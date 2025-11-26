@@ -34,7 +34,7 @@ function applyStyle() {
 }
 
 // Load GeoJSON and add to map
-fetch('data/entities_sample.geojson')
+fetch('data/HIAN_V1_Test.geojson')
   .then(res => res.json())
   .then(data => {
     dataLayer = L.geoJSON(data, {
@@ -75,3 +75,4 @@ document.getElementById('basemapSat').addEventListener('input', e => {
   const value = Number(e.target.value) / 100;
   document.documentElement.style.setProperty('--sat', value);
 });
+
