@@ -160,16 +160,16 @@ function applyTheme(theme) {
 
   dataLayer = L.geoJSON(geojsonData, {
     style: feature => {
-      const props = feature.properties || {};
-      const subValue = props.Sub_category ?? props.Sub_Category;
-      const value = theme === 'sub' ? subValue : props.Period;
-      const color = theme === 'sub' ? (subColors[value] || '#999') : (periodColors[value] || '#999');
+  const props = feature.properties || {};
+  const subValue = props.Sub_category ?? props.SubCategory;
+  const value = theme === 'sub' ? subValue : props.Period;
+  const color = theme === 'sub' ? (subColors[value] || '#999') : (periodColors[value] || '#999');
 
-      return {
-        color,
-        weight: 1.5,       // 👀 thinner visible line
-        opacity: 1,
-        interactive: true  // ensure the layer responds to clicks
+  return {
+    color,
+    weight: 1.5,       // thinner visible line
+    opacity: 1,
+    interactive: true  // allow clicks
   };
 },
 
@@ -183,6 +183,17 @@ function applyTheme(theme) {
       }
     }
   }).addTo(map);
+  dataLayer.eachLayer(layer => {
+  layer.setStyle({
+    weight: 8,          // big invisible buffer
+    opacity: 0,
+    fillOpacity: 0,
+    fillColor: 'transparent'
+  });
+  layer.bringToFront(); // keep visible stroke on top
+});
+
+
 
   // Do not fit bounds here (prevents jumping when switching themes)
   updateLegend(categories, theme);
@@ -212,4 +223,5 @@ fetch('data/HIAN_V1_Test.geojson')
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
+
 
