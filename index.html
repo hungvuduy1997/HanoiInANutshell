@@ -19,13 +19,8 @@
       font-family: sans-serif;
       font-size: 14px;
     }
-    .controls label {
-      display: block;
-      margin-bottom: 6px;
-    }
-    .tile-filter {
-      filter: saturate(var(--sat, 1));
-    }
+    .controls label { display: block; margin-bottom: 6px; }
+    .tile-filter { filter: saturate(var(--sat, 1)); }
     .legend {
       position: absolute;
       bottom: 10px;
@@ -37,17 +32,12 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
       font-family: sans-serif;
       font-size: 13px;
+      max-width: 320px;
     }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 4px;
-    }
+    .legend-title { font-weight: 600; margin-bottom: 6px; }
+    .legend-item { display: flex; align-items: center; margin-bottom: 4px; }
     .legend-color {
-      width: 16px;
-      height: 16px;
-      margin-right: 6px;
-      border: 1px solid #ccc;
+      width: 16px; height: 16px; margin-right: 6px; border: 1px solid #ccc; flex: 0 0 16px;
     }
   </style>
 </head>
@@ -67,7 +57,10 @@
     <label>Basemap Saturation: <input type="range" id="basemapSat" min="0" max="200" value="100" /></label>
   </div>
 
-  <div id="legend" class="legend"></div>
+  <div id="legend" class="legend">
+    <div id="legendTitle" class="legend-title"></div>
+    <div id="legendItems"></div>
+  </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="app.js"></script>
