@@ -49,6 +49,9 @@ fetch('data/HIAN_V1_Test.geojson')
         }
       }
     }).addTo(map);
+
+    // Zoom to layer bounds
+    map.fitBounds(dataLayer.getBounds());
   })
   .catch(err => console.error('Failed to load GeoJSON:', err));
 
@@ -75,4 +78,3 @@ document.getElementById('basemapSat').addEventListener('input', e => {
   const value = Number(e.target.value) / 100;
   document.documentElement.style.setProperty('--sat', value);
 });
-
