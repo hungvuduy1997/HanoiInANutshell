@@ -11,11 +11,12 @@ const tileLayer = L.tileLayer(
   }
 ).addTo(map);
 
-let dataLayer = null;
+let dataLayer = null;    // visible thin-stroke layer
+let bufferLayer = null;  // invisible wide-stroke clickable buffer
 let geojsonData = null;
 
 // -----------------------------
-// Phân loại (Sub_category) colors
+// Phân loại (Sub_category) colors — edit here
 // -----------------------------
 const subColors = {
   "CM": "#7A8B3D",
@@ -34,6 +35,7 @@ const subColors = {
   "Other": "#F02AE7"
 };
 
+// Labels for Phân loại — edit here
 const subLabels = {
   "CM": "Cách mạng",
   "DN": "Doanh nhân",
@@ -51,12 +53,13 @@ const subLabels = {
   "Other": "Khác"
 };
 
+// Legend order for Phân loại — reorder to change
 const subOrder = [
   "CM","DN","GD","KT","KT-XH","LĐ","PK","QC","QS","TG","ThTh","VH-NT","YH","Other"
 ];
 
 // -----------------------------
-// Thời kỳ colors
+// Thời kỳ colors — edit here if needed
 // -----------------------------
 const periodColors = {
   "01 - Hồng Bàng - sơ sử (trước 258 TCN)": "#0D0887",
@@ -85,6 +88,7 @@ const periodColors = {
   "24 - Cách mạng & kháng chiến - Sau Giải phóng & hiện đại (1945 - nay)": "#F7E726"
 };
 
+// Legend order for Thời kỳ — reorder to change
 const periodOrder = [
   "01 - Hồng Bàng - sơ sử (trước 258 TCN)",
   "02 - Bắc thuộc & khởi nghĩa (258 TCN - 938 SCN)",
@@ -119,6 +123,8 @@ function updateLegend(categories, theme) {
   const titleDiv = document.getElementById('legendTitle');
   const itemsDiv = document.getElementById('legendItems');
 
+  if (!titleDiv || !itemsDiv) return;
+
   titleDiv.textContent = theme === 'sub' ? 'Phân loại' : 'Thời kỳ';
   itemsDiv.innerHTML = '';
 
@@ -140,68 +146,98 @@ function updateLegend(categories, theme) {
     itemsDiv.appendChild(row);
   });
 }
+
+// Helper: safely get the Sub_category value regardless of field name
+function getSubCategory(props) {
+  return props.Sub_category ?? props.Sub_Category ?? props.SubCategory ?? null;
+}
+
 // -----------------------------
-// Apply theme and redraw layer
+// Apply theme and redraw layers (thin visible stroke + wide invisible buffer)
 // -----------------------------
 function applyTheme(theme) {
-if (dataLayer) map.removeLayer(dataLayer);
-if (bufferLayer) map.removeLayer(bufferLayer); // remove old buffer if exists
+  if (!geojsonData) return;
 
-dataLayer = L.geoJSON(geojsonData, {
-  style: feature => {
-    const props = feature.properties || {};
-    const subValue = props.Sub_category ?? props.SubCategory;
+  // Gather categories present in the data
+  const categoriesSet = new Set();
+  geojsonData.features.forEach(f => {
+    const props = f.properties || {};
+    const subValue = getSubCategory(props);
     const value = theme === 'sub' ? subValue : props.Period;
-    const color = theme === 'sub' ? (subColors[value] || '#999') : (periodColors[value] || '#999');
-    return {
-      color,
-      weight: 1.5,
-      opacity: 1
-    };
-  },
-  onEachFeature: (feature, layer) => {
-    // same popup logic
-  }
-}).addTo(map);
-
-// 👇 Add invisible buffer layer for easier clicking
-bufferLayer = L.geoJSON(geojsonData, {
-  style: () => ({
-    color: 'transparent',
-    weight: 10,
-    opacity: 0,
-    interactive: true
-  }),
-  onEachFeature: (feature, layer) => {
-    // same popup logic
-  }
-}).addTo(map);
-
-  dataLayer.eachLayer(layer => {
-  layer.setStyle({
-    weight: 8,          // big invisible buffer
-    opacity: 0,
-    fillOpacity: 0,
-    fillColor: 'transparent'
+    if (value && value !== 'NULL') categoriesSet.add(value);
   });
-  layer.bringToFront(); // keep visible stroke on top
-});
+  const categories = Array.from(categoriesSet);
 
+  // Remove previous layers
+  if (dataLayer) map.removeLayer(dataLayer);
+  if (bufferLayer) map.removeLayer(bufferLayer);
 
+  // Visible thin-stroke layer
+  dataLayer = L.geoJSON(geojsonData, {
+    style: feature => {
+      const props = feature.properties || {};
+      const subValue = getSubCategory(props);
+      const value = theme === 'sub' ? subValue : props.Period;
+      const color = theme === 'sub' ? (subColors[value] || '#999') : (periodColors[value] || '#999');
+      return {
+        color,
+        weight: 1.25,  // thinner visible line
+        opacity: 1
+      };
+    },
+    onEachFeature: (feature, layer) => {
+      const props = feature.properties || {};
+      const entries = Object.entries(props)
+        .filter(([k, v]) => k && v && k !== 'id' && v !== undefined && v !== '' && v !== 'NULL');
+      if (entries.length) {
+        const html = entries.map(([k, v]) => `<b>${k}:</b> ${v}`).join('<br>');
+        layer.bindPopup(html);
+      }
+    }
+  }).addTo(map);
 
-  // Do not fit bounds here (prevents jumping when switching themes)
+  // Invisible wide-stroke buffer layer to improve clickability
+  bufferLayer = L.geoJSON(geojsonData, {
+    style: () => ({
+      color: 'transparent',
+      weight: 10,     // make this larger to increase the hit zone
+      opacity: 0
+    }),
+    onEachFeature: (feature, layer) => {
+      const props = feature.properties || {};
+      const entries = Object.entries(props)
+        .filter(([k, v]) => k && v && k !== 'id' && v !== undefined && v !== '' && v !== 'NULL');
+      if (entries.length) {
+        const html = entries.map(([k, v]) => `<b>${k}:</b> ${v}`).join('<br>');
+        layer.bindPopup(html);
+      }
+
+      // Forward hover/click to visible layer by highlighting it
+      layer.on('mouseover', () => {
+        // Optionally you can visually highlight the thin layer; here we slightly increase opacity
+        // You could also change color or weight temporarily if you want stronger feedback
+        layer.bringToFront();
+      });
+    }
+  }).addTo(map);
+
+  // Keep the visible layer above the buffer
+  dataLayer.bringToFront();
+
+  // Update legend
   updateLegend(categories, theme);
 }
 
 // -----------------------------
-// Load GeoJSON
+// Load GeoJSON (fit bounds once)
 // -----------------------------
 fetch('data/HIAN_V1_Test.geojson')
   .then(res => res.json())
   .then(data => {
     geojsonData = data;
     applyTheme('sub'); // default to Phân loại
-    // Fit bounds once, when data first loads
+
+    // Fit bounds once, if available
     if (dataLayer) {
       const bounds = dataLayer.getBounds();
       if (bounds && bounds.isValid()) {
@@ -212,11 +248,8 @@ fetch('data/HIAN_V1_Test.geojson')
   .catch(err => console.error('Failed to load GeoJSON:', err));
 
 // -----------------------------
-// Controls
+// Theme control (no sliders)
 // -----------------------------
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
-
-
-
