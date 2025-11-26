@@ -31,14 +31,25 @@
 <body>
   <div id="map"></div>
 
-  <div class="controls">
-    <label>Line Width: <input type="range" id="lineWidth" min="1" max="10" value="2" /></label>
-    <label>Line Color: <input type="color" id="lineColor" value="#3388ff" /></label>
-    <label>Layer Opacity: <input type="range" id="layerOpacity" min="0" max="100" value="100" /></label>
-    <label>Basemap Saturation: <input type="range" id="basemapSat" min="0" max="200" value="100" /></label>
-  </div>
+<div class="controls">
+  <label>Theme:
+    <select id="themeSelect">
+      <option value="sub">Phân loại</option>
+      <option value="period">Thời kỳ</option>
+    </select>
+  </label>
+  <hr>
+  <label>Line Width: <input type="range" id="lineWidth" min="1" max="10" value="2" /></label>
+  <label>Line Color: <input type="color" id="lineColor" value="#3388ff" /></label>
+  <label>Layer Opacity: <input type="range" id="layerOpacity" min="0" max="100" value="100" /></label>
+  <label>Basemap Saturation: <input type="range" id="basemapSat" min="0" max="200" value="100" /></label>
+</div>
+
+<div id="legend" class="legend"></div>
+
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
+
