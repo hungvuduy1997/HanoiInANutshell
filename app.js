@@ -186,14 +186,38 @@ function applyTheme(theme) {
       };
     },
     onEachFeature: (feature, layer) => {
-      const props = feature.properties || {};
-      const entries = Object.entries(props)
-        .filter(([k, v]) => k && v && k !== 'id' && v !== undefined && v !== '' && v !== 'NULL');
-      if (entries.length) {
-        const html = entries.map(([k, v]) => `<b>${k}:</b> ${v}`).join('<br>');
-        layer.bindPopup(html);
-      }
-    }
+  const props = feature.properties || {};
+  const labels = {
+    name: "Tên",
+    Sub_Category: "Phân loại",
+    Period: "Thời kỳ",
+    "Birth & Death": "Năm sinh - mất",
+    Profession: "Nghề nghiệp",
+    title: "Danh hiệu",
+    description: "Mô tả",
+    Family: "Gia đình",
+    Trivia: "Giai thoại"
+  };
+
+  const order = [
+    "name",
+    "Sub_Category",
+    "Period",
+    "Birth & Death",
+    "Profession",
+    "title",
+    "description",
+    "Family",
+    "Trivia"
+  ];
+
+  const html = order
+    .filter(key => props[key] && props[key] !== 'NULL' && props[key] !== '')
+    .map(key => `<b>${labels[key] || key}:</b> ${props[key]}`)
+    .join('<br>');
+
+  if (html) layer.bindPopup(html);
+}
   }).addTo(map);
 
   // Invisible wide-stroke buffer layer to improve clickability
@@ -259,6 +283,7 @@ fetch('data/HIAN_V1_Test.geojson')
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
+
 
 
 
