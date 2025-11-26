@@ -82,8 +82,8 @@ function buildPopupHTML(props) {
     Profession: "Nghề nghiệp",
     title: "Danh hiệu",
     description: "Mô tả",
-    Family: "Gia đình",
-    Trivia: "Giai thoại"
+    Family: "Mối quan hệ gia đình",
+    Trivia: "Fun-fact"
   };
 
   const order = [
@@ -206,5 +206,6 @@ fetch('data/HIAN_V1_Test.geojson')
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
+
 
 
