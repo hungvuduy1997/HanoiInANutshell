@@ -14,6 +14,7 @@ const tileLayer = L.tileLayer(
 let dataLayer = null;    // visible thin-stroke layer
 let bufferLayer = null;  // invisible wide-stroke clickable buffer
 let geojsonData = null;
+let bufferLayer = null;
 
 // -----------------------------
 // Phân loại (Sub_category) colors — edit here
@@ -253,3 +254,4 @@ fetch('data/HIAN_V1_Test.geojson')
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
+
