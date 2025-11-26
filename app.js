@@ -2,14 +2,11 @@
 const map = L.map('map').setView([21.03, 105.85], 12);
 
 // Add Esri World Imagery (satellite) basemap
-const tileLayer = L.tileLayer(
-  'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-  {
-    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-    subdomains: 'abcd',
-    maxZoom: 20
-  }
-).addTo(map);
+const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
 
 // Apply saturation filter to basemap tiles
 tileLayer.on('tileload', () => {
@@ -82,4 +79,5 @@ document.getElementById('basemapSat').addEventListener('input', e => {
   const value = Number(e.target.value) / 100;
   document.documentElement.style.setProperty('--sat', value);
 });
+
 
