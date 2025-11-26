@@ -144,45 +144,39 @@ function updateLegend(categories, theme) {
 // Apply theme and redraw layer
 // -----------------------------
 function applyTheme(theme) {
-  if (!geojsonData) return;
+if (dataLayer) map.removeLayer(dataLayer);
+if (bufferLayer) map.removeLayer(bufferLayer); // remove old buffer if exists
 
-  // Collect categories from data
-  const categoriesSet = new Set();
-  geojsonData.features.forEach(f => {
-    const props = f.properties || {};
-    const subValue = props.Sub_category ?? props.Sub_Category; // support both field names
+dataLayer = L.geoJSON(geojsonData, {
+  style: feature => {
+    const props = feature.properties || {};
+    const subValue = props.Sub_category ?? props.SubCategory;
     const value = theme === 'sub' ? subValue : props.Period;
-    if (value && value !== 'NULL') categoriesSet.add(value);
-  });
-  const categories = Array.from(categoriesSet);
+    const color = theme === 'sub' ? (subColors[value] || '#999') : (periodColors[value] || '#999');
+    return {
+      color,
+      weight: 1.5,
+      opacity: 1
+    };
+  },
+  onEachFeature: (feature, layer) => {
+    // same popup logic
+  }
+}).addTo(map);
 
-  if (dataLayer) map.removeLayer(dataLayer);
+// 👇 Add invisible buffer layer for easier clicking
+bufferLayer = L.geoJSON(geojsonData, {
+  style: () => ({
+    color: 'transparent',
+    weight: 10,
+    opacity: 0,
+    interactive: true
+  }),
+  onEachFeature: (feature, layer) => {
+    // same popup logic
+  }
+}).addTo(map);
 
-  dataLayer = L.geoJSON(geojsonData, {
-    style: feature => {
-  const props = feature.properties || {};
-  const subValue = props.Sub_category ?? props.SubCategory;
-  const value = theme === 'sub' ? subValue : props.Period;
-  const color = theme === 'sub' ? (subColors[value] || '#999') : (periodColors[value] || '#999');
-
-  return {
-    color,
-    weight: 1.5,       // thinner visible line
-    opacity: 1,
-    interactive: true  // allow clicks
-  };
-},
-
-    onEachFeature: (feature, layer) => {
-      const props = feature.properties || {};
-      const entries = Object.entries(props)
-        .filter(([k, v]) => v !== null && v !== undefined && v !== '' && v !== 'NULL');
-      if (entries.length) {
-        const html = entries.map(([k, v]) => `<b>${k}:</b> ${v}`).join('<br>');
-        layer.bindPopup(html);
-      }
-    }
-  }).addTo(map);
   dataLayer.eachLayer(layer => {
   layer.setStyle({
     weight: 8,          // big invisible buffer
@@ -223,5 +217,6 @@ fetch('data/HIAN_V1_Test.geojson')
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
+
 
 
