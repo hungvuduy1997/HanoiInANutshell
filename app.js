@@ -161,7 +161,7 @@ function applyTheme(theme) {
   bufferLayer = L.geoJSON(geojsonData, {
     style: () => ({
       color: 'transparent',
-      weight: 10,
+      weight: 12,
       opacity: 0,
       interactive: true
     }),
@@ -206,6 +206,7 @@ fetch('data/HIAN_V1_Test.geojson')
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
+
 
 
 
