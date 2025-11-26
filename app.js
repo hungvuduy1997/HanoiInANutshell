@@ -2,23 +2,11 @@
 const map = L.map('map').setView([21.03, 105.85], 12);
 
 // Satellite basemap
-const tileLayer = L.tileLayer(
-  'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-  {
-    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-    subdomains: 'abcd',
-    maxZoom: 20
-  }
-).addTo(map);
+const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
 
-
-tileLayer.on('tileload', () => {
-  const container = tileLayer.getContainer();
-  if (container) container.classList.add('tile-filter');
-});
-
-let dataLayer = null;
-let geojsonData = null;
 
 // Fixed color schemes for Sub_category
 const subColors = {
@@ -131,4 +119,5 @@ document.getElementById('basemapSat').addEventListener('input', e => {
   document.documentElement.style.setProperty('--sat', value);
 });
 document.getElementById('themeSelect').addEventListener('change', e => applyTheme(e.target.value));
+
 
