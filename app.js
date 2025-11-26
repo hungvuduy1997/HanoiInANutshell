@@ -232,11 +232,16 @@ function applyTheme(theme) {
 // Load GeoJSON (fit bounds once)
 // -----------------------------
 fetch('data/HIAN_V1_Test.geojson')
-  .then(res => res.json())
-  .then(data => {
-    geojsonData = data;
-    applyTheme('sub'); // default to Phân loại
-console.log("Sample properties:", Object.keys(data.features[0].properties));
+.then(data => {
+  geojsonData = data;
+  applyTheme('sub'); // default to Phân loại
+
+  // 👇 Show all property keys from the first feature
+  const props = data.features[0].properties;
+  const keys = Object.keys(props);
+  alert("Properties:\n" + keys.join("\n"));
+});
+
 
     // Fit bounds once, if available
     if (dataLayer) {
@@ -254,6 +259,7 @@ console.log("Sample properties:", Object.keys(data.features[0].properties));
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
+
 
 
 
