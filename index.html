@@ -26,30 +26,50 @@
     .tile-filter {
       filter: saturate(var(--sat, 1));
     }
+    .legend {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      z-index: 1000;
+      background: white;
+      padding: 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      font-family: sans-serif;
+      font-size: 13px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      margin-right: 6px;
+      border: 1px solid #ccc;
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
 
-<div class="controls">
-  <label>Theme:
-    <select id="themeSelect">
-      <option value="sub">Phân loại</option>
-      <option value="period">Thời kỳ</option>
-    </select>
-  </label>
-  <hr>
-  <label>Line Width: <input type="range" id="lineWidth" min="1" max="10" value="2" /></label>
-  <label>Line Color: <input type="color" id="lineColor" value="#3388ff" /></label>
-  <label>Layer Opacity: <input type="range" id="layerOpacity" min="0" max="100" value="100" /></label>
-  <label>Basemap Saturation: <input type="range" id="basemapSat" min="0" max="200" value="100" /></label>
-</div>
+  <div class="controls">
+    <label>Theme:
+      <select id="themeSelect">
+        <option value="sub">Phân loại con</option>
+        <option value="period">Thời kỳ</option>
+      </select>
+    </label>
+    <hr>
+    <label>Line Width: <input type="range" id="lineWidth" min="1" max="10" value="2" /></label>
+    <label>Layer Opacity: <input type="range" id="layerOpacity" min="0" max="100" value="100" /></label>
+    <label>Basemap Saturation: <input type="range" id="basemapSat" min="0" max="200" value="100" /></label>
+  </div>
 
-<div id="legend" class="legend"></div>
-
+  <div id="legend" class="legend"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
-
