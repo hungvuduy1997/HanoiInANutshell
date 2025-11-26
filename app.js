@@ -93,7 +93,13 @@ function buildPopupHTML(props) {
 
   return order
     .filter(k => props[k] && props[k] !== 'NULL' && props[k] !== '')
-    .map(k => `<b>${labels[k] || k}:</b> ${props[k]}`)
+    .map(k => {
+  let value = props[k];
+  if (k === "Sub_Category") {
+    value = subLabels[value] || value; // 👈 convert abbreviation to full label
+  }
+  return `<b>${labels[k] || k}:</b> ${value}`;
+})
     .join('<br>');
 }
 
@@ -200,3 +206,4 @@ fetch('data/HIAN_V1_Test.geojson')
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
+
