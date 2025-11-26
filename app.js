@@ -152,41 +152,7 @@ function getSubCategory(props) {
   return props.Sub_category ?? props.Sub_Category ?? props.SubCategory ?? null;
 }
 
-// -----------------------------
-// Apply theme and redraw layers (thin visible stroke + wide invisible buffer)
-// -----------------------------
-function applyTheme(theme) {
-  if (!geojsonData) return;
-
-  // Gather categories present in the data
-  const categoriesSet = new Set();
-  geojsonData.features.forEach(f => {
-    const props = f.properties || {};
-    const subValue = getSubCategory(props);
-    const value = theme === 'sub' ? subValue : props.Period;
-    if (value && value !== 'NULL') categoriesSet.add(value);
-  });
-  const categories = Array.from(categoriesSet);
-
-  // Remove previous layers
-  if (dataLayer) map.removeLayer(dataLayer);
-  if (bufferLayer) map.removeLayer(bufferLayer);
-
-  // Visible thin-stroke layer
-  dataLayer = L.geoJSON(geojsonData, {
-    style: feature => {
-      const props = feature.properties || {};
-      const subValue = getSubCategory(props);
-      const value = theme === 'sub' ? subValue : props.Period;
-      const color = theme === 'sub' ? (subColors[value] || '#999') : (periodColors[value] || '#999');
-      return {
-        color,
-        weight: 1.25,  // thinner visible line
-        opacity: 1
-      };
-    },
-    onEachFeature: (feature, layer) => {
-  const props = feature.properties || {};
+function buildPopupHTML(props) {
   const labels = {
     name: "Tên",
     Sub_Category: "Phân loại",
@@ -212,35 +178,69 @@ function applyTheme(theme) {
   ];
 
   const html = order
-    .filter(key => props[key] && props[key] !== 'NULL' && props[key] !== '')
+    .filter(key => props && props[key] && props[key] !== 'NULL' && props[key] !== '')
     .map(key => `<b>${labels[key] || key}:</b> ${props[key]}`)
     .join('<br>');
 
-  if (html) layer.bindPopup(html);
+  return html || '';
 }
+
+
+// -----------------------------
+// Apply theme and redraw layers (thin visible stroke + wide invisible buffer)
+// -----------------------------
+function applyTheme(theme) {
+  if (!geojsonData) return;
+
+  // Gather categories present in the data
+  const categoriesSet = new Set();
+  geojsonData.features.forEach(f => {
+    const props = f.properties || {};
+    const subValue = getSubCategory(props);
+    const value = theme === 'sub' ? subValue : props.Period;
+    if (value && value !== 'NULL') categoriesSet.add(value);
+  });
+  const categories = Array.from(categoriesSet);
+
+  // Remove previous layers (make sure bufferLayer is declared globally)
+  if (dataLayer) map.removeLayer(dataLayer);
+  if (bufferLayer) map.removeLayer(bufferLayer);
+
+  // Visible thin-stroke layer
+  dataLayer = L.geoJSON(geojsonData, {
+    style: feature => {
+      const props = feature.properties || {};
+      const subValue = getSubCategory(props);
+      const value = theme === 'sub' ? subValue : props.Period;
+      const color = theme === 'sub' ? (subColors[value] || '#999') : (periodColors[value] || '#999');
+      return {
+        color,
+        weight: 1.25,  // thinner visible line
+        opacity: 1
+      };
+    },
+    onEachFeature: (feature, layer) => {
+      const html = buildPopupHTML(feature.properties || {});
+      if (html) layer.bindPopup(html);
+    }
   }).addTo(map);
 
   // Invisible wide-stroke buffer layer to improve clickability
   bufferLayer = L.geoJSON(geojsonData, {
     style: () => ({
       color: 'transparent',
-      weight: 10,     // make this larger to increase the hit zone
-      opacity: 0
+      weight: 10,     // increase to enlarge hit zone
+      opacity: 0,
+      interactive: true
     }),
     onEachFeature: (feature, layer) => {
-      const props = feature.properties || {};
-      const entries = Object.entries(props)
-        .filter(([k, v]) => k && v && k !== 'id' && v !== undefined && v !== '' && v !== 'NULL');
-      if (entries.length) {
-        const html = entries.map(([k, v]) => `<b>${k}:</b> ${v}`).join('<br>');
-        layer.bindPopup(html);
-      }
+      const html = buildPopupHTML(feature.properties || {});
+      if (html) layer.bindPopup(html);
 
-      // Forward hover/click to visible layer by highlighting it
+      // Optional: subtle feedback on hover
       layer.on('mouseover', () => {
-        // Optionally you can visually highlight the thin layer; here we slightly increase opacity
-        // You could also change color or weight temporarily if you want stronger feedback
         layer.bringToFront();
+        dataLayer.bringToFront(); // keep the visible stroke above
       });
     }
   }).addTo(map);
@@ -250,6 +250,7 @@ function applyTheme(theme) {
 
   // Update legend
   updateLegend(categories, theme);
+}
 
 // -----------------------------
 // Load GeoJSON (fit bounds once)
@@ -282,6 +283,7 @@ fetch('data/HIAN_V1_Test.geojson')
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
+
 
 
 
