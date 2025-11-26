@@ -236,6 +236,7 @@ fetch('data/HIAN_V1_Test.geojson')
   .then(data => {
     geojsonData = data;
     applyTheme('sub'); // default to Phân loại
+console.log("Sample properties:", Object.keys(data.features[0].properties));
 
     // Fit bounds once, if available
     if (dataLayer) {
@@ -253,5 +254,6 @@ fetch('data/HIAN_V1_Test.geojson')
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
+
 
 
