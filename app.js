@@ -1,17 +1,44 @@
-// Create the map (centered roughly on Hanoi; adjust as needed)
+// Initialize map centered on Hanoi
 const map = L.map('map').setView([21.03, 105.85], 12);
 
 // Add OpenStreetMap basemap
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Load your GeoJSON file from /data/
-fetch('data/HIAN_V1_Test.geojson')
+// Apply saturation filter to basemap tiles
+tileLayer.on('tileload', () => {
+  const container = tileLayer.getContainer();
+  if (container) container.classList.add('tile-filter');
+});
+
+// Initial style settings
+let currentStyle = {
+  color: document.getElementById('lineColor').value,
+  weight: Number(document.getElementById('lineWidth').value),
+  opacity: Number(document.getElementById('layerOpacity').value) / 100
+};
+
+let dataLayer = null;
+
+// Function to apply style to the layer
+function applyStyle() {
+  if (dataLayer) {
+    dataLayer.setStyle({
+      color: currentStyle.color,
+      weight: currentStyle.weight,
+      opacity: currentStyle.opacity
+    });
+  }
+}
+
+// Load GeoJSON and add to map
+fetch('data/entities_sample.geojson')
   .then(res => res.json())
   .then(data => {
-    L.geoJSON(data, {
+    dataLayer = L.geoJSON(data, {
+      style: () => currentStyle,
       onEachFeature: (feature, layer) => {
         const props = feature.properties || {};
         const entries = Object.entries(props)
@@ -24,3 +51,27 @@ fetch('data/HIAN_V1_Test.geojson')
     }).addTo(map);
   })
   .catch(err => console.error('Failed to load GeoJSON:', err));
+
+// Line width control
+document.getElementById('lineWidth').addEventListener('input', e => {
+  currentStyle.weight = Number(e.target.value);
+  applyStyle();
+});
+
+// Line color control
+document.getElementById('lineColor').addEventListener('input', e => {
+  currentStyle.color = e.target.value;
+  applyStyle();
+});
+
+// Layer opacity control
+document.getElementById('layerOpacity').addEventListener('input', e => {
+  currentStyle.opacity = Number(e.target.value) / 100;
+  applyStyle();
+});
+
+// Basemap saturation control
+document.getElementById('basemapSat').addEventListener('input', e => {
+  const value = Number(e.target.value) / 100;
+  document.documentElement.style.setProperty('--sat', value);
+});
