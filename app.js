@@ -3,10 +3,11 @@ const map = L.map('map').setView([21.03, 105.85], 12);
 
 // Add Esri World Imagery (satellite) basemap
 const tileLayer = L.tileLayer(
-  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}',
+  'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
   {
-    maxZoom: 19,
-    attribution: 'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics'
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    subdomains: 'abcd',
+    maxZoom: 20
   }
 ).addTo(map);
 
@@ -81,3 +82,4 @@ document.getElementById('basemapSat').addEventListener('input', e => {
   const value = Number(e.target.value) / 100;
   document.documentElement.style.setProperty('--sat', value);
 });
+
