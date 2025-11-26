@@ -1,87 +1,99 @@
 // Initialize map centered on Hanoi
 const map = L.map('map').setView([21.03, 105.85], 12);
 
-// Add Esri World Imagery (satellite) basemap
+// Satellite basemap
 const tileLayer = L.tileLayer(
-  'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}',
   {
-    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-    subdomains: 'abcd',
-    maxZoom: 20
+    maxZoom: 19,
+    attribution: 'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics'
   }
 ).addTo(map);
 
-// Apply saturation filter to basemap tiles
 tileLayer.on('tileload', () => {
   const container = tileLayer.getContainer();
   if (container) container.classList.add('tile-filter');
 });
 
-// Initial style settings
-let currentStyle = {
-  color: document.getElementById('lineColor').value,
-  weight: Number(document.getElementById('lineWidth').value),
-  opacity: Number(document.getElementById('layerOpacity').value) / 100
+let dataLayer = null;
+let geojsonData = null;
+
+// Color palettes
+const palettes = {
+  sub: ['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf'],
+  period: ['#1b9e77','#d95f02','#7570b3','#e7298a','#66a61e','#e6ab02','#a6761d','#666666']
 };
 
-let dataLayer = null;
-
-// Function to apply style to the layer
-function applyStyle() {
-  if (dataLayer) {
-    dataLayer.setStyle({
-      color: currentStyle.color,
-      weight: currentStyle.weight,
-      opacity: currentStyle.opacity
-    });
-  }
+// Function to assign colors
+function getColor(value, theme, categories) {
+  const idx = categories.indexOf(value);
+  if (idx === -1) return '#999';
+  return palettes[theme][idx % palettes[theme].length];
 }
 
-// Load GeoJSON and add to map
+// Function to build legend
+function updateLegend(categories, theme) {
+  const legendDiv = document.getElementById('legend');
+  legendDiv.innerHTML = '<b>Legend</b><br>';
+  categories.forEach((cat, i) => {
+    const color = palettes[theme][i % palettes[theme].length];
+    legendDiv.innerHTML += `
+      <div class="legend-item">
+        <div class="legend-color" style="background:${color}"></div>${cat}
+      </div>`;
+  });
+}
+
+// Function to apply theme
+function applyTheme(theme) {
+  if (!geojsonData) return;
+
+  // Collect unique categories
+  const categories = [...new Set(geojsonData.features.map(f => {
+    return theme === 'sub' ? f.properties.Sub_category : f.properties.Period;
+  }).filter(v => v && v !== 'NULL'))];
+
+  if (dataLayer) map.removeLayer(dataLayer);
+
+  dataLayer = L.geoJSON(geojsonData, {
+    style: feature => {
+      const value = theme === 'sub' ? feature.properties.Sub_category : feature.properties.Period;
+      return {
+        color: getColor(value, theme, categories),
+        weight: Number(document.getElementById('lineWidth').value),
+        opacity: Number(document.getElementById('layerOpacity').value) / 100
+      };
+    },
+    onEachFeature: (feature, layer) => {
+      const props = feature.properties || {};
+      const entries = Object.entries(props)
+        .filter(([k, v]) => v !== null && v !== undefined && v !== '' && v !== 'NULL');
+      if (entries.length) {
+        const html = entries.map(([k, v]) => `<b>${k}:</b> ${v}`).join('<br>');
+        layer.bindPopup(html);
+      }
+    }
+  }).addTo(map);
+
+  map.fitBounds(dataLayer.getBounds());
+  updateLegend(categories, theme);
+}
+
+// Load GeoJSON
 fetch('data/HIAN_V1_Test.geojson')
   .then(res => res.json())
   .then(data => {
-    dataLayer = L.geoJSON(data, {
-      style: () => currentStyle,
-      onEachFeature: (feature, layer) => {
-        const props = feature.properties || {};
-        const entries = Object.entries(props)
-          .filter(([k, v]) => v !== null && v !== undefined && v !== '' && v !== 'NULL');
-        if (entries.length) {
-          const html = entries.map(([k, v]) => `<b>${k}:</b> ${v}`).join('<br>');
-          layer.bindPopup(html);
-        }
-      }
-    }).addTo(map);
-
-    // Zoom to layer bounds
-    map.fitBounds(dataLayer.getBounds());
+    geojsonData = data;
+    applyTheme('sub'); // default theme
   })
   .catch(err => console.error('Failed to load GeoJSON:', err));
 
-// Line width control
-document.getElementById('lineWidth').addEventListener('input', e => {
-  currentStyle.weight = Number(e.target.value);
-  applyStyle();
-});
-
-// Line color control
-document.getElementById('lineColor').addEventListener('input', e => {
-  currentStyle.color = e.target.value;
-  applyStyle();
-});
-
-// Layer opacity control
-document.getElementById('layerOpacity').addEventListener('input', e => {
-  currentStyle.opacity = Number(e.target.value) / 100;
-  applyStyle();
-});
-
-// Basemap saturation control
+// Controls
+document.getElementById('lineWidth').addEventListener('input', () => applyTheme(document.getElementById('themeSelect').value));
+document.getElementById('lineColor').addEventListener('input', () => applyTheme(document.getElementById('themeSelect').value));
+document.getElementById('layerOpacity').addEventListener('input', () => applyTheme(document.getElementById('themeSelect').value));
 document.getElementById('basemapSat').addEventListener('input', e => {
   const value = Number(e.target.value) / 100;
   document.documentElement.style.setProperty('--sat', value);
 });
-
-
-
+document.getElementById('themeSelect').addEventListener('change', e => applyTheme(e.target.value));
