@@ -3,12 +3,14 @@ const map = L.map('map').setView([21.03, 105.85], 12);
 
 // Satellite basemap
 const tileLayer = L.tileLayer(
-  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}',
+  'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
   {
-    maxZoom: 19,
-    attribution: 'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics'
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    subdomains: 'abcd',
+    maxZoom: 20
   }
 ).addTo(map);
+
 
 tileLayer.on('tileload', () => {
   const container = tileLayer.getContainer();
@@ -129,3 +131,4 @@ document.getElementById('basemapSat').addEventListener('input', e => {
   document.documentElement.style.setProperty('--sat', value);
 });
 document.getElementById('themeSelect').addEventListener('change', e => applyTheme(e.target.value));
+
