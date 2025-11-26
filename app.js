@@ -8,7 +8,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // Load your GeoJSON file from /data/
-fetch('data/entities_sample.geojson')
+fetch('data/HIAN_V1_Test.geojson')
   .then(res => res.json())
   .then(data => {
     L.geoJSON(data, {
