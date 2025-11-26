@@ -75,7 +75,7 @@ function getSubCategory(props) {
 
 function buildPopupHTML(props) {
   const labels = {
-    name: "Tên",
+    name: "Tên đường phố",
     Sub_Category: "Phân loại",
     Period: "Thời kỳ",
     "Birth & Death": "Năm sinh - mất",
@@ -206,4 +206,5 @@ fetch('data/HIAN_V1_Test.geojson')
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
+
 
