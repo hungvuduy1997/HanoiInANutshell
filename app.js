@@ -11,16 +11,11 @@ const tileLayer = L.tileLayer(
   }
 ).addTo(map);
 
-tileLayer.on('tileload', () => {
-  const container = tileLayer.getContainer();
-  if (container) container.classList.add('tile-filter');
-});
-
 let dataLayer = null;
 let geojsonData = null;
 
 // -----------------------------
-// Phân loại (Sub_category) colors — edit if needed
+// Phân loại (Sub_category) colors
 // -----------------------------
 const subColors = {
   "CM": "#7A8B3D",
@@ -39,7 +34,6 @@ const subColors = {
   "Other": "#F02AE7"
 };
 
-// Labels for Phân loại legend — edit names if you want
 const subLabels = {
   "CM": "Cách mạng",
   "DN": "Doanh nhân",
@@ -57,13 +51,12 @@ const subLabels = {
   "Other": "Khác"
 };
 
-// Order for Phân loại legend — reorder to change display order
 const subOrder = [
   "CM","DN","GD","KT","KT-XH","LĐ","PK","QC","QS","TG","ThTh","VH-NT","YH","Other"
 ];
 
 // -----------------------------
-// Thời kỳ colors (from QGIS export)
+// Thời kỳ colors
 // -----------------------------
 const periodColors = {
   "01 - Hồng Bàng - sơ sử (trước 258 TCN)": "#0D0887",
@@ -92,7 +85,6 @@ const periodColors = {
   "24 - Cách mạng & kháng chiến - Sau Giải phóng & hiện đại (1945 - nay)": "#F7E726"
 };
 
-// Explicit order for Period legend
 const periodOrder = [
   "01 - Hồng Bàng - sơ sử (trước 258 TCN)",
   "02 - Bắc thuộc & khởi nghĩa (258 TCN - 938 SCN)",
@@ -121,16 +113,11 @@ const periodOrder = [
 ];
 
 // -----------------------------
-// Legend builder (with guards)
+// Legend builder
 // -----------------------------
 function updateLegend(categories, theme) {
   const titleDiv = document.getElementById('legendTitle');
   const itemsDiv = document.getElementById('legendItems');
-
-  if (!titleDiv || !itemsDiv) {
-    console.warn('Legend containers not found in HTML.');
-    return;
-  }
 
   titleDiv.textContent = theme === 'sub' ? 'Phân loại' : 'Thời kỳ';
   itemsDiv.innerHTML = '';
@@ -153,15 +140,11 @@ function updateLegend(categories, theme) {
     itemsDiv.appendChild(row);
   });
 }
-
 // -----------------------------
-// Apply theme and redraw layer (with guards)
+// Apply theme and redraw layer
 // -----------------------------
 function applyTheme(theme) {
-  if (!geojsonData) {
-    console.warn('No geojsonData yet.');
-    return;
-  }
+  if (!geojsonData) return;
 
   // Collect categories from data
   const categoriesSet = new Set();
@@ -173,9 +156,7 @@ function applyTheme(theme) {
   });
   const categories = Array.from(categoriesSet);
 
-  if (dataLayer) {
-    map.removeLayer(dataLayer);
-  }
+  if (dataLayer) map.removeLayer(dataLayer);
 
   dataLayer = L.geoJSON(geojsonData, {
     style: feature => {
@@ -185,8 +166,8 @@ function applyTheme(theme) {
       const color = theme === 'sub' ? (subColors[value] || '#999') : (periodColors[value] || '#999');
       return {
         color,
-        weight: Number(document.getElementById('lineWidth').value),
-        opacity: Number(document.getElementById('layerOpacity').value) / 100
+        weight: 2,          // fixed line width
+        opacity: 1          // fixed opacity
       };
     },
     onEachFeature: (feature, layer) => {
@@ -200,61 +181,31 @@ function applyTheme(theme) {
     }
   }).addTo(map);
 
-  // Don’t fit bounds here (prevents jumping)
+  // Do not fit bounds here (prevents jumping when switching themes)
   updateLegend(categories, theme);
 }
 
 // -----------------------------
-// Load GeoJSON (with logging and fitBounds guard)
+// Load GeoJSON
 // -----------------------------
 fetch('data/HIAN_V1_Test.geojson')
-  .then(res => {
-    if (!res.ok) throw new Error(`HTTP ${res.status} loading GeoJSON`);
-    return res.json();
-  })
+  .then(res => res.json())
   .then(data => {
-    if (!data || !data.features || !Array.isArray(data.features)) {
-      throw new Error('GeoJSON has no features or invalid format.');
-    }
     geojsonData = data;
-    console.log(`Loaded ${data.features.length} features.`);
     applyTheme('sub'); // default to Phân loại
-
-    // Fit bounds once, only if layer exists and has features
+    // Fit bounds once, when data first loads
     if (dataLayer) {
-      const layers = dataLayer.getLayers();
-      if (layers && layers.length > 0) {
-        const bounds = dataLayer.getBounds();
-        if (bounds && bounds.isValid()) {
-          map.fitBounds(bounds);
-        } else {
-          console.warn('Layer bounds invalid; skipping fitBounds.');
-        }
-      } else {
-        console.warn('No layers in dataLayer; skipping fitBounds.');
+      const bounds = dataLayer.getBounds();
+      if (bounds && bounds.isValid()) {
+        map.fitBounds(bounds);
       }
-    } else {
-      console.warn('dataLayer is null; skipping fitBounds.');
     }
   })
-  .catch(err => {
-    console.error('Failed to load GeoJSON:', err);
-    alert('Failed to load data. Check console for details and confirm the GeoJSON path.');
-  });
+  .catch(err => console.error('Failed to load GeoJSON:', err));
 
 // -----------------------------
 // Controls
 // -----------------------------
-document.getElementById('lineWidth').addEventListener('input', () => {
-  applyTheme(document.getElementById('themeSelect').value);
-});
-document.getElementById('layerOpacity').addEventListener('input', () => {
-  applyTheme(document.getElementById('themeSelect').value);
-});
-document.getElementById('basemapSat').addEventListener('input', e => {
-  const value = Number(e.target.value) / 100;
-  document.documentElement.style.setProperty('--sat', value);
-});
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
