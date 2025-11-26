@@ -250,7 +250,6 @@ function applyTheme(theme) {
 
   // Update legend
   updateLegend(categories, theme);
-}
 
 // -----------------------------
 // Load GeoJSON (fit bounds once)
@@ -283,6 +282,7 @@ fetch('data/HIAN_V1_Test.geojson')
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
+
 
 
 
