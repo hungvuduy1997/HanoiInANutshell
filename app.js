@@ -164,12 +164,15 @@ function applyTheme(theme) {
       const subValue = props.Sub_category ?? props.Sub_Category;
       const value = theme === 'sub' ? subValue : props.Period;
       const color = theme === 'sub' ? (subColors[value] || '#999') : (periodColors[value] || '#999');
+
       return {
         color,
-        weight: 2,          // fixed line width
-        opacity: 1          // fixed opacity
-      };
-    },
+        weight: 1.5,       // 👀 thinner visible line
+        opacity: 1,
+        interactive: true  // ensure the layer responds to clicks
+  };
+},
+
     onEachFeature: (feature, layer) => {
       const props = feature.properties || {};
       const entries = Object.entries(props)
@@ -209,3 +212,4 @@ fetch('data/HIAN_V1_Test.geojson')
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
+
