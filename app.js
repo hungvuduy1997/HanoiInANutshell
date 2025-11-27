@@ -57,16 +57,18 @@ function buildPopupHTML(props) {
     Family: "Gia đình",
     Trivia: "Giai thoại"
   };
-  const order = ["name","Sub_Category","Period","Birth & Death","Profession","title","description","Family","Trivia"];
-  return order
-    .filter(k => props[k] && props[k] !==);
-  const map = L.map('map').setView([21.03, 105.85], 12);
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-  subdomains: 'abcd',
-  maxZoom: 20
-}).addTo(map);
+  const order = ["name", "Sub_Category", "Period", "Birth & Death", "Profession", "title", "description", "Family", "Trivia"];
+
+  return order
+    .filter(k => props[k] && props[k] !== 'NULL' && props[k] !== '')
+    .map(k => {
+      let value = props[k];
+      if (k === "Sub_Category") value = subLabels[value] || value;
+      return `<b>${labels[k] || k}:</b> ${value}`;
+    })
+    .join('<br>');
+}
 
 let dataLayer = null;
 let geojsonData = null;
@@ -255,4 +257,5 @@ map.on('click', () => {
   }
 
 });
+
 
