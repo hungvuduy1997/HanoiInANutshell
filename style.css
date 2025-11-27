@@ -14,7 +14,6 @@
   font-family: Helvetica, Arial, sans-serif;
 }
 
-/* Legend container */
 #legendContainer {
   position: absolute;
   bottom: 20px;
@@ -26,14 +25,16 @@
 #legend {
   background: white;
   border: 1px solid #ccc;
-  padding: 10px;
-  max-height: 0;              /* collapsed by default */
+  padding: 0 10px; /* horizontal padding only */
+  height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease;
+  transition: height 0.3s ease;
 }
 
 #legend.open {
-  max-height: 300px;          /* expanded when open */
+  padding: 10px;
+  height: auto;
+  max-height: 300px;
   overflow-y: auto;
 }
 
@@ -45,7 +46,7 @@
   font-size: 16px;
 }
 
-/* Legend items with color squares */
+/* Legend items */
 .legend-item {
   display: flex;
   align-items: center;
