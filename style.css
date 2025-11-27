@@ -109,3 +109,63 @@
     max-width: 260px;
   }
 }
+
+/* Legend container */
+#legendContainer {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  font-family: Helvetica, Arial, sans-serif;
+  width: 240px;
+}
+
+/* Toggle button */
+#legendToggle {
+  background: #eee;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  padding: 6px 8px;
+  border-radius: 4px 4px 0 0;
+}
+
+/* Collapsible legend */
+#legend {
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  padding: 0 10px;
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s ease;
+  border-radius: 0 0 4px 4px;
+}
+
+#legend.open {
+  padding: 10px;
+  height: auto;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#legendTitle {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  border: 1px solid #999;
+  flex: 0 0 16px;
+}
