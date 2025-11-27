@@ -209,10 +209,10 @@ document.getElementById('legendToggle').addEventListener('click', () => {
   const toggle = document.getElementById('legendToggle');
   if (legend.classList.contains('open')) {
     legend.classList.remove('open');
-    toggle.textContent = '▼'; // show down arrow when collapsed
+    toggle.textContent = '▼';
   } else {
     legend.classList.add('open');
-    toggle.textContent = '▲'; // show up arrow when expanded
+    toggle.textContent = '▲';
   }
 });
 
@@ -224,3 +224,4 @@ map.on('click', () => {
   panel.style.display = 'none';
   dataLayer.eachLayer(l => l.getElement()?.classList.remove('glow-highlight'));
 });
+
