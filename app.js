@@ -207,15 +207,6 @@ document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
 
-// Legend toggle with slide open/close
-document.getElementById('legendToggle').addEventListener('click', () => {
-  const legend = document.getElementById('legend');
-  const toggle = document.getElementById('legendToggle');
-  if (legend.classList.contains('open')) {
-    legend.classList.remove('open');
-    toggle.textContent = '▼'; // collapsed
-  } else {
-    legend.classList.add('open');
-    toggle.textContent = '▲'; // expanded
-  }
-});
+
+
+
