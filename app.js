@@ -112,9 +112,6 @@ function updateLegend(categories, theme) {
   });
 }
 
-// -----------------------------
-// Apply theme and redraw layers
-// -----------------------------
 function applyTheme(theme) {
   if (!geojsonData) return;
 
@@ -151,6 +148,16 @@ function applyTheme(theme) {
       });
     }
   }).addTo(map);
+
+  dataLayer.bringToFront();
+  updateLegend(categories, theme);
+}
+
+map.on('click', () => {
+  const panel = document.getElementById('infoPanel');
+  panel.style.display = 'none';
+  dataLayer.eachLayer(l => l.getElement()?.classList.remove('glow-highlight'));
+});
 
   bufferLayer = L.geoJSON(geojsonData, {
     style: () => ({
@@ -224,4 +231,5 @@ map.on('click', () => {
   panel.style.display = 'none';
   dataLayer.eachLayer(l => l.getElement()?.classList.remove('glow-highlight'));
 });
+
 
