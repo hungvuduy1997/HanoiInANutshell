@@ -1,4 +1,4 @@
-// Initialize map
+// Initialize map once
 const map = L.map('map').setView([21.03, 105.85], 12);
 
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -10,6 +10,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
 let dataLayer = null;
 let geojsonData = null;
 
+/* Sub-category configuration */
 const subColors = {
   "CM":"#7A8B3D","DN":"#E89CB1","GD":"#F4A03A","KT":"#E85C3C","KT-XH":"#4E9A4F",
   "LĐ":"#7C3E3E","PK":"#E5D5B7","QC":"#B6E3B6","QS":"#9B6FB3","TG":"#6ED3D3",
@@ -24,6 +25,7 @@ const subLabels = {
 
 const subOrder = ["CM","DN","GD","KT","KT-XH","LĐ","PK","QC","QS","TG","ThTh","VH-NT","YH","Other"];
 
+/* Period configuration */
 const periodColors = {
   "01 - Hồng Bàng - sơ sử (trước 258 TCN)":"#0D0887",
   "02 - Bắc thuộc & khởi nghĩa (258 TCN - 938 SCN)":"#270592",
@@ -40,7 +42,7 @@ const periodColors = {
   "13 - Nhà Hậu Lê (1428 - 1527)":"#CB4778",
   "14 - Nhà Hậu Lê - Phân tranh (1428 - 1788)":"#D5536E",
   "15 - Phân tranh (1527 - 1788)":"#DD5F65",
-  "16 - Phân tranh - Nhà Tây Sơn (1527 - 1802)":"#E66B5C",
+  "16 - Phân tranh - Nhà Tây Sơn (1527 - 1802)":"#E66B3C",
   "17 - Phân Tranh - Nhà Tây Sơn - Nhà Nguyễn & Pháp thuộc (1527 - 1945)":"#ED7953",
   "18 - Nhà Tây Sơn (1788 - 1802)":"#F4864A",
   "19 - Nhà Tây Sơn - Nhà Nguyễn & Pháp Thuộc (1788 - 1945)":"#F89641",
@@ -53,6 +55,7 @@ const periodColors = {
 
 const periodOrder = Object.keys(periodColors);
 
+/* Helpers */
 function getSubCategory(props) {
   return props.Sub_category ?? props.Sub_Category ?? props.SubCategory ?? null;
 }
@@ -70,7 +73,7 @@ function buildPopupHTML(props) {
     Trivia: "Giai thoại"
   };
 
-  const order = ["name", "Sub_Category", "Period", "Birth & Death", "Profession", "title", "description", "Family", "Trivia"];
+  const order = ["name","Sub_Category","Period","Birth & Death","Profession","title","description","Family","Trivia"];
 
   return order
     .filter(k => props[k] && props[k] !== 'NULL' && props[k] !== '')
@@ -82,22 +85,26 @@ function buildPopupHTML(props) {
     .join('<br>');
 }
 
-function updateLegend(categories, theme) {
+/* Legend builder */
+function updateLegend(theme) {
   const titleDiv = document.getElementById('legendTitle');
   const itemsDiv = document.getElementById('legendItems');
   titleDiv.textContent = theme === 'sub' ? 'Phân loại' : 'Thời kỳ';
   itemsDiv.innerHTML = '';
 
-  const visibleCategories = new Set();
-  dataLayer.eachLayer(layer => {
-    const props = layer.feature.properties || {};
-    const value = theme === 'sub' ? getSubCategory(props) : props.Period;
-    if (value && value !== 'NULL') visibleCategories.add(value);
-  });
+  // Determine which categories are present in current data
+  const present = new Set();
+  if (dataLayer) {
+    dataLayer.eachLayer(layer => {
+      const props = layer.feature?.properties || {};
+      const v = theme === 'sub' ? getSubCategory(props) : props.Period;
+      if (v && v !== 'NULL') present.add(v);
+    });
+  }
 
   const ordered = theme === 'sub'
-    ? subOrder.filter(c => visibleCategories.has(c)).concat([...visibleCategories].filter(c => !subOrder.includes(c)))
-    : periodOrder.filter(c => visibleCategories.has(c));
+    ? subOrder.filter(c => present.has(c)).concat([...present].filter(c => !subOrder.includes(c)))
+    : periodOrder.filter(c => present.has(c));
 
   ordered.forEach(cat => {
     const color = theme === 'sub' ? (subColors[cat] || '#999') : (periodColors[cat] || '#999');
@@ -109,19 +116,14 @@ function updateLegend(categories, theme) {
   });
 }
 
+/* Apply theme and redraw layers */
 function applyTheme(theme) {
   if (!geojsonData) return;
 
-  const categoriesSet = new Set();
-  geojsonData.features.forEach(f => {
-    const props = f.properties || {};
-    const subValue = getSubCategory(props);
-    const value = theme === 'sub' ? subValue : props.Period;
-    if (value && value !== 'NULL') categoriesSet.add(value);
-  });
-  const categories = Array.from(categoriesSet);
-
-  if (dataLayer) map.removeLayer(dataLayer);
+  if (dataLayer) {
+    map.removeLayer(dataLayer);
+    dataLayer = null;
+  }
 
   dataLayer = L.geoJSON(geojsonData, {
     style: feature => {
@@ -129,69 +131,70 @@ function applyTheme(theme) {
       const subValue = getSubCategory(props);
       const value = theme === 'sub' ? subValue : props.Period;
       const color = theme === 'sub' ? (subColors[value] || '#999') : (periodColors[value] || '#999');
-      return { color, weight: 1.25, opacity: 1 };
+      return { color, weight: 1.5, opacity: 1 };
     },
     onEachFeature: (feature, layer) => {
       layer.on('click', () => {
         const html = buildPopupHTML(feature.properties || {});
         const panel = document.getElementById('infoPanel');
-        panel.innerHTML = html;
+        panel.innerHTML = html || 'Không có dữ liệu';
         panel.style.display = 'block';
 
-        dataLayer.eachLayer(l => l.getElement()?.classList.remove('glow-highlight'));
-        layer.getElement()?.classList.add('glow-highlight');
+        // Remove glow from others, then add to current
+        dataLayer.eachLayer(l => {
+          const el = l.getElement && l.getElement();
+          if (el) el.classList.remove('glow-highlight');
+        });
+        const el = layer.getElement && layer.getElement();
+        if (el) el.classList.add('glow-highlight');
       });
     }
   }).addTo(map);
 
-  dataLayer.bringToFront();
-  updateLegend(categories, theme);
+  // Fit bounds to data if possible
+  try {
+    const bounds = dataLayer.getBounds();
+    if (bounds && bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [20, 20] });
+    }
+  } catch (e) {
+    // Ignore bounds errors for point-only datasets
+  }
+
+  updateLegend(theme);
 }
 
+/* Load GeoJSON and initialize */
 fetch('data/HIAN_V1_Test.geojson')
   .then(res => res.json())
   .then(data => {
     geojsonData = data;
     applyTheme('sub'); // default theme
-
-    if (dataLayer) {
-      const bounds = dataLayer.getBounds();
-      if (bounds && bounds.isValid()) {
-        map.fitBounds(bounds);
-      }
-    }
   })
   .catch(err => console.error('Failed to load GeoJSON:', err));
 
-// -----------------------------
-// Theme selector
-// -----------------------------
+/* Theme selector */
 document.getElementById('themeSelect').addEventListener('change', e => {
   applyTheme(e.target.value);
 });
 
-// -----------------------------
-// Legend toggle with slide open/close
-// -----------------------------
+/* Legend toggle with slide open/close */
 document.getElementById('legendToggle').addEventListener('click', () => {
   const legend = document.getElementById('legend');
   const toggle = document.getElementById('legendToggle');
-  if (legend.classList.contains('open')) {
-    legend.classList.remove('open');
-    toggle.textContent = '▼'; // show down arrow when collapsed
-  } else {
-    legend.classList.add('open');
-    toggle.textContent = '▲'; // show up arrow when expanded
-  }
+  const isOpen = legend.classList.toggle('open');
+  toggle.textContent = isOpen ? '▲' : '▼';
+  toggle.setAttribute('aria-expanded', String(isOpen));
 });
 
-// -----------------------------
-// Clear info panel on map click
-// -----------------------------
+/* Clear info panel and highlight on map click */
 map.on('click', () => {
   const panel = document.getElementById('infoPanel');
   panel.style.display = 'none';
   if (dataLayer) {
-    dataLayer.eachLayer(l => l.getElement()?.classList.remove('glow-highlight'));
+    dataLayer.eachLayer(l => {
+      const el = l.getElement && l.getElement();
+      if (el) el.classList.remove('glow-highlight');
+    });
   }
 });

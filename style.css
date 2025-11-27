@@ -1,35 +1,53 @@
-/* Map container */
+/* Map fills viewport */
 #map {
   width: 100%;
   height: 100vh;
 }
 
-/* Theme selector */
+/* Theme selector (top-right) */
 #themeSelect {
   position: absolute;
   top: 20px;
   right: 20px;
   z-index: 1000;
-  padding: 5px;
+  padding: 6px 8px;
   font-family: Helvetica, Arial, sans-serif;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-/* Legend container */
+/* Legend container (bottom-left) */
 #legendContainer {
   position: absolute;
   bottom: 20px;
   left: 20px;
   z-index: 1000;
   font-family: Helvetica, Arial, sans-serif;
+  width: 240px;
 }
 
+/* Toggle button */
+#legendToggle {
+  background: #eee;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  padding: 6px 8px;
+  border-radius: 4px 4px 0 0;
+}
+
+/* Collapsible legend */
 #legend {
   background: white;
   border: 1px solid #ccc;
+  border-top: none;
   padding: 0 10px;
   height: 0;
   overflow: hidden;
   transition: height 0.3s ease;
+  border-radius: 0 0 4px 4px;
 }
 
 #legend.open {
@@ -39,12 +57,9 @@
   overflow-y: auto;
 }
 
-#legendToggle {
-  background: #eee;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  font-size: 16px;
+#legendTitle {
+  font-weight: 600;
+  margin-bottom: 6px;
 }
 
 /* Legend items */
@@ -60,9 +75,10 @@
   height: 16px;
   margin-right: 6px;
   border: 1px solid #999;
+  flex: 0 0 16px;
 }
 
-/* Info panel */
+/* Info panel (bottom-right) */
 #infoPanel {
   position: absolute;
   bottom: 20px;
@@ -70,14 +86,26 @@
   background: white;
   border: 1px solid #ccc;
   padding: 10px;
-  max-width: 300px;
+  max-width: 320px;
   z-index: 1000;
-  display: none;
+  display: none; /* hidden until a feature is clicked */
   font-family: Helvetica, Arial, sans-serif;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  border-radius: 4px;
+  line-height: 1.4;
 }
 
-/* Highlight glow */
+/* Highlight glow for selected features */
 .glow-highlight {
   filter: drop-shadow(0 0 6px yellow);
+}
+
+/* Small responsive tweaks */
+@media (max-width: 600px) {
+  #legendContainer {
+    width: 200px;
+  }
+  #infoPanel {
+    max-width: 260px;
+  }
 }

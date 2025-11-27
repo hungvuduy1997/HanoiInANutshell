@@ -2,7 +2,8 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Bản đồ HIAN</title>
+  <title>hanoi In A Nutshell</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -11,14 +12,14 @@
   <div id="map"></div>
 
   <!-- Theme selector -->
-  <select id="themeSelect">
+  <select id="themeSelect" aria-label="Chọn chủ đề hiển thị">
     <option value="sub">Phân loại</option>
     <option value="period">Thời kỳ</option>
   </select>
 
-  <!-- Legend container -->
+  <!-- Legend -->
   <div id="legendContainer">
-    <button id="legendToggle">▲</button>
+    <button id="legendToggle" aria-expanded="false" aria-controls="legend">▼</button>
     <div id="legend">
       <div id="legendTitle"></div>
       <div id="legendItems"></div>
