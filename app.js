@@ -59,7 +59,7 @@ function buildPopupHTML(props) {
   };
   const order = ["name","Sub_Category","Period","Birth & Death","Profession","title","description","Family","Trivia"];
   return order
-    .filter(k => props[k] && props[k] !==
+    .filter(k => props[k] && props[k] !==;
   const map = L.map('map').setView([21.03, 105.85], 12);
 
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -253,4 +253,5 @@ map.on('click', () => {
   if (dataLayer) {
     dataLayer.eachLayer(l => l.getElement()?.classList.remove('glow-highlight'));
   }
+
 });
