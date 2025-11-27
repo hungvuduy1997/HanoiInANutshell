@@ -177,17 +177,17 @@ document.getElementById('themeSelect').addEventListener('change', e => {
 });
 
 // -----------------------------
-// Legend toggle
+// Legend toggle with slide open/close
 // -----------------------------
 document.getElementById('legendToggle').addEventListener('click', () => {
   const legend = document.getElementById('legend');
   const toggle = document.getElementById('legendToggle');
-  if (legend.style.display === 'none') {
-    legend.style.display = 'block';
-    toggle.textContent = '▲';
+  if (legend.classList.contains('open')) {
+    legend.classList.remove('open');
+    toggle.textContent = '▼'; // show down arrow when collapsed
   } else {
-    legend.style.display = 'none';
-    toggle.textContent = '▼';
+    legend.classList.add('open');
+    toggle.textContent = '▲'; // show up arrow when expanded
   }
 });
 
@@ -199,3 +199,4 @@ map.on('click', () => {
   panel.style.display = 'none';
   dataLayer.eachLayer(l => l.getElement()?.classList.remove('glow-highlight'));
 });
+
