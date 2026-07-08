@@ -1,171 +1,162 @@
-/* Map fills viewport */
-#map {
-  width: 100%;
-  height: 100vh;
+/* --- GLOBAL LAYOUT RESETS --- */
+body, html { 
+  margin: 0; 
+  padding: 0; 
+  height: 100%; 
+  overflow: hidden; 
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Theme selector (top-right) */
-#themeSelect {
-  position: absolute;
+#map { 
+  height: 100vh; 
+  width: 100%; 
+  z-index: 1; 
+}
+
+/* --- MAP CONTROL ROW (TOP RIGHT) --- */
+.map-controls-row {
+  position: fixed;
   top: 20px;
   right: 20px;
   z-index: 1000;
-  padding: 6px 8px;
-  font-family: Helvetica, Arial, sans-serif;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-/* Legend container (bottom-left) */
-#legendContainer {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  z-index: 1000;
-  font-family: Helvetica, Arial, sans-serif;
-  width: 240px;
-}
-
-/* Toggle button */
-#legendToggle {
-  background: #eee;
-  border: 1px solid #ccc;
-  cursor: pointer;
-  width: 100%;
-  font-size: 16px;
-  padding: 6px 8px;
-  border-radius: 4px 4px 0 0;
-}
-
-/* Collapsible legend */
-#legend {
-  background: white;
-  border: 1px solid #ccc;
-  border-top: none;
-  padding: 0 10px;
-  height: 0;
-  overflow: hidden;
-  transition: height 0.3s ease;
-  border-radius: 0 0 4px 4px;
-}
-
-#legend.open {
-  padding: 10px;
-  height: auto;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-#legendTitle {
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-/* Legend items */
-.legend-item {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  margin: 4px 0;
-  font-size: 14px;
+  gap: 10px;
 }
 
-.legend-color {
-  width: 16px;
-  height: 16px;
-  margin-right: 6px;
-  border: 1px solid #999;
-  flex: 0 0 16px;
+/* Update this specific block right here: */
+.control-btn, #themeSelect {
+  position: static !important; 
+  background: white;
+  color: #333;
+  border: 1px solid #ccc;
+  padding: 8px 14px;
+  border-radius: 6px;
+  
+  /* FORCE THE FONT TO A CLEAN SANS-SERIF TYPEFACE */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 500; /* Gives it a crisp, deliberate modern look */
+  
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  height: 36px;
+  box-sizing: border-box;
+  transition: all 0.2s ease-in-out;
 }
 
-/* Info panel (bottom-right) */
+.control-btn:hover, #themeSelect:hover {
+  background: #f5f5f5;
+}
+
+/* --- CONDITIONAL VISIBILITY ANIMATION FOR MODETOGGLE --- */
+#modeToggle {
+  opacity: 1;
+  visibility: visible;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity 0.2s ease, max-width 0.2s ease, padding 0.2s ease, visibility 0.2s ease;
+}
+
+#modeToggle.hidden {
+  opacity: 0;
+  visibility: hidden;
+  max-width: 0;
+  padding-left: 0;
+  padding-right: 0;
+  border: none;
+  margin: 0;
+}
+
+/* --- SIDEBAR INFO PANEL --- */
 #infoPanel {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  background: white;
-  border: 1px solid #ccc;
-  padding: 10px;
-  max-width: 320px;
+  position: absolute; 
+  top: 70px; /* Offset safely down below the top button layout row */
+  right: 20px; 
   z-index: 1000;
-  display: none; /* hidden until a feature is clicked */
-  font-family: Helvetica, Arial, sans-serif;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  border-radius: 4px;
-  line-height: 1.4;
+  background: white; 
+  width: 250px; 
+  max-height: 70vh; 
+  overflow-y: auto;
+  padding: 15px; 
+  display: none; 
+  border-radius: 6px; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
 }
 
-/* Highlight glow for selected features */
-.glow-highlight {
-  filter: drop-shadow(0 0 6px yellow);
-}
-
-/* Small responsive tweaks */
-@media (max-width: 600px) {
-  #legendContainer {
-    width: 200px;
-  }
-  #infoPanel {
-    max-width: 260px;
-  }
-}
-
-/* Legend container */
+/* --- COLLAPSIBLE LEGEND PANEL (BOTTOM RIGHT) --- */
 #legendContainer {
-  position: absolute;
+  position: fixed;
   bottom: 20px;
   left: 20px;
   z-index: 1000;
-  font-family: Helvetica, Arial, sans-serif;
-  width: 240px;
+  display: flex;
+  flex-direction: column;
+  width: 220px;
 }
 
-/* Toggle button */
 #legendToggle {
-  background: #eee;
+  background: #f4f4f4;
   border: 1px solid #ccc;
-  cursor: pointer;
-  width: 100%;
-  font-size: 16px;
-  padding: 6px 8px;
   border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  padding: 6px 0;
+  font-size: 12px;
+  width: 100%;
+  outline: none;
 }
 
-/* Collapsible legend */
 #legend {
   background: white;
+  padding: 15px;
   border: 1px solid #ccc;
   border-top: none;
-  padding: 0 10px;
-  height: 0;
-  overflow: hidden;
-  transition: height 0.3s ease;
-  border-radius: 0 0 4px 4px;
-}
-
-#legend.open {
-  padding: 10px;
-  height: auto;
-  max-height: 300px;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  max-height: 400px;
+  opacity: 1;
   overflow-y: auto;
+  transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out, padding 0.3s ease-in-out;
 }
 
-#legendTitle {
+/* Collapse override states */
+#legendContainer.collapsed #legend {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border: none;
+}
+
+.legend-item { display: flex; align-items: center; margin-bottom: 4px; font-size: 12px; }
+.legend-color { width: 15px; height: 15px; margin-right: 8px; border-radius: 2px; }
+
+/* --- CUSTOM SPECIAL VECTOR EFFECTS --- */
+.glow-line { 
+  filter: drop-shadow(0 0 2px rgba(255,255,255,0.5)); 
+}
+
+/* --- LEAFLET POP-UP TYPOGRAPHY --- */
+.leaflet-popup-content-wrapper {
+  font-family: "Helvetica Neue", Roboto, sans-serif;
+  border-radius: 6px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+/* Target the text inside the pop-up specifically */
+.leaflet-popup-content {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #333;
+  margin: 12px 15px; /* Clean internal margins */
+}
+
+/* Style the attribute titles/labels inside the pop-up */
+.leaflet-popup-content strong {
   font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  margin: 4px 0;
-  font-size: 14px;
-}
-
-.legend-color {
-  width: 16px;
-  height: 16px;
-  margin-right: 6px;
-  border: 1px solid #999;
-  flex: 0 0 16px;
+  color: #000;
+  text-transform: capitalize; /* Changes display text casing style if desired */
 }
