@@ -21,13 +21,22 @@ export const themes = {
 
   // Theme 2: Historical Epoch/Chronology (Example database attribute: 'period')
   historical_epoch: {
-    name: "Historical Period",
+    name: "Thời kỳ Lịch sử",
     attribute: "period", // Matches column name inside hian_db.csv or hian_geninfo.csv
     categories: {
-      'feudal':       { lightColor: '#8D6E63', darkColor: '#D7CCC8', label: 'Pre-Colonial (Ancient)' },
-      'french':       { lightColor: '#0D47A1', darkColor: '#64B5F6', label: 'French Colonial Era' },
-      'modern':       { lightColor: '#2E7D32', darkColor: '#81C784', label: 'Post-1954 Modern Grid' },
-      'contemporary': { lightColor: '#E53935', darkColor: '#EF9A9A', label: 'Recent Expansions' }
+      'feudal':       { lightColor: '#2b83ba', darkColor: '#2b83ba', label: 'Pre-Colonial (Ancient)' },
+      'french':       { lightColor: '#5aa4b2', darkColor: '#5aa4b2', label: 'French Colonial Era' },
+      'modern':       { lightColor: '#88c4aa', darkColor: '#88c4aa', label: 'Post-1954 Modern Grid' },
+      'modern':       { lightColor: '#b3e0a6', darkColor: '#b3e0a6', label: 'Post-1954 Modern Grid' },
+      'modern':       { lightColor: '#d1ecb0', darkColor: '#d1ecb0', label: 'Post-1954 Modern Grid' },
+      'modern':       { lightColor: '#f0f9ba', darkColor: '#f0f9ba', label: 'Post-1954 Modern Grid' },
+      'modern':       { lightColor: '#f0f9ba', darkColor: '#f0f9ba', label: 'Post-1954 Modern Grid' },
+      'modern':       { lightColor: '#fed38c', darkColor: '#fed38c', label: 'Post-1954 Modern Grid' },
+      'modern':       { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Post-1954 Modern Grid' },
+      'modern':       { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Post-1954 Modern Grid' },
+      'modern':       { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Post-1954 Modern Grid' },
+      'contemporary': { lightColor: '#d7191c', darkColor: '#d7191c', label: 'Recent Expansions' }
+      
     }
   }
 };
