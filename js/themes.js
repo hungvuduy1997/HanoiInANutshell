@@ -24,18 +24,18 @@ export const themes = {
     name: "Thời kỳ Lịch sử",
     attribute: "period", // Matches column name inside hian_db.csv or hian_geninfo.csv
     categories: {
-      'Hồng Bàng - sơ sử':         { lightColor: '#2b83ba', darkColor: '#2b83ba', label: 'Pre-Colonial (Ancient)' },
-      'Bắc thuộc & khởi nghĩa':    { lightColor: '#5aa4b2', darkColor: '#5aa4b2', label: 'French Colonial Era' },
-      'Độc lập tự chủ sớm':        { lightColor: '#88c4aa', darkColor: '#88c4aa', label: 'Post-1954 Modern Grid' },
-      'Nhà Lý':                    { lightColor: '#b3e0a6', darkColor: '#b3e0a6', label: 'Post-1954 Modern Grid' },
-      'Nhà Trần':                  { lightColor: '#d1ecb0', darkColor: '#d1ecb0', label: 'Post-1954 Modern Grid' },
-      'Nhà Hồ & Minh thuộc':       { lightColor: '#f0f9ba', darkColor: '#f0f9ba', label: 'Post-1954 Modern Grid' },
-      'Hậu Lê':                    { lightColor: '#f0f9ba', darkColor: '#f0f9ba', label: 'Post-1954 Modern Grid' },
-      'Phân tranh':                { lightColor: '#fed38c', darkColor: '#fed38c', label: 'Post-1954 Modern Grid' },
-      'Nhà Tây Sơn':               { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Post-1954 Modern Grid' },
-      'Nhà Nguyễn & Pháp thuộc':   { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Post-1954 Modern Grid' },
-      'Cách mạng & kháng chiến':   { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Post-1954 Modern Grid' },
-      'Sau Giải phóng & hiện đại': { lightColor: '#d7191c', darkColor: '#d7191c', label: 'Recent Expansions' }
+      'Hồng Bàng - sơ sử':         { lightColor: '#2b83ba', darkColor: '#2b83ba', label: 'Hồng Bàng - sơ sử (trước 258TCN)' },
+      'Bắc thuộc & khởi nghĩa':    { lightColor: '#5aa4b2', darkColor: '#5aa4b2', label: 'Bắc thuộc & khởi nghĩa (258 TCN - 938 SCN)' },
+      'Độc lập tự chủ sớm':        { lightColor: '#88c4aa', darkColor: '#88c4aa', label: 'Độc lập tự chủ sớm (938 - 1009)' },
+      'Nhà Lý':                    { lightColor: '#b3e0a6', darkColor: '#b3e0a6', label: 'Nhà Lý (1009 - 1226)' },
+      'Nhà Trần':                  { lightColor: '#d1ecb0', darkColor: '#d1ecb0', label: 'Nhà Trần (1226 - 1400)' },
+      'Nhà Hồ & Minh thuộc':       { lightColor: '#f0f9ba', darkColor: '#f0f9ba', label: 'Nhà Hồ & Minh thuộc (1400 - 1428)' },
+      'Hậu Lê':                    { lightColor: '#f0f9ba', darkColor: '#f0f9ba', label: 'Nhà Hậu Lê (1428 - 1527)' },
+      'Phân tranh':                { lightColor: '#fed38c', darkColor: '#fed38c', label: 'Phân tranh (1527 - 1788)' },
+      'Nhà Tây Sơn':               { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Nhà Tây Sơn (1788 - 1802)' },
+      'Nhà Nguyễn & Pháp thuộc':   { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Nhà Nguyễn & Pháp thuộc (1802 - 1945)' },
+      'Cách mạng & kháng chiến':   { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Cách mạng & kháng chiến (1945 - 1975)' },
+      'Sau Giải phóng & hiện đại': { lightColor: '#d7191c', darkColor: '#d7191c', label: 'Sau Giải phóng & hiện đại (1975 - nay)' }
       
     }
   }
