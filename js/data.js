@@ -128,8 +128,10 @@ async function rebuildLayers(theme) {
     const combinedData = getStreetCombinedData(fullId);
     const hw = combinedData.highway;
 
-    const val = combinedData[theme.attribute];
-    const def = theme.categories[val];
+    // --- FIX: READ THEME CONDITIONALS DYNAMICALLY FROM GLOBAL TRACKING STATE ---
+    const activeTheme = themes[currentThemeKey]; 
+    const val = combinedData[activeTheme.attribute];
+    const def = activeTheme.categories[val];
     const color = def ? (currentMode === 'dark' ? def.darkColor : def.lightColor) : '#999';
     
     const metersWidth = getHighwayWidthInMeters(hw);
