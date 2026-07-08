@@ -24,18 +24,18 @@ export const themes = {
     name: "Thời kỳ Lịch sử",
     attribute: "period", // Matches column name inside hian_db.csv or hian_geninfo.csv
     categories: {
-      'feudal':       { lightColor: '#2b83ba', darkColor: '#2b83ba', label: 'Pre-Colonial (Ancient)' },
-      'french':       { lightColor: '#5aa4b2', darkColor: '#5aa4b2', label: 'French Colonial Era' },
-      'modern':       { lightColor: '#88c4aa', darkColor: '#88c4aa', label: 'Post-1954 Modern Grid' },
-      'modern':       { lightColor: '#b3e0a6', darkColor: '#b3e0a6', label: 'Post-1954 Modern Grid' },
-      'modern':       { lightColor: '#d1ecb0', darkColor: '#d1ecb0', label: 'Post-1954 Modern Grid' },
-      'modern':       { lightColor: '#f0f9ba', darkColor: '#f0f9ba', label: 'Post-1954 Modern Grid' },
-      'modern':       { lightColor: '#f0f9ba', darkColor: '#f0f9ba', label: 'Post-1954 Modern Grid' },
-      'modern':       { lightColor: '#fed38c', darkColor: '#fed38c', label: 'Post-1954 Modern Grid' },
-      'modern':       { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Post-1954 Modern Grid' },
-      'modern':       { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Post-1954 Modern Grid' },
-      'modern':       { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Post-1954 Modern Grid' },
-      'contemporary': { lightColor: '#d7191c', darkColor: '#d7191c', label: 'Recent Expansions' }
+      'Hồng Bàng - sơ sử':         { lightColor: '#2b83ba', darkColor: '#2b83ba', label: 'Pre-Colonial (Ancient)' },
+      'Bắc thuộc & khởi nghĩa':    { lightColor: '#5aa4b2', darkColor: '#5aa4b2', label: 'French Colonial Era' },
+      'Độc lập tự chủ sớm':        { lightColor: '#88c4aa', darkColor: '#88c4aa', label: 'Post-1954 Modern Grid' },
+      'Nhà Lý':                    { lightColor: '#b3e0a6', darkColor: '#b3e0a6', label: 'Post-1954 Modern Grid' },
+      'Nhà Trần':                  { lightColor: '#d1ecb0', darkColor: '#d1ecb0', label: 'Post-1954 Modern Grid' },
+      'Nhà Hồ & Minh thuộc':       { lightColor: '#f0f9ba', darkColor: '#f0f9ba', label: 'Post-1954 Modern Grid' },
+      'Hậu Lê':                    { lightColor: '#f0f9ba', darkColor: '#f0f9ba', label: 'Post-1954 Modern Grid' },
+      'Phân tranh':                { lightColor: '#fed38c', darkColor: '#fed38c', label: 'Post-1954 Modern Grid' },
+      'Nhà Tây Sơn':               { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Post-1954 Modern Grid' },
+      'Nhà Nguyễn & Pháp thuộc':   { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Post-1954 Modern Grid' },
+      'Cách mạng & kháng chiến':   { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Post-1954 Modern Grid' },
+      'Sau Giải phóng & hiện đại': { lightColor: '#d7191c', darkColor: '#d7191c', label: 'Recent Expansions' }
       
     }
   }
