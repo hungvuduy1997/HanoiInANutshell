@@ -132,7 +132,9 @@ async function rebuildLayers(theme) {
     const activeTheme = themes[currentThemeKey]; 
     const val = combinedData[activeTheme.attribute];
     const def = activeTheme.categories[val];
-    const color = def ? (currentMode === 'dark' ? def.darkColor : def.lightColor) : '#999';
+    // Example: Muted dark charcoal for light mode, and a bright soft silver for dark mode
+    const fallbackColor = currentMode === 'dark' ? '#b0bec5' : '#546e7a';
+    const color = def ? (currentMode === 'dark' ? def.darkColor : def.lightColor) : fallbackColor;
     
     const metersWidth = getHighwayWidthInMeters(hw);
     const dynamicPixelWeight = calculatePixelWeight(metersWidth);

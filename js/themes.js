@@ -30,7 +30,7 @@ export const themes = {
       'Nhà Lý':                    { lightColor: '#b3e0a6', darkColor: '#b3e0a6', label: 'Nhà Lý (1009 - 1226)' },
       'Nhà Trần':                  { lightColor: '#d1ecb0', darkColor: '#d1ecb0', label: 'Nhà Trần (1226 - 1400)' },
       'Nhà Hồ & Minh thuộc':       { lightColor: '#f0f9ba', darkColor: '#f0f9ba', label: 'Nhà Hồ & Minh thuộc (1400 - 1428)' },
-      'Hậu Lê':                    { lightColor: '#f0f9ba', darkColor: '#f0f9ba', label: 'Nhà Hậu Lê (1428 - 1527)' },
+      'Nhà Hậu Lê':                    { lightColor: '#f0f9ba', darkColor: '#f0f9ba', label: 'Nhà Hậu Lê (1428 - 1527)' },
       'Phân tranh':                { lightColor: '#fed38c', darkColor: '#fed38c', label: 'Phân tranh (1527 - 1788)' },
       'Nhà Tây Sơn':               { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Nhà Tây Sơn (1788 - 1802)' },
       'Nhà Nguyễn & Pháp thuộc':   { lightColor: '#fdb56a', darkColor: '#fdb56a', label: 'Nhà Nguyễn & Pháp thuộc (1802 - 1945)' },
