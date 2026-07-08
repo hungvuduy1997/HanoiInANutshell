@@ -133,7 +133,7 @@ async function rebuildLayers(theme) {
     const val = combinedData[activeTheme.attribute];
     const def = activeTheme.categories[val];
     // Example: Muted dark charcoal for light mode, and a bright soft silver for dark mode
-    const fallbackColor = currentMode === 'dark' ? '#b0bec5' : '#546e7a';
+    const fallbackColor = currentMode === 'dark' ? '#b0bec5' : '#7f7f7f';
     const color = def ? (currentMode === 'dark' ? def.darkColor : def.lightColor) : fallbackColor;
     
     const metersWidth = getHighwayWidthInMeters(hw);
