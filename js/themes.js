@@ -25,7 +25,7 @@ export const themes = {
     attribute: "period", // Matches column name inside hian_db.csv or hian_geninfo.csv
     categories: {
       'Hồng Bàng - sơ sử':         { lightColor: '#2b83ba', darkColor: '#2b83ba', label: 'Hồng Bàng - sơ sử (trước 258TCN)' },
-      'Bắc thuộc & khởi nghĩa':    { lightColor: '#5aa4b2', darkColor: '#5aa4b2', label: 'Bắc thuộc & khởi nghĩa (258 TCN - 938 SCN)' },
+      'Bắc Thuộc & khởi nghĩa':    { lightColor: '#5aa4b2', darkColor: '#5aa4b2', label: 'Bắc Thuộc & khởi nghĩa (258 TCN - 938 SCN)' },
       'Độc lập tự chủ sớm':        { lightColor: '#88c4aa', darkColor: '#88c4aa', label: 'Độc lập tự chủ sớm (938 - 1009)' },
       'Nhà Lý':                    { lightColor: '#b3e0a6', darkColor: '#b3e0a6', label: 'Nhà Lý (1009 - 1226)' },
       'Nhà Trần':                  { lightColor: '#d1ecb0', darkColor: '#d1ecb0', label: 'Nhà Trần (1226 - 1400)' },
