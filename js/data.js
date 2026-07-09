@@ -239,8 +239,8 @@ const styleFunction = feature => {
     color: color, 
     weight: dynamicPixelWeight, 
     dashArray: dashPattern,
-    lineCap: 'round', // Keeps the line smooth while the math above preserves the gaps
-    opacity: 1,
+    lineCap: 'square', // Keeps the line smooth while the math above preserves the gaps
+    opacity: 0.8,
     interactive: true
   };
 };

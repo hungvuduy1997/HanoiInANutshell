@@ -20,8 +20,8 @@ export function attachInteractions(layer, feature) {
   const popupHTML = `
     <div style="font-family: sans-serif; font-size: 13px; line-height: 1.4;">
       <strong style="color: #222;">${combinedData.street_name || ''}</strong>
-      ${targetValue ? `<br><span style="font-size: 11px; color: #666;">${targetValue}</span>` : ''}
-      ${subCategory ? `<span style="font-size: 11px; color: #999;"> (${subCategory})</span>` : ''}
+      ${targetValue ? `<br><span style="font-size: 11px; color: #333;">${targetValue}</span>` : ''}
+      ${subCategory ? `<span style="font-size: 11px; color: #333;"> (${subCategory})</span>` : ''}
     </div>
   `;
 
