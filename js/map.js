@@ -8,45 +8,47 @@ export const map = L.map('map', {
 });
 
 // 2. Define the base tile providers using CARTO and Google engines
-const lightMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+export const lightMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
   attribution: '© OpenStreetMap, © CARTO',
   maxZoom: 20
 });
 
-const darkMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+export const darkMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
   attribution: '© OpenStreetMap, © CARTO',
   maxZoom: 20
 });
 
 // Google Hybrid (lyrs=s,h provides high-res satellite photography with clear text labeling)
-const satelliteMap = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+export const satelliteMap = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
   subdomains: ['0', '1', '2', '3'],
   attribution: '© Google Maps',
   maxZoom: 20
 });
 
-// Default initial system state tracking
-let currentMapType = 'leaflet'; // 'leaflet' or 'satellite'
-let currentLightMode = 'light'; // 'light' or 'dark'
-
-// Add the default light vector map background on startup
+// Load the default layout configuration safely
 lightMap.addTo(map);
 
-// 3. UI Element references mapped to your index.html hooks
+// 3. Track UI layout settings tracking states
+let currentMapType = 'leaflet'; // Can be either 'leaflet' or 'google-satellite'
+let currentLightMode = 'light'; // Can be either 'light' or 'dark'
+
+// 4. Hook into view controls layout elements 
 const viewToggle = document.getElementById('viewToggle');
 const modeToggle = document.getElementById('modeToggle');
 
-// 4. Base map toggle logic (Swapping between vector maps and satellite photography)
 if (viewToggle && modeToggle) {
   viewToggle.addEventListener('click', () => {
     if (currentMapType === 'leaflet') {
-      // Switch map background to Satellite view
+      // Toggle to Google Satellite layouts
       currentMapType = 'satellite';
       viewToggle.textContent = 'Bản đồ';
       
-      // Clear out running vector maps and slide satellite into place
-      map.removeLayer(lightMap);
-      map.removeLayer(darkMap);
+      if (currentLightMode === 'light') {
+        map.removeLayer(lightMap);
+      } else {
+        map.removeLayer(darkMap);
+      }
+      
       satelliteMap.addTo(map);
       
       // Hide the light/dark controller smoothly via CSS class
@@ -79,7 +81,7 @@ if (viewToggle && modeToggle) {
   modeToggle.addEventListener('click', () => {
     if (currentLightMode === 'light') {
       currentLightMode = 'dark';
-      modeToggle.textContent = 'Giao diện: Tối';
+      modeToggle.textContent = '🌙';
       
       if (currentMapType === 'leaflet') {
         map.removeLayer(lightMap);
@@ -88,7 +90,7 @@ if (viewToggle && modeToggle) {
       setMode('dark');
     } else {
       currentLightMode = 'light';
-      modeToggle.textContent = 'Giao diện: Sáng';
+      modeToggle.textContent = '☀️';
       
       if (currentMapType === 'leaflet') {
         map.removeLayer(darkMap);

@@ -95,7 +95,7 @@ body, html {
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  width: 220px;
+  width: 300px;
 }
 
 #legendToggle {
@@ -159,4 +159,9 @@ body, html {
   font-weight: 600;
   color: #000;
   text-transform: capitalize; /* Changes display text casing style if desired */
+}
+
+/* Prevent pure black flashes behind your smooth new tiles */
+.dark-mode #map {
+  background-color: #242426 !important; 
 }

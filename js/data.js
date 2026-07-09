@@ -5,9 +5,9 @@ import { updateLegend } from './legend.js';
 
 let dataLayer = null;
 let bufferLayer = null;
-let currentThemeKey = 'highway_type';
+let currentThemeKey = 'highway_hierarchy'; 
 let currentMode = 'light';
-const dataUrl = 'data/HIAN_FullDatabase.geojson';
+let lastBoundsStr = '';
 
 let isZoomEventBound = false;
 let genInfoMap = {}; // Keyed by full_id
@@ -32,6 +32,90 @@ function parseCSV(url) {
       error: (error) => reject(error)
     });
   });
+}
+
+/**
+ * Maps any procedural step percentage (0.0 to 1.0) directly to a mode-specific
+ * multi-stop Spectral color ramp, interpolating smoothly between coordinates.
+ */
+function getSpectralGradientColor(percent, mode) {
+  // Define custom multi-stop keyframes tailored for Light vs Dark map aesthetics
+  const spectralStops = {
+    light: [
+      { offset: 0.0,  hex: '#d7191c' },
+      { offset: 0.25, hex: '#fdae61' },
+      { offset: 0.5,  hex: '#ffffbf' },
+      { offset: 0.75, hex: '#abdda4' },
+      { offset: 1.0,  hex: '#2b83ba' }
+    ],
+    dark: [
+      
+      { offset: 0.0,  hex: '#ff4d4d' },
+      { offset: 0.2,  hex: '#ff9f43' },
+      { offset: 0.4,  hex: '#fff200' },
+      { offset: 0.6,  hex: '#2ed573' },
+      { offset: 0.8,  hex: '#1e90ff' },
+      { offset: 1.0,  hex: '#70a1ff' }
+    ]
+  };
+
+  // Clamp percent between 0 and 1 safety boundaries
+  const p = Math.max(0, Math.min(1, percent));
+  const stops = spectralStops[mode] || spectralStops.light;
+
+  // 1. Find the two bounding keyframes for the current percentage position
+  let lower = stops[0];
+  let upper = stops[stops.length - 1];
+
+  for (let i = 0; i < stops.length - 1; i++) {
+    if (p >= stops[i].offset && p <= stops[i + 1].offset) {
+      lower = stops[i];
+      upper = stops[i + 1];
+      break;
+    }
+  }
+
+  // 2. Calculate the local percentage between these two specific stops
+  const range = upper.offset - lower.offset;
+  const localPercent = range === 0 ? 0 : (p - lower.offset) / range;
+
+  // 3. Extract RGB channels from the bounding colors
+  const r1 = parseInt(lower.hex.substring(1, 3), 16);
+  const g1 = parseInt(lower.hex.substring(3, 5), 16);
+  const b1 = parseInt(lower.hex.substring(5, 7), 16);
+
+  const r2 = parseInt(upper.hex.substring(1, 3), 16);
+  const g2 = parseInt(upper.hex.substring(3, 5), 16);
+  const b2 = parseInt(upper.hex.substring(5, 7), 16);
+
+  // 4. Blend channels using Gamma-Corrected Linear Interpolation to keep it crisp
+  const r = Math.round(Math.sqrt(r1 * r1 + (r2 * r2 - r1 * r1) * localPercent));
+  const g = Math.round(Math.sqrt(g1 * g1 + (g2 * g2 - g1 * g1) * localPercent));
+  const b = Math.round(Math.sqrt(b1 * b1 + (b2 * b2 - b1 * b1) * localPercent));
+
+  // 5. Convert back into standard CSS Hex format
+  const toHex = val => Math.max(0, Math.min(255, val)).toString(16).padStart(2, '0');
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+// Global color resolution engine
+export function getColorForValue(theme, value, mode) {
+  const fallbackColor = mode === 'dark' ? 'hsl(0, 0%, 30%)' : '#a3a3a3';
+  if (!theme) return fallbackColor;
+
+  if (theme.isDynamicGradient) {
+    const rankIndex = theme.ranks.findIndex(r => r.value === value);
+    if (rankIndex !== -1 && theme.ranks.length > 1) {
+      const percent = rankIndex / (theme.ranks.length - 1);
+      
+      // Call the dual-mode multi-stop procedural engine
+      return getSpectralGradientColor(percent, mode);
+    }
+    return fallbackColor;
+  } else {
+    const def = theme.categories ? theme.categories[value] : null;
+    return def ? (mode === 'dark' ? def.darkColor : def.lightColor) : fallbackColor;
+  }
 }
 
 async function loadRelationalData() {
@@ -64,7 +148,7 @@ export function getStreetCombinedData(fullId) {
   return {
     full_id: fullId,
     highway: genInfo.highway || 'unclassified',
-    street_name: genInfo.name || 'Đường phố chưa rõ tên',
+    street_name: genInfo.name || 'Unknown Street',
     old_names: genInfo['old_name:processed'] || '',
     ...dbInfo,
     ...triviaInfo
@@ -83,14 +167,12 @@ export function applyTheme(themeKey, initialLoad = false) {
   rebuildLayers(theme);
   
   if (typeof updateLegend === 'function') {
-    updateLegend(theme.categories, theme, currentMode);
+    const legendData = theme.isDynamicGradient ? theme.ranks : theme.categories;
+    updateLegend(legendData, theme, currentMode, getColorForValue);
   }
 }
 
 async function rebuildLayers(theme) {
-  if (dataLayer) map.removeLayer(dataLayer);
-  if (bufferLayer) map.removeLayer(bufferLayer);
-
   const getHighwayWidthInMeters = (highway) => {
     switch (highway) {
       case 'motorway': case 'motorway_link': return 15.0;
@@ -126,15 +208,12 @@ async function rebuildLayers(theme) {
     }
     
     const combinedData = getStreetCombinedData(fullId);
+    
+    const activeTheme = themes[currentThemeKey]; 
+    const targetValue = combinedData[activeTheme.attribute] || 'unclassified';
     const hw = combinedData.highway;
 
-    // --- FIX: READ THEME CONDITIONALS DYNAMICALLY FROM GLOBAL TRACKING STATE ---
-    const activeTheme = themes[currentThemeKey]; 
-    const val = combinedData[activeTheme.attribute];
-    const def = activeTheme.categories[val];
-    // Example: Muted dark charcoal for light mode, and a bright soft silver for dark mode
-    const fallbackColor = currentMode === 'dark' ? '#4c4c4c' : '#7f7f7f';
-    const color = def ? (currentMode === 'dark' ? def.darkColor : def.lightColor) : fallbackColor;
+    const color = getColorForValue(activeTheme, targetValue, currentMode);
     
     const metersWidth = getHighwayWidthInMeters(hw);
     const dynamicPixelWeight = calculatePixelWeight(metersWidth);
@@ -147,77 +226,79 @@ async function rebuildLayers(theme) {
       color: color, 
       weight: dynamicPixelWeight, 
       dashArray: dashPattern,
-      opacity: 0.85,
+      opacity: 1,
       interactive: true
     };
   };
 
+  const getNormalizedId = (f) => {
+    const osmId = f.properties?.id || f.id;
+    if (!osmId) return f.properties?.full_id || '';
+    const idStr = osmId.toString();
+    if (idStr.includes('way/')) return `w${idStr.replace('way/', '')}`;
+    if (idStr.includes('relation/')) return `r${idStr.replace('relation/', '')}`;
+    return idStr.startsWith('w') || idStr.startsWith('r') ? idStr : `w${idStr}`;
+  };
+
   try {
-    // 1. Fetch GeoJSON file dataset if not cached
-    if (!window._cachedGeojsonData) {
-      console.log("Fetching and parsing GeoJSON database...");
-      const response = await fetch(dataUrl);
-      window._cachedGeojsonData = await response.json();
+    const bounds = map.getBounds();
+    const bbox = {
+      minX: bounds.getWest(),
+      minY: bounds.getSouth(),
+      maxX: bounds.getEast(),
+      maxY: bounds.getNorth()
+    };
+
+    console.log("Streaming view-bounded binary elements via FlatGeobuf index...");
+    const iterator = flatgeobuf.deserialize('data/HIAN_FullDatabase.fgb', bbox);
+    const visibleFeatures = [];
+    
+    for await (const feature of iterator) {
+      visibleFeatures.push(feature);
     }
 
-    // 2. Sort lines dynamically so major corridors draw over local alleys
-    const sortedFeatures = [...window._cachedGeojsonData.features].sort((a, b) => {
-      const getNormalizedId = (f) => {
-        const osmId = f.properties?.id || f.id;
-        if (!osmId) return f.properties?.full_id || '';
-        const idStr = osmId.toString();
-        if (idStr.includes('way/')) return `w${idStr.replace('way/', '')}`;
-        if (idStr.includes('relation/')) return `r${idStr.replace('relation/', '')}`;
-        return idStr.startsWith('w') || idStr.startsWith('r') ? idStr : `w${idStr}`;
-      };
-
-      const fullIdA = getNormalizedId(a);
-      const fullIdB = getNormalizedId(b);
-
-      const hwA = getStreetCombinedData(fullIdA).highway || 'unclassified';
-      const hwB = getStreetCombinedData(fullIdB).highway || 'unclassified';
-
+    const sortedFeatures = visibleFeatures.sort((a, b) => {
+      const hwA = getStreetCombinedData(getNormalizedId(a)).highway || 'unclassified';
+      const hwB = getStreetCombinedData(getNormalizedId(b)).highway || 'unclassified';
       return (highwayRenderWeight[hwA] || 0) - (highwayRenderWeight[hwB] || 0);
     });
 
     const sortedGeoJsonStructure = { type: "FeatureCollection", features: sortedFeatures };
 
-    // 3. Render visual pathways smoothly onto Leaflet canvas
-    dataLayer = L.geoJson(sortedGeoJsonStructure, {
+    const nextDataLayer = L.geoJson(sortedGeoJsonStructure, {
       style: styleFunction,
       onEachFeature: (f, l) => {
-        const osmId = f.properties?.id || f.id;
-        let fullId = f.properties?.full_id;
-        if (osmId) {
-          const idStr = osmId.toString();
-          if (idStr.includes('way/')) fullId = `w${idStr.replace('way/', '')}`;
-          else if (idStr.includes('relation/')) fullId = `r${idStr.replace('relation/', '')}`;
-          else fullId = idStr.startsWith('w') || idStr.startsWith('r') ? idStr : `w${idStr}`;
-        }
-        f.properties.full_id = fullId;
+        f.properties.full_id = getNormalizedId(f);
         attachInteractions(l, f);
       }
-    }).addTo(map);
+    });
 
-    // 4. Invisible thick overlay layers to maximize mobile touch accuracy
-    bufferLayer = L.geoJson(sortedGeoJsonStructure, {
+    const nextBufferLayer = L.geoJson(sortedGeoJsonStructure, {
       style: () => ({ color: 'transparent', weight: 15, opacity: 0 }),
       onEachFeature: (f, l) => {
-        const osmId = f.properties?.id || f.id;
-        let fullId = f.properties?.full_id;
-        if (osmId) {
-          const idStr = osmId.toString();
-          if (idStr.includes('way/')) fullId = `w${idStr.replace('way/', '')}`;
-          else if (idStr.includes('relation/')) fullId = `r${idStr.replace('relation/', '')}`;
-          else fullId = idStr.startsWith('w') || idStr.startsWith('r') ? idStr : `w${idStr}`;
-        }
-        f.properties.full_id = fullId;
+        f.properties.full_id = getNormalizedId(f);
         attachInteractions(l, f);
       }
-    }).addTo(map);
+    });
+
+    nextDataLayer.addTo(map);
+    nextBufferLayer.addTo(map);
+
+    if (dataLayer) map.removeLayer(dataLayer);
+    if (bufferLayer) map.removeLayer(bufferLayer);
+
+    dataLayer = nextDataLayer;
+    bufferLayer = nextBufferLayer;
 
     if (!isZoomEventBound) {
-      map.on('zoomend', () => { if (dataLayer) dataLayer.setStyle(styleFunction); });
+      map.on('moveend', () => {
+        const newBounds = map.getBounds().toBBoxString();
+        if (newBounds !== lastBoundsStr) {
+          lastBoundsStr = newBounds;
+          rebuildLayers(themes[currentThemeKey]);
+        }
+      });
+
       map.on('click', () => {
         const panel = document.getElementById('infoPanel');
         if (panel) { panel.innerHTML = ''; panel.style.display = 'none'; }
@@ -226,7 +307,7 @@ async function rebuildLayers(theme) {
     }
 
   } catch (error) {
-    console.error("Error drawing GeoJSON vector layers:", error);
+    console.error("Error drawing indexed FlatGeobuf layers:", error);
   }
 }
 

@@ -1,6 +1,6 @@
 import { loadData, setTheme, getTheme, setMode } from './data.js';
 import { themes } from './themes.js';
-import { map} from './map.js';
+import { map } from './map.js';
 
 loadData();
 
@@ -17,20 +17,6 @@ themeSelect.addEventListener('change', e => setTheme(e.target.value));
 
 const modeToggle = document.getElementById('modeToggle');
 let currentMode = 'light';
-modeToggle.textContent = '☀️';
-
-modeToggle.addEventListener('click', () => {
-  if (currentMode === 'light') {
-    currentMode = 'dark';
-    modeToggle.textContent = '🌙';
-    setMode('dark');
-    map.removeLayer(lightBasemap);
-    darkBasemap.addTo(map);
-  } else {
-    currentMode = 'light';
-    modeToggle.textContent = '☀️';
-    setMode('light');
-    map.removeLayer(darkBasemap);
-    lightBasemap.addTo(map);
-  }
-});
+if (modeToggle) {
+  modeToggle.textContent = '☀️';
+}
