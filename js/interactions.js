@@ -14,12 +14,14 @@ export function attachInteractions(layer, feature) {
   const currentThemeKey = getTheme();
   const activeTheme = themes[currentThemeKey];
   const targetValue = combinedData[activeTheme?.attribute] || '';
+  const subCategory = combinedData.subcategory || '';
 
   // 2. Build the minimalist popup tooltip template for map hovers/clicks
   const popupHTML = `
     <div style="font-family: sans-serif; font-size: 13px; line-height: 1.4;">
       <strong style="color: #222;">${combinedData.street_name || ''}</strong>
       ${targetValue ? `<br><span style="font-size: 11px; color: #666;">${targetValue}</span>` : ''}
+      ${subCategory ? `<span style="font-size: 11px; color: #999;"> (${subCategory})</span>` : ''}
     </div>
   `;
 
@@ -38,7 +40,7 @@ export function attachInteractions(layer, feature) {
           ${combinedData.old_names ? `<p class="info-old-names" style="margin: 4px 0; color: #666;"><em>Tên cũ: ${combinedData.old_names}</em></p>` : ''}
           <hr class="info-divider" style="border: 0; border-top: 1px solid #eee; margin: 12px 0;">
           
-          ${targetValue ? `<p class="info-row" style="margin: 6px 0;"><strong>Phân loại chính:</strong> ${targetValue}</p>` : ''}
+          ${targetValue ? `<p class="info-row" style="margin: 6px 0;"><strong>Phân loại chính:</strong> ${targetValue}${subCategory ? ` (${subCategory})` : ''}</p>` : ''}
           ${combinedData.description ? `<p class="info-row" style="margin: 6px 0;"><strong>Mô tả:</strong> ${combinedData.description}</p>` : ''}
           ${combinedData.trivia ? `<p class="info-row info-trivia" style="margin: 6px 0;"><strong>Thông tin bên lề:</strong> ${combinedData.trivia}</p>` : ''}
         </div>
