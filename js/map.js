@@ -1,69 +1,101 @@
 import { setMode } from './data.js';
 
-// 1. Initialize map view and export it so data.js and other files can interact with it
+// Inside js/map.js
 export const map = L.map('map', {
-  center: [21.02899796430522, 105.85237212478512], // Centered on Hanoi coordinates
+  center: [21.02899796430522, 105.85237212478512],
   zoom: 17,
   zoomControl: true
 });
 
-// 2. Define the base tile providers using CARTO and Google engines
-export const lightMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+const lightMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
   attribution: '© OpenStreetMap, © CARTO',
   maxZoom: 20
 });
 
-export const darkMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+const darkMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
   attribution: '© OpenStreetMap, © CARTO',
   maxZoom: 20
 });
 
-// Google Hybrid (lyrs=s,h provides high-res satellite photography with clear text labeling)
-export const satelliteMap = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+// OPTION 1: Pure Satellite Imagery without text labels
+const satelliteMap = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
   subdomains: ['0', '1', '2', '3'],
   attribution: '© Google Maps',
   maxZoom: 20
 });
 
-// Load the default layout configuration safely
+// Add a specific class hook to the satellite tiles once they are appended to the DOM 
+satelliteMap.on('tileload', (e) => {
+  e.tile.classList.add('satellite-tile-target');
+  // Initialize current slider value immediately to newly loaded tiles
+  const sliderValue = document.getElementById('satelliteSaturationSlider')?.value ?? 100;
+  updateSatelliteSaturation(sliderValue);
+});
+
 lightMap.addTo(map);
 
-// 3. Track UI layout settings tracking states
-let currentMapType = 'leaflet'; // Can be either 'leaflet' or 'google-satellite'
-let currentLightMode = 'light'; // Can be either 'light' or 'dark'
+let currentMapType = 'leaflet'; 
+let currentLightMode = 'light'; 
 
-// 4. Hook into view controls layout elements 
 const viewToggle = document.getElementById('viewToggle');
 const modeToggle = document.getElementById('modeToggle');
+const sliderContainer = document.getElementById('satelliteFilterContainer');
+const saturationSlider = document.getElementById('satelliteSaturationSlider');
 
-if (viewToggle && modeToggle) {
-  viewToggle.addEventListener('click', () => {
-    if (currentMapType === 'leaflet') {
-      // Toggle to Google Satellite layouts
-      currentMapType = 'satellite';
-      viewToggle.textContent = 'Bản đồ';
-      
-      if (currentLightMode === 'light') {
-        map.removeLayer(lightMap);
-      } else {
-        map.removeLayer(darkMap);
-      }
-      
-      satelliteMap.addTo(map);
-      
-      // Hide the light/dark controller smoothly via CSS class
-      modeToggle.classList.add('hidden');
-      
-      // Force overlay lines into dark mode coloring to stand out cleanly against dark satellite imagery
-      setMode('dark');
-    } else {
-      // Return to Standard Vector layouts
-      currentMapType = 'leaflet';
-      viewToggle.textContent = 'Vệ tinh';
-      
+/**
+ * Sweeps through active satellite image tiles and updates their CSS grayscale metrics
+ */
+function updateSatelliteSaturation(val) {
+  const grayscalePercent = 100 - val; // Sliding to left (0) means 100% grayscale desaturation
+  const tiles = document.querySelectorAll('.satellite-tile-target');
+  tiles.forEach(tile => {
+    tile.style.filter = `grayscale(${grayscalePercent}%)`;
+  });
+}
+
+// Bind input event to live-update tiles as you drag the slider track handle
+if (saturationSlider) {
+  saturationSlider.addEventListener('input', (e) => {
+    updateSatelliteSaturation(e.target.value);
+  });
+}
+
+// Replace the entire viewToggle.addEventListener block inside js/map.js
+
+viewToggle.addEventListener('click', () => {
+  if (currentMapType === 'leaflet') {
+    currentMapType = 'satellite';
+    viewToggle.textContent = 'Bản đồ';
+    
+    if (currentLightMode === 'light') map.removeLayer(lightMap);
+    else map.removeLayer(darkMap);
+    
+    // 1. Add satellite layer to map
+    satelliteMap.addTo(map);
+    modeToggle.classList.add('hidden');
+    if (sliderContainer) sliderContainer.classList.remove('hidden');
+    
+    // 2. Force layer rebuild to apply light colors over the photography
+    setMode(currentLightMode); 
+    
+    // 3. Trigger the slow desaturation transition after tiles are placed
+    setTimeout(() => {
+      updateSatelliteSaturation(saturationSlider ? saturationSlider.value : 100);
+    }, 50);
+
+  } else {
+    currentMapType = 'leaflet';
+    viewToggle.textContent = 'Vệ tinh';
+    
+    // 1. First, smoothly slide saturation all the way back to full color (100%)
+    updateSatelliteSaturation(100);
+    if (sliderContainer) sliderContainer.classList.add('hidden');
+    
+    // 2. Wait 800ms (matching your CSS transition length) for the color to completely bleed back in
+    setTimeout(() => {
+      // 3. Cleanly swap layers only AFTER the transition has completed
       map.removeLayer(satelliteMap);
       
-      // Restore previous vector tile layer alongside the line configurations
       if (currentLightMode === 'light') {
         lightMap.addTo(map);
         setMode('light');
@@ -71,32 +103,28 @@ if (viewToggle && modeToggle) {
         darkMap.addTo(map);
         setMode('dark');
       }
-      
-      // Slide the light/dark control switch back into display row layout
       modeToggle.classList.remove('hidden');
-    }
-  });
+    }, 800); // 800ms delay matches the 0.8s transition in style.css
+  }
+});
 
-  // 5. Light Mode vs Dark Mode style toggling logic
-  modeToggle.addEventListener('click', () => {
-    if (currentLightMode === 'light') {
-      currentLightMode = 'dark';
-      modeToggle.textContent = '🌙';
-      
-      if (currentMapType === 'leaflet') {
-        map.removeLayer(lightMap);
-        darkMap.addTo(map);
-      }
-      setMode('dark');
-    } else {
-      currentLightMode = 'light';
-      modeToggle.textContent = '☀️';
-      
-      if (currentMapType === 'leaflet') {
-        map.removeLayer(darkMap);
-        lightMap.addTo(map);
-      }
-      setMode('light');
+// Light Mode vs Dark Mode button interactions 
+modeToggle.addEventListener('click', () => {
+  if (currentLightMode === 'light') {
+    currentLightMode = 'dark';
+    modeToggle.innerHTML = '🌙';
+    if (currentMapType === 'leaflet') {
+      map.removeLayer(lightMap);
+      darkMap.addTo(map);
     }
-  });
-}
+    setMode('dark');
+  } else {
+    currentLightMode = 'light';
+    modeToggle.innerHTML = '☀️';
+    if (currentMapType === 'leaflet') {
+      map.removeLayer(darkMap);
+      lightMap.addTo(map);
+    }
+    setMode('light');
+  }
+});

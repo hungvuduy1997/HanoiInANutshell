@@ -3,38 +3,26 @@
  * Maps categorical attributes to specific HEX values for both Light and Dark conditions.
  */
 export const themes = {
-  // Theme 1: Spatial Functional Classification
-  highway_hierarchy: {
-    name: "Phân cấp đường bộ",
-    attribute: "highway",
+  categorization: {
+    name: "Phân loại",
+    attribute: "category",
     isDynamicGradient: true,
     lightStartOklch: { l: 0.56, c: 0.22, h: 27 },
     lightEndOklch:   { l: 0.58, c: 0.12, h: 241 },
     darkStartOklch:  { l: 0.56, c: 0.22, h: 27 },
     darkEndOklch:    { l: 0.58, c: 0.12, h: 241 },
     ranks: [
-      { value: "motorway", label: "Đường bộ trên cao" },
-      { value: "motorway_link", label: "Đường nối cao tốc" },
-      { value: "trunk", label: "Đường đối ngoại" },
-      { value: "trunk_link", label: "Đường nối đối ngoại" },
-      { value: "primary", label: "Đường trục chính" },
-      { value: "primary_link", label: "Đường nối trục chính" },
-      { value: "secondary", label: "Đường cấp hai" },
-      { value: "secondary_link", label: "Đường nối cấp hai" },
-      { value: "tertiary", label: "Đường cấp ba" },
-      { value: "tertiary_link", label: "Đường nối cấp ba" },
-      { value: "road", label: "Đường hỗn hợp" },
-      { value: "residential", label: "Đường nội bộ" },
-      { value: "service", label: "Đường nội khu" },
-      { value: "living_street", label: "Đường dân sinh" },
-      { value: "cycleway", label: "Đường xe đạp" },
-      { value: "pedestrian", label: "Đường đi bộ" },
-      { value: "construction", label: "Đang xây dựng" },
-      { value: "unclassified", label: "Chưa phân loại" }
+      { value: "Triều đại", label: "Triều đại" },
+      { value: "Sự kiện lịch sử", label: "Sự kiện lịch sử" },
+      { value: "Địa danh", label: "Địa danh" },
+      { value: "Làng nghề", label: "Làng nghề" },
+      { value: "Tôn giáo", label: "Tôn giáo" },
+      { value: "Nhân vật lịch sử", label: "Nhân vật lịch sử" },
+      { value: "Tư tưởng xã hội", label: "Tư tưởng xã hội" },
+      { value: "Khác", label: "Khác" },
+      { value: "Unknown", label: "Không rõ" }
     ]
   },
-
-  // Theme 2: Historical Epoch/Chronology
   historical_epoch: {
     name: "Thời kỳ Lịch sử",
     attribute: "period",

@@ -5,7 +5,7 @@ import { updateLegend } from './legend.js';
 
 let dataLayer = null;
 let bufferLayer = null;
-let currentThemeKey = 'highway_hierarchy'; 
+let currentThemeKey = 'categorization'; 
 let currentMode = 'light';
 let lastBoundsStr = '';
 
@@ -99,8 +99,9 @@ function getSpectralGradientColor(percent, mode) {
 }
 
 // Global color resolution engine
+// Global color resolution engine
 export function getColorForValue(theme, value, mode) {
-  const fallbackColor = mode === 'dark' ? 'hsl(0, 0%, 30%)' : '#a3a3a3';
+  const fallbackColor = mode === 'dark' ? 'hsl(0, 0%, 60%)' : 'hsl(0, 0%, 70%)';
   if (!theme) return fallbackColor;
 
   if (theme.isDynamicGradient) {
@@ -108,8 +109,13 @@ export function getColorForValue(theme, value, mode) {
     if (rankIndex !== -1 && theme.ranks.length > 1) {
       const percent = rankIndex / (theme.ranks.length - 1);
       
+      // Force 'light' mode colors if satellite view is active
+      const viewToggle = document.getElementById('viewToggle');
+      const isSatelliteActive = viewToggle && viewToggle.textContent === 'Bản đồ';
+      const resolvedMode = isSatelliteActive ? 'light' : mode;
+      
       // Call the dual-mode multi-stop procedural engine
-      return getSpectralGradientColor(percent, mode);
+      return getSpectralGradientColor(percent, resolvedMode);
     }
     return fallbackColor;
   } else {
@@ -148,7 +154,7 @@ export function getStreetCombinedData(fullId) {
   return {
     full_id: fullId,
     highway: genInfo.highway || 'unclassified',
-    street_name: genInfo.name || 'Unknown Street',
+    street_name: genInfo.name || 'Đường phố chưa biết tên',
     old_names: genInfo['old_name:processed'] || '',
     ...dbInfo,
     ...triviaInfo
@@ -193,43 +199,51 @@ async function rebuildLayers(theme) {
     return Math.max(1, meters / metersPerPixel);
   };
 
-  const styleFunction = feature => {
-    const props = feature.properties || {};
-    const osmId = props.id || feature.id;
-    let fullId = '';
-    
-    if (osmId) {
-      const idStr = osmId.toString();
-      if (idStr.includes('way/')) fullId = `w${idStr.replace('way/', '')}`;
-      else if (idStr.includes('relation/')) fullId = `r${idStr.replace('relation/', '')}`;
-      else fullId = idStr.startsWith('w') || idStr.startsWith('r') ? idStr : `w${idStr}`;
-    } else {
-      fullId = props.full_id;
-    }
-    
-    const combinedData = getStreetCombinedData(fullId);
-    
-    const activeTheme = themes[currentThemeKey]; 
-    const targetValue = combinedData[activeTheme.attribute] || 'unclassified';
-    const hw = combinedData.highway;
+  // Inside js/data.js -> rebuildLayers() -> styleFunction definitions:
 
-    const color = getColorForValue(activeTheme, targetValue, currentMode);
-    
-    const metersWidth = getHighwayWidthInMeters(hw);
-    const dynamicPixelWeight = calculatePixelWeight(metersWidth);
+const styleFunction = feature => {
+  const props = feature.properties || {};
+  const osmId = props.id || feature.id;
+  let fullId = '';
+  
+  if (osmId) {
+    const idStr = osmId.toString();
+    if (idStr.includes('way/')) fullId = `w${idStr.replace('way/', '')}`;
+    else if (idStr.includes('relation/')) fullId = `r${idStr.replace('relation/', '')}`;
+    else fullId = idStr.startsWith('w') || idStr.startsWith('r') ? idStr : `w${idStr}`;
+  } else {
+    fullId = props.full_id;
+  }
+  
+  const combinedData = getStreetCombinedData(fullId);
+  const activeTheme = themes[currentThemeKey]; 
+  const targetValue = combinedData[activeTheme.attribute] || 'unclassified';
+  const hw = combinedData.highway;
 
-    let dashPattern = null;
-    if (['pedestrian', 'footway', 'path'].includes(hw)) dashPattern = "6, 5";
-    if (hw === 'construction') dashPattern = "3, 4";
+  const color = getColorForValue(activeTheme, targetValue, currentMode);
+  
+  const metersWidth = getHighwayWidthInMeters(hw);
+  const dynamicPixelWeight = calculatePixelWeight(metersWidth);
 
-    return { 
-      color: color, 
-      weight: dynamicPixelWeight, 
-      dashArray: dashPattern,
-      opacity: 1,
-      interactive: true
-    };
+  // Dynamic Scale-Proportional Dash Engine
+  let dashPattern = null;
+  if (['pedestrian', 'footway', 'path'].includes(hw)) {
+    // Scales the gaps and dashes relative to line thickness to safely absorb rounded line caps
+    dashPattern = `${dynamicPixelWeight * 2} ${dynamicPixelWeight * 2.5}`;
+  }
+  if (hw === 'construction') {
+    dashPattern = `${dynamicPixelWeight * 1} ${dynamicPixelWeight * 2}`;
+  }
+
+  return { 
+    color: color, 
+    weight: dynamicPixelWeight, 
+    dashArray: dashPattern,
+    lineCap: 'round', // Keeps the line smooth while the math above preserves the gaps
+    opacity: 1,
+    interactive: true
   };
+};
 
   const getNormalizedId = (f) => {
     const osmId = f.properties?.id || f.id;
