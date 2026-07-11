@@ -7,12 +7,13 @@ export const map = L.map('map', {
   zoomControl: true
 });
 
-const lightMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+// Replace your existing lightMap definition near the top with this:
+const lightMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
   attribution: '© OpenStreetMap, © CARTO',
   maxZoom: 20
 });
 
-const darkMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+const darkMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
   attribution: '© OpenStreetMap, © CARTO',
   maxZoom: 20
 });

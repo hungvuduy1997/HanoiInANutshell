@@ -13,6 +13,7 @@ let isZoomEventBound = false;
 let genInfoMap = {}; // Keyed by full_id
 let databaseMap = {}; // Keyed by name
 let triviaMap = {};   // Keyed by name:trivia
+let activeFilterValue = null; // Currently selected filter value for highlighting
 
 // Explicit rendering stack priorities: low numbers at bottom, high numbers layered on top
 const highwayRenderWeight = {
@@ -39,7 +40,6 @@ function parseCSV(url) {
  * multi-stop Spectral color ramp, interpolating smoothly between coordinates.
  */
 function getSpectralGradientColor(percent, mode) {
-  // Define custom multi-stop keyframes tailored for Light vs Dark map aesthetics
   const spectralStops = {
     light: [
       { offset: 0.0,  hex: '#d7191c' },
@@ -49,7 +49,6 @@ function getSpectralGradientColor(percent, mode) {
       { offset: 1.0,  hex: '#2b83ba' }
     ],
     dark: [
-      
       { offset: 0.0,  hex: '#ff4d4d' },
       { offset: 0.2,  hex: '#ff9f43' },
       { offset: 0.4,  hex: '#fff200' },
@@ -59,11 +58,9 @@ function getSpectralGradientColor(percent, mode) {
     ]
   };
 
-  // Clamp percent between 0 and 1 safety boundaries
   const p = Math.max(0, Math.min(1, percent));
   const stops = spectralStops[mode] || spectralStops.light;
 
-  // 1. Find the two bounding keyframes for the current percentage position
   let lower = stops[0];
   let upper = stops[stops.length - 1];
 
@@ -75,11 +72,9 @@ function getSpectralGradientColor(percent, mode) {
     }
   }
 
-  // 2. Calculate the local percentage between these two specific stops
   const range = upper.offset - lower.offset;
   const localPercent = range === 0 ? 0 : (p - lower.offset) / range;
 
-  // 3. Extract RGB channels from the bounding colors
   const r1 = parseInt(lower.hex.substring(1, 3), 16);
   const g1 = parseInt(lower.hex.substring(3, 5), 16);
   const b1 = parseInt(lower.hex.substring(5, 7), 16);
@@ -88,17 +83,14 @@ function getSpectralGradientColor(percent, mode) {
   const g2 = parseInt(upper.hex.substring(3, 5), 16);
   const b2 = parseInt(upper.hex.substring(5, 7), 16);
 
-  // 4. Blend channels using Gamma-Corrected Linear Interpolation to keep it crisp
   const r = Math.round(Math.sqrt(r1 * r1 + (r2 * r2 - r1 * r1) * localPercent));
   const g = Math.round(Math.sqrt(g1 * g1 + (g2 * g2 - g1 * g1) * localPercent));
   const b = Math.round(Math.sqrt(b1 * b1 + (b2 * b2 - b1 * b1) * localPercent));
 
-  // 5. Convert back into standard CSS Hex format
   const toHex = val => Math.max(0, Math.min(255, val)).toString(16).padStart(2, '0');
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
-// Global color resolution engine
 // Global color resolution engine
 export function getColorForValue(theme, value, mode) {
   const fallbackColor = mode === 'dark' ? 'hsl(0, 0%, 60%)' : 'hsl(0, 0%, 70%)';
@@ -109,12 +101,10 @@ export function getColorForValue(theme, value, mode) {
     if (rankIndex !== -1 && theme.ranks.length > 1) {
       const percent = rankIndex / (theme.ranks.length - 1);
       
-      // Force 'light' mode colors if satellite view is active
       const viewToggle = document.getElementById('viewToggle');
       const isSatelliteActive = viewToggle && viewToggle.textContent === 'Bản đồ';
       const resolvedMode = isSatelliteActive ? 'light' : mode;
       
-      // Call the dual-mode multi-stop procedural engine
       return getSpectralGradientColor(percent, resolvedMode);
     }
     return fallbackColor;
@@ -122,6 +112,90 @@ export function getColorForValue(theme, value, mode) {
     const def = theme.categories ? theme.categories[value] : null;
     return def ? (mode === 'dark' ? def.darkColor : def.lightColor) : fallbackColor;
   }
+}
+
+const getHighwayWidthInMeters = (highway) => {
+  switch (highway) {
+    case 'motorway': case 'motorway_link': return 15.0;
+    case 'trunk': case 'trunk_link': return 12.0;
+    case 'primary': case 'primary_link': return 10.0;
+    case 'secondary': case 'secondary_link': return 8.0;
+    case 'tertiary': case 'tertiary_link': return 6.0;
+    case 'residential': case 'unclassified': case 'living_street': case 'construction': return 4.5;
+    case 'service': case 'pedestrian': case 'footway': case 'path': return 2.5;
+    default: return 4.0;
+  }
+};
+
+const calculatePixelWeight = (meters) => {
+  const zoom = map.getZoom();
+  const latInRadians = 21.0285 * (Math.PI / 180);
+  const metersPerPixel = (40075016.686 * Math.cos(latInRadians)) / Math.pow(2, zoom + 8);
+  return Math.max(1, meters / metersPerPixel);
+};
+
+// Global style definition function for GeoJSON vectors
+const styleFunction = feature => {
+  const props = feature.properties || {};
+  const osmId = props.id || feature.id;
+  let fullId = '';
+  
+  if (osmId) {
+    const idStr = osmId.toString();
+    if (idStr.includes('way/')) fullId = `w${idStr.replace('way/', '')}`;
+    else if (idStr.includes('relation/')) fullId = `r${idStr.replace('relation/', '')}`;
+    else fullId = idStr.startsWith('w') || idStr.startsWith('r') ? idStr : `w${idStr}`;
+  } else {
+    fullId = props.full_id;
+  }
+  
+  const combinedData = getStreetCombinedData(fullId);
+  const activeTheme = themes[currentThemeKey]; 
+  const targetValue = combinedData[activeTheme.attribute] || 'unclassified';
+  const hw = combinedData.highway;
+
+  const metersWidth = getHighwayWidthInMeters(hw);
+  const dynamicPixelWeight = calculatePixelWeight(metersWidth);
+
+  let dashPattern = null;
+  if (['pedestrian', 'footway', 'path'].includes(hw)) {
+    dashPattern = `${dynamicPixelWeight * 2} ${dynamicPixelWeight * 2.5}`;
+  }
+  if (hw === 'construction') {
+    dashPattern = `${dynamicPixelWeight * 1} ${dynamicPixelWeight * 2}`;
+  }
+
+  let color = getColorForValue(activeTheme, targetValue, currentMode);
+  let opacity = 1;
+
+  // Apply isolation logic if a legend filtering criterion is currently chosen
+  if (activeFilterValue !== null) {
+    if (targetValue !== activeFilterValue) {
+      color = currentMode === 'dark' ? 'hsl(0, 0%, 30%)' : 'hsl(0, 0%, 85%)';
+      opacity = 0.15;
+    }
+  }
+
+  return { 
+    color: color, 
+    weight: dynamicPixelWeight, 
+    dashArray: dashPattern,
+    lineCap: 'square', 
+    opacity: opacity,
+    interactive: activeFilterValue !== null ? (targetValue === activeFilterValue) : true
+  };
+};
+
+// Top-level function wrapper to safely manipulate active filter selection state
+export function toggleLegendFilter(value) {
+  if (activeFilterValue === value) {
+    activeFilterValue = null; 
+  } else {
+    activeFilterValue = value; 
+  }
+  
+  applyTheme(currentThemeKey);
+  return activeFilterValue;
 }
 
 async function loadRelationalData() {
@@ -179,72 +253,6 @@ export function applyTheme(themeKey, initialLoad = false) {
 }
 
 async function rebuildLayers(theme) {
-  const getHighwayWidthInMeters = (highway) => {
-    switch (highway) {
-      case 'motorway': case 'motorway_link': return 15.0;
-      case 'trunk': case 'trunk_link': return 12.0;
-      case 'primary': case 'primary_link': return 10.0;
-      case 'secondary': case 'secondary_link': return 8.0;
-      case 'tertiary': case 'tertiary_link': return 6.0;
-      case 'residential': case 'unclassified': case 'living_street': case 'construction': return 4.5;
-      case 'service': case 'pedestrian': case 'footway': case 'path': return 2.5;
-      default: return 4.0;
-    }
-  };
-
-  const calculatePixelWeight = (meters) => {
-    const zoom = map.getZoom();
-    const latInRadians = 21.0285 * (Math.PI / 180);
-    const metersPerPixel = (40075016.686 * Math.cos(latInRadians)) / Math.pow(2, zoom + 8);
-    return Math.max(1, meters / metersPerPixel);
-  };
-
-  // Inside js/data.js -> rebuildLayers() -> styleFunction definitions:
-
-const styleFunction = feature => {
-  const props = feature.properties || {};
-  const osmId = props.id || feature.id;
-  let fullId = '';
-  
-  if (osmId) {
-    const idStr = osmId.toString();
-    if (idStr.includes('way/')) fullId = `w${idStr.replace('way/', '')}`;
-    else if (idStr.includes('relation/')) fullId = `r${idStr.replace('relation/', '')}`;
-    else fullId = idStr.startsWith('w') || idStr.startsWith('r') ? idStr : `w${idStr}`;
-  } else {
-    fullId = props.full_id;
-  }
-  
-  const combinedData = getStreetCombinedData(fullId);
-  const activeTheme = themes[currentThemeKey]; 
-  const targetValue = combinedData[activeTheme.attribute] || 'unclassified';
-  const hw = combinedData.highway;
-
-  const color = getColorForValue(activeTheme, targetValue, currentMode);
-  
-  const metersWidth = getHighwayWidthInMeters(hw);
-  const dynamicPixelWeight = calculatePixelWeight(metersWidth);
-
-  // Dynamic Scale-Proportional Dash Engine
-  let dashPattern = null;
-  if (['pedestrian', 'footway', 'path'].includes(hw)) {
-    // Scales the gaps and dashes relative to line thickness to safely absorb rounded line caps
-    dashPattern = `${dynamicPixelWeight * 2} ${dynamicPixelWeight * 2.5}`;
-  }
-  if (hw === 'construction') {
-    dashPattern = `${dynamicPixelWeight * 1} ${dynamicPixelWeight * 2}`;
-  }
-
-  return { 
-    color: color, 
-    weight: dynamicPixelWeight, 
-    dashArray: dashPattern,
-    lineCap: 'square', // Keeps the line smooth while the math above preserves the gaps
-    opacity: 0.8,
-    interactive: true
-  };
-};
-
   const getNormalizedId = (f) => {
     const osmId = f.properties?.id || f.id;
     if (!osmId) return f.properties?.full_id || '';
@@ -279,21 +287,41 @@ const styleFunction = feature => {
 
     const sortedGeoJsonStructure = { type: "FeatureCollection", features: sortedFeatures };
 
-    const nextDataLayer = L.geoJson(sortedGeoJsonStructure, {
-      style: styleFunction,
-      onEachFeature: (f, l) => {
-        f.properties.full_id = getNormalizedId(f);
-        attachInteractions(l, f);
-      }
-    });
+    // Find this section inside rebuildLayers() in js/data.js
 
-    const nextBufferLayer = L.geoJson(sortedGeoJsonStructure, {
-      style: () => ({ color: 'transparent', weight: 15, opacity: 0 }),
-      onEachFeature: (f, l) => {
-        f.properties.full_id = getNormalizedId(f);
-        attachInteractions(l, f);
-      }
-    });
+    const nextDataLayer = L.geoJson(sortedGeoJsonStructure, {
+  style: styleFunction,
+  onEachFeature: (f, l) => {
+    f.properties.full_id = getNormalizedId(f);
+    attachInteractions(l, f);
+  }
+});
+
+// UPDATE THIS BLOCK BELOW:
+const nextBufferLayer = L.geoJson(sortedGeoJsonStructure, {
+  style: (feature) => {
+    // Resolve the target value for this specific feature's theme attribute
+    const props = feature.properties || {};
+    const fullId = getNormalizedId(feature);
+    const combinedData = getStreetCombinedData(fullId);
+    const activeTheme = themes[currentThemeKey]; 
+    const targetValue = combinedData[activeTheme.attribute] || 'unclassified';
+
+    // If a filter is active and this street doesn't match, disable its pointer events completely
+    const isInteractive = activeFilterValue !== null ? (targetValue === activeFilterValue) : true;
+
+    return { 
+      color: 'transparent', 
+      weight: 15, 
+      opacity: 0,
+      interactive: isInteractive // <-- This locks out the invisible click buffer
+    };
+  },
+  onEachFeature: (f, l) => {
+    f.properties.full_id = getNormalizedId(f);
+    attachInteractions(l, f);
+  }
+});
 
     nextDataLayer.addTo(map);
     nextBufferLayer.addTo(map);
@@ -316,7 +344,13 @@ const styleFunction = feature => {
       map.on('click', () => {
         const panel = document.getElementById('infoPanel');
         if (panel) { panel.innerHTML = ''; panel.style.display = 'none'; }
+        
+        if (activeFilterValue !== null) {
+          activeFilterValue = null;
+          applyTheme(currentThemeKey);
+        }
       });
+      
       isZoomEventBound = true;
     }
 
