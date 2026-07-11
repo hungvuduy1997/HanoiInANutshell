@@ -166,23 +166,16 @@ const styleFunction = feature => {
   }
 
   let color = getColorForValue(activeTheme, targetValue, currentMode);
-  let opacity = 1;
 
-  // Apply isolation logic if a legend filtering criterion is currently chosen
-  if (activeFilterValue !== null) {
-    if (targetValue !== activeFilterValue) {
-      color = currentMode === 'dark' ? 'hsl(0, 0%, 30%)' : 'hsl(0, 0%, 85%)';
-      opacity = 0.15;
-    }
-  }
-
+  // Note: We don't need to check activeFilterValue for opacity anymore, 
+  // because non-matching entities are blocked completely at the pipeline step below!
   return { 
     color: color, 
     weight: dynamicPixelWeight, 
     dashArray: dashPattern,
     lineCap: 'square', 
-    opacity: opacity,
-    interactive: activeFilterValue !== null ? (targetValue === activeFilterValue) : true
+    opacity: 1,
+    interactive: true
   };
 };
 
@@ -275,7 +268,26 @@ async function rebuildLayers(theme) {
     const iterator = flatgeobuf.deserialize('data/HIAN_FullDatabase.fgb', bbox);
     const visibleFeatures = [];
     
+    const activeTheme = themes[currentThemeKey];
+
     for await (const feature of iterator) {
+      // -------------------------------------------------------------
+      // OPTIMIZATION ENHANCEMENT: REVERSED PIPELINE INTERCEPTION
+      // -------------------------------------------------------------
+      // Intercept elements right as they stream out of the binary index.
+      // If a legend item is isolated, map out its relational value *first*.
+      if (activeFilterValue !== null) {
+        const fullId = getNormalizedId(feature);
+        const combinedData = getStreetCombinedData(fullId);
+        const targetValue = combinedData[activeTheme.attribute] || 'unclassified';
+
+        // If it doesn't match the active filter, skip it completely.
+        // It won't get processed, sorted, or parsed into Leaflet DOM structures.
+        if (targetValue !== activeFilterValue) {
+          continue; 
+        }
+      }
+
       visibleFeatures.push(feature);
     }
 
@@ -287,41 +299,21 @@ async function rebuildLayers(theme) {
 
     const sortedGeoJsonStructure = { type: "FeatureCollection", features: sortedFeatures };
 
-    // Find this section inside rebuildLayers() in js/data.js
-
     const nextDataLayer = L.geoJson(sortedGeoJsonStructure, {
-  style: styleFunction,
-  onEachFeature: (f, l) => {
-    f.properties.full_id = getNormalizedId(f);
-    attachInteractions(l, f);
-  }
-});
+      style: styleFunction,
+      onEachFeature: (f, l) => {
+        f.properties.full_id = getNormalizedId(f);
+        attachInteractions(l, f);
+      }
+    });
 
-// UPDATE THIS BLOCK BELOW:
-const nextBufferLayer = L.geoJson(sortedGeoJsonStructure, {
-  style: (feature) => {
-    // Resolve the target value for this specific feature's theme attribute
-    const props = feature.properties || {};
-    const fullId = getNormalizedId(feature);
-    const combinedData = getStreetCombinedData(fullId);
-    const activeTheme = themes[currentThemeKey]; 
-    const targetValue = combinedData[activeTheme.attribute] || 'unclassified';
-
-    // If a filter is active and this street doesn't match, disable its pointer events completely
-    const isInteractive = activeFilterValue !== null ? (targetValue === activeFilterValue) : true;
-
-    return { 
-      color: 'transparent', 
-      weight: 15, 
-      opacity: 0,
-      interactive: isInteractive // <-- This locks out the invisible click buffer
-    };
-  },
-  onEachFeature: (f, l) => {
-    f.properties.full_id = getNormalizedId(f);
-    attachInteractions(l, f);
-  }
-});
+    const nextBufferLayer = L.geoJson(sortedGeoJsonStructure, {
+      style: () => ({ color: 'transparent', weight: 15, opacity: 0, interactive: true }),
+      onEachFeature: (f, l) => {
+        f.properties.full_id = getNormalizedId(f);
+        attachInteractions(l, f);
+      }
+    });
 
     nextDataLayer.addTo(map);
     nextBufferLayer.addTo(map);
