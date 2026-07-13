@@ -2,7 +2,7 @@
  * Centralized Application Data & Relational Schema
  * * 1. DATA_SOURCES: Defines the relational layout, primary keys, and linking paths
  * between the decentralized CSV files.
- * * 2. PROPERTY_SCHEMA: Maps every user-facing property to its raw CSV source,
+ * 2. PROPERTY_SCHEMA: Maps every user-facing property to its raw CSV source,
  * its exact column header name, fallback defaults, and UI layout rendering targets.
  */
 
@@ -50,7 +50,7 @@ export const PROPERTY_SCHEMA = {
     targets: ['panel_subheader']
   },
 
-  // --- THEME ATTRIBUTES OUT OF hian_db.csv (FIXES THE COLORS) ---
+  // --- THEME ATTRIBUTES OUT OF hian_db.csv ---
   category: {
     csvSource: 'database',
     csvHeader: 'category', // Matches themes.categorization.attribute exactly

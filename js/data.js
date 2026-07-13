@@ -106,11 +106,11 @@ export function getColorForValue(theme, value, mode) {
     const rankIndex = theme.ranks.findIndex(r => r.value === value);
     if (rankIndex !== -1 && theme.ranks.length > 1) {
       const percent = rankIndex / (theme.ranks.length - 1);
-      
+
       const viewToggle = document.getElementById('viewToggle');
       const isSatelliteActive = viewToggle && viewToggle.textContent === 'Bản đồ';
       const resolvedMode = isSatelliteActive ? 'light' : mode;
-      
+
       return getSpectralGradientColor(percent, resolvedMode);
     }
     return fallbackColor;
@@ -157,7 +157,7 @@ const styleFunction = feature => {
   
   const combinedData = getStreetCombinedData(fullId);
   const activeTheme = themes[currentThemeKey]; 
-  const targetValue = combinedData[activeTheme.attribute] || 'unclassified';
+  const targetValue = combinedData[activeTheme.attribute] || 'Unknown';
   const hw = combinedData.highway;
 
   const metersWidth = getHighwayWidthInMeters(hw);
@@ -300,15 +300,11 @@ async function rebuildLayers(theme) {
     const activeTheme = themes[currentThemeKey];
 
     for await (const feature of iterator) {
-      // -------------------------------------------------------------
-      // OPTIMIZATION ENHANCEMENT: REVERSED PIPELINE INTERCEPTION
-      // -------------------------------------------------------------
       if (activeFilterValue !== null) {
         const fullId = getNormalizedId(feature);
         const combinedData = getStreetCombinedData(fullId);
-        const targetValue = combinedData[activeTheme.attribute] || 'unclassified';
+        const targetValue = combinedData[activeTheme.attribute] || 'Unknown';
 
-        // Discard unmatched vectors directly at the stream entry level
         if (targetValue !== activeFilterValue) {
           continue; 
         }
