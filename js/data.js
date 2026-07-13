@@ -2,6 +2,7 @@ import { map } from './map.js';
 import { themes } from './themes.js';
 import { attachInteractions } from './interactions.js';
 import { updateLegend } from './legend.js';
+import { DATA_SOURCES, PROPERTY_SCHEMA } from './schema.js'; // Centered relational truth schema
 
 let dataLayer = null;
 let bufferLayer = null;
@@ -10,9 +11,14 @@ let currentMode = 'light';
 let lastBoundsStr = '';
 
 let isZoomEventBound = false;
-let genInfoMap = {}; // Keyed by full_id
-let databaseMap = {}; // Keyed by name
-let triviaMap = {};   // Keyed by name:trivia
+
+// Dynamic cache tables allocated dynamically from the schema profiles
+const csvStorageTables = {
+  geninfo: {},
+  database: {},
+  trivia: {}
+};
+
 let activeFilterValue = null; // Currently selected filter value for highlighting
 
 // Explicit rendering stack priorities: low numbers at bottom, high numbers layered on top
@@ -167,8 +173,6 @@ const styleFunction = feature => {
 
   let color = getColorForValue(activeTheme, targetValue, currentMode);
 
-  // Note: We don't need to check activeFilterValue for opacity anymore, 
-  // because non-matching entities are blocked completely at the pipeline step below!
   return { 
     color: color, 
     weight: dynamicPixelWeight, 
@@ -191,41 +195,66 @@ export function toggleLegendFilter(value) {
   return activeFilterValue;
 }
 
+/**
+ * Parses and processes decentralized CSV structures algorithmically via rules from schema.js
+ */
 async function loadRelationalData() {
   try {
-    console.log("Loading relational CSV data stores...");
+    console.log("Centralized Engine: Parsing relational CSV data stores...");
     const [genInfoData, dbData, triviaData] = await Promise.all([
-      parseCSV('data/hian_geninfo.csv'),
-      parseCSV('data/hian_db.csv'),
-      parseCSV('data/hian_trivia.csv')
+      parseCSV(DATA_SOURCES.geninfo.file),
+      parseCSV(DATA_SOURCES.database.file),
+      parseCSV(DATA_SOURCES.trivia.file)
     ]);
 
-    genInfoData.forEach(row => { if (row.full_id) genInfoMap[row.full_id] = row; });
-    dbData.forEach(row => { if (row.name) databaseMap[row.name] = row; });
-    triviaData.forEach(row => { if (row['name:trivia']) triviaMap[row['name:trivia']] = row; });
+    genInfoData.forEach(row => { 
+      const pKey = row[DATA_SOURCES.geninfo.primaryKey];
+      if (pKey) csvStorageTables.geninfo[pKey] = row; 
+    });
+    
+    dbData.forEach(row => { 
+      const pKey = row[DATA_SOURCES.database.primaryKey];
+      if (pKey) csvStorageTables.database[pKey] = row; 
+    });
+    
+    triviaData.forEach(row => { 
+      const pKey = row[DATA_SOURCES.trivia.primaryKey];
+      if (pKey) csvStorageTables.trivia[pKey] = row; 
+    });
 
-    console.log("Relational tables fully optimized!");
+    console.log("Centralized Engine: Relational storage structures compiled successfully!");
   } catch (err) {
-    console.error("Critical error mapping relational CSV tables:", err);
+    console.error("Critical Schema Error: Failed parsing table records:", err);
   }
 }
 
+/**
+ * Dynamically resolves data elements across separated CSV layers using parameters from schema.js
+ */
 export function getStreetCombinedData(fullId) {
-  const genInfo = genInfoMap[fullId] || {};
-  const processedName = genInfo['name:processed'];
-  const triviaKey = genInfo['name:trivia'];
+  const genInfoRow = csvStorageTables.geninfo[fullId] || {};
+  
+  const dbLookupKey = genInfoRow[DATA_SOURCES.database.foreignKeyInGenInfo];
+  const triviaLookupKey = genInfoRow[DATA_SOURCES.trivia.foreignKeyInGenInfo];
 
-  const dbInfo = processedName ? (databaseMap[processedName] || {}) : {};
-  const triviaInfo = triviaKey ? (triviaMap[triviaKey] || {}) : {};
+  const dbRow = dbLookupKey ? (csvStorageTables.database[dbLookupKey] || {}) : {};
+  const triviaRow = triviaLookupKey ? (csvStorageTables.trivia[triviaLookupKey] || {}) : {};
 
-  return {
-    full_id: fullId,
-    highway: genInfo.highway || 'unclassified',
-    street_name: genInfo.name || 'Đường phố chưa biết tên',
-    old_names: genInfo['old_name:processed'] || '',
-    ...dbInfo,
-    ...triviaInfo
-  };
+  const compiledRecord = { full_id: fullId };
+
+  // Read explicitly from the master schema layout maps
+  Object.keys(PROPERTY_SCHEMA).forEach(propertyKey => {
+    const config = PROPERTY_SCHEMA[propertyKey];
+    let sourceRow = {};
+
+    if (config.csvSource === 'geninfo') sourceRow = genInfoRow;
+    else if (config.csvSource === 'database') sourceRow = dbRow;
+    else if (config.csvSource === 'trivia') sourceRow = triviaRow;
+
+    compiledRecord[propertyKey] = sourceRow[config.csvHeader] || config.default;
+  });
+
+  return compiledRecord;
 }
 
 export async function loadData() {
@@ -274,15 +303,12 @@ async function rebuildLayers(theme) {
       // -------------------------------------------------------------
       // OPTIMIZATION ENHANCEMENT: REVERSED PIPELINE INTERCEPTION
       // -------------------------------------------------------------
-      // Intercept elements right as they stream out of the binary index.
-      // If a legend item is isolated, map out its relational value *first*.
       if (activeFilterValue !== null) {
         const fullId = getNormalizedId(feature);
         const combinedData = getStreetCombinedData(fullId);
         const targetValue = combinedData[activeTheme.attribute] || 'unclassified';
 
-        // If it doesn't match the active filter, skip it completely.
-        // It won't get processed, sorted, or parsed into Leaflet DOM structures.
+        // Discard unmatched vectors directly at the stream entry level
         if (targetValue !== activeFilterValue) {
           continue; 
         }
