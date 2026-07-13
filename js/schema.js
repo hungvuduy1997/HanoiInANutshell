@@ -33,7 +33,7 @@ export const PROPERTY_SCHEMA = {
     csvHeader: 'highway',
     label: 'Highway Type',
     default: 'unclassified',
-    targets: [] // Intercepted programmatically by the map engine renderer
+    targets: [] // Handled directly by the rendering pipeline weights
   },
   street_name: {
     csvSource: 'geninfo',
@@ -50,7 +50,23 @@ export const PROPERTY_SCHEMA = {
     targets: ['panel_subheader']
   },
 
-  // --- PROPERTIES OUT OF hian_db.csv ---
+  // --- THEME ATTRIBUTES OUT OF hian_db.csv (FIXES THE COLORS) ---
+  category: {
+    csvSource: 'database',
+    csvHeader: 'category', // Matches themes.categorization.attribute exactly
+    label: 'Classification',
+    default: 'Unknown',
+    targets: [] // Picked up by map engine styles & legend systems
+  },
+  period: {
+    csvSource: 'database',
+    csvHeader: 'period', // Matches themes.historical_epoch.attribute exactly
+    label: 'Historical Period',
+    default: 'Unknown',
+    targets: []
+  },
+
+  // --- OTHER DESCRIPTIONAL FIELDS OUT OF hian_db.csv ---
   subcategory: {
     csvSource: 'database',
     csvHeader: 'subcategory',
@@ -69,21 +85,9 @@ export const PROPERTY_SCHEMA = {
   // --- PROPERTIES OUT OF hian_trivia.csv ---
   trivia: {
     csvSource: 'trivia',
-    csvHeader: 'trivia', // Matches the text column header in hian_trivia.csv
+    csvHeader: 'trivia',
     label: 'Trivia & Anecdotes',
     default: '',
     targets: ['panel_row']
   }
-
-  /* FUTURE EXPANSION EXAMPLE:
-  If you add a new column 'established_year' to hian_db.csv, you only write this:
-  
-  established_year: {
-    csvSource: 'database',
-    csvHeader: 'established_year',
-    label: 'Year Established',
-    default: 'Unknown',
-    targets: ['panel_row']
-  }
-  */
 };
