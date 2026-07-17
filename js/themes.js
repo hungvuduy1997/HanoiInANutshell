@@ -18,25 +18,6 @@ export const themes = {
       { value: "Unknown", label: "Không rõ" }
     ]
   },
-  historical_epoch: {
-    name: "Thời kỳ Lịch sử",
-    attribute: "period",
-    isDynamicGradient: true,
-    ranks: [
-      { value: "Hồng Bàng - sơ sử", label: "Hồng Bàng - sơ sử (trước 258 TCN)" },
-      { value: "Bắc Thuộc & khởi nghĩa", label: "Bắc Thuộc & khởi nghĩa (258 TCN - 938 SCN)" },
-      { value: "Độc lập tự chủ sớm", label: "Độc lập tự chủ sớm (938 - 1009)" },
-      { value: "Nhà Lý", label: "Nhà Lý (1009 - 1226)" },
-      { value: "Nhà Trần", label: "Nhà Trần (1226 - 1400)" },
-      { value: "Nhà Hồ & Minh thuộc", label: "Nhà Hồ & Minh thuộc (1400 - 1428)" },
-      { value: "Nhà Hậu Lê", label: "Nhà Hậu Lê (1428 - 1527)" },
-      { value: "Phân tranh", label: "Phân tranh (1527 - 1788)" },
-      { value: "Nhà Tây Sơn", label: "Nhà Tây Sơn (1788 - 1802)" },
-      { value: "Nhà Nguyễn & Pháp thuộc", label: "Nhà Nguyễn & Pháp thuộc (1802 - 1945)" },
-      { value: "Cách mạng & kháng chiến", label: "Cách mạng & kháng chiến (1945 - 1975)" },
-      { value: "Sau Giải phóng & hiện đại", label: "Sau Giải phóng & hiện đại (1975 - nay)" }
-    ]
-  },
   subcategory: {
     name: "Phân loại phụ",
     attribute: "subcategory",
@@ -54,8 +35,27 @@ export const themes = {
       { value: "Thần thoại", label: "Thần thoại" },
       { value: "Tổ nghề", label: "Tổ nghề" },
       { value: "Tôn giáo", label: "Tôn giáo" },
-      { value: "Văn hoá - nghê thuật", label: "Văn hoá - nghê thuật" },
+      { value: "Văn hoá - nghệ thuật", label: "Văn hoá - nghệ thuật" },
       { value: "Y học", label: "Y học" }
+    ]
+  },
+  historical_epoch: {
+    name: "Thời kỳ Lịch sử",
+    attribute: "period",
+    isDynamicGradient: true,
+    ranks: [
+      { value: "Hồng Bàng - sơ sử", label: "Hồng Bàng - sơ sử (trước 258 TCN)" },
+      { value: "Bắc Thuộc & khởi nghĩa", label: "Bắc Thuộc & khởi nghĩa (258 TCN - 938 SCN)" },
+      { value: "Độc lập tự chủ sớm", label: "Độc lập tự chủ sớm (938 - 1009)" },
+      { value: "Nhà Lý", label: "Nhà Lý (1009 - 1226)" },
+      { value: "Nhà Trần", label: "Nhà Trần (1226 - 1400)" },
+      { value: "Nhà Hồ & Minh thuộc", label: "Nhà Hồ & Minh thuộc (1400 - 1428)" },
+      { value: "Nhà Hậu Lê", label: "Nhà Hậu Lê (1428 - 1527)" },
+      { value: "Phân tranh", label: "Phân tranh (1527 - 1788)" },
+      { value: "Nhà Tây Sơn", label: "Nhà Tây Sơn (1788 - 1802)" },
+      { value: "Nhà Nguyễn & Pháp thuộc", label: "Nhà Nguyễn & Pháp thuộc (1802 - 1945)" },
+      { value: "Cách mạng & kháng chiến", label: "Cách mạng & kháng chiến (1945 - 1975)" },
+      { value: "Sau Giải phóng & hiện đại", label: "Sau Giải phóng & hiện đại (1975 - nay)" }
     ]
   }
 };

@@ -1,9 +1,18 @@
 /**
  * Centralized Application Data & Relational Schema
- * * 1. DATA_SOURCES: Defines the relational layout, primary keys, and linking paths
- * between the decentralized CSV files.
- * 2. PROPERTY_SCHEMA: Maps every user-facing property to its raw CSV source,
- * its exact column header name, fallback defaults, and UI layout rendering targets.
+ * 
+ * 1. DATA_SOURCES: Defines the relational layout, primary keys, and linking paths
+ *    between the decentralized CSV files.
+ * 
+ * 2. PROPERTY_SCHEMA (UI LAYOUT & ROUTING MAP):
+ *    Maps every user-facing attribute to its raw CSV source, column header, and fallback defaults.
+ *    The 'targets' array dynamically routes where each attribute is rendered in the UI:
+ *      - 'popup_header'    --> Renders as the bold main title inside the map's small Pop-up Box.
+ *      - 'popup_row'       --> Appends as a secondary parenthetical detail inside the small Pop-up Box.
+ *      - 'panel_header'    --> Renders as the large H3 title in the sidebar Info Panel.
+ *      - 'panel_subheader' --> Renders as italicized secondary text under the title in the sidebar Info Panel.
+ *      - 'panel_row'       --> Renders as a structured detail row inside the body of the sidebar Info Panel.
+ *      - Empty Array ([])  --> Handled dynamically by styling/rendering engines (e.g., road widths or map colors).
  */
 
 export const DATA_SOURCES = {
@@ -31,14 +40,14 @@ export const PROPERTY_SCHEMA = {
   highway: {
     csvSource: 'geninfo',
     csvHeader: 'highway',
-    label: 'Highway Type',
+    label: 'Loại đường',
     default: 'unclassified',
     targets: [] // Handled directly by the rendering pipeline weights
   },
   street_name: {
     csvSource: 'geninfo',
     csvHeader: 'name',
-    label: 'Tên đường phố',
+    label: 'Tên đường/ phố',
     default: 'Đường phố chưa biết tên',
     targets: ['popup_header', 'panel_header']
   },
@@ -58,21 +67,68 @@ export const PROPERTY_SCHEMA = {
     default: 'Không rõ',
     targets: [] // Picked up by map engine styles & legend systems
   },
+  subcategory: {
+    csvSource: 'database',
+    csvHeader: 'subcategory',
+    label: 'Phân loại con',
+    default: '',
+    targets: ['popup_row', 'panel_row']
+  },
   period: {
     csvSource: 'database',
     csvHeader: 'period', // Matches themes.historical_epoch.attribute exactly
     label: 'Thời kỳ',
     default: '',
-    targets: []
+    targets: ['panel_row']
   },
-
-  // --- OTHER DESCRIPTIONAL FIELDS OUT OF hian_db.csv ---
-  subcategory: {
+  profession: {
     csvSource: 'database',
-    csvHeader: 'subcategory',
-    label: 'Phân loại phụ',
+    csvHeader: 'profession',
+    label: 'Nghề nghiệp chính',
     default: '',
-    targets: ['popup_row']
+    targets: ['panel_row']
+  },
+    birthanddeath: {
+    csvSource: 'database',
+    csvHeader: 'birthanddeath',
+    label: 'Ngày sinh & mất',
+    default: '',
+    targets: ['panel_row']
+  },
+  title: {
+    csvSource: 'database',
+    csvHeader: 'title',
+    label: 'Chức vụ / Danh hiệu',
+    default: '',
+    targets: ['panel_row']
+  },
+  equititle: {
+    csvSource: 'database',
+    csvHeader: 'equititle',
+    label: 'Danh hiệu tương đương',
+    default: '',
+    targets: ['panel_row']
+  },
+  family: {
+    csvSource: 'database',
+    csvHeader: 'family',
+    label: 'Mối quan hệ gia đình',
+    default: '',
+    targets: ['panel_row']
+  },
+  ke: {
+    csvSource: 'database',
+    csvHeader: 'ke',
+    label: 'Kẻ',
+    default: '',
+    targets: ['panel_row']
+  },
+  othernames: {
+    csvSource: 'database',
+    csvHeader: 'othernames',
+    label: 'Tên gọi khác',
+    default: '',
+    targets: ['panel_row']
   },
   description: {
     csvSource: 'database',
@@ -86,7 +142,7 @@ export const PROPERTY_SCHEMA = {
   trivia: {
     csvSource: 'trivia',
     csvHeader: 'trivia',
-    label: 'Thông tin khác',
+    label: 'Thông tin thú vị',
     default: '',
     targets: ['panel_row']
   }
