@@ -27,6 +27,9 @@ export function attachInteractions(layer, feature) {
   let popupRowsHtml = '';
 
   Object.keys(PROPERTY_SCHEMA).forEach(key => {
+    // SKIP if this key is the active theme's primary attribute (it gets its own highlighted themeRowHtml below!)
+    if (activeTheme && key === activeTheme.attribute) return;
+
     const config = PROPERTY_SCHEMA[key];
     const value = combinedData[key] || config.default;
     if (!value || value === 'NULL' || value === '') return;
@@ -39,7 +42,7 @@ export function attachInteractions(layer, feature) {
     }
   });
 
-  const themeRowHtml = targetValue ? `<br><span style="font-size: 11px; color: #555; font-style: italic;">${targetValue}</span>` : '';
+  const themeRowHtml = targetValue ? `<br><span style="font-size: 11px; color: #555; font-style: italic;">${activeTheme.name}: ${targetValue}</span>` : '';
 
   const popupHTML = `
     <div style="font-family: sans-serif; line-height: 1.4;">
@@ -82,6 +85,9 @@ export function attachInteractions(layer, feature) {
 
     // Process the detailed body rows exactly once in sequence order[cite: 2]
     renderSequence.forEach(key => {
+      // SKIP if this key is the active theme's primary attribute (we prepend it as a highlight below!)
+      if (activeTheme && key === activeTheme.attribute) return;
+
       const config = PROPERTY_SCHEMA[key];
       if (!config) return;
 
@@ -108,9 +114,13 @@ export function attachInteractions(layer, feature) {
       }
     });
 
-    // Inject active theme category row dynamically at the top of info parameters if not already rendered
-    if (targetValue && !panelRowsHtml.includes(targetValue)) {
-      panelRowsHtml = `<p class="info-row" style="margin: 6px 0; color: #222;"><strong>${activeTheme.name}:</strong> ${targetValue}</p>` + panelRowsHtml;
+    // Cleanly prepend the active theme's highlighted classification at the top of the body
+    if (targetValue) {
+      panelRowsHtml = `
+        <p class="info-row" style="margin: 6px 0; color: #222;">
+          <strong>${activeTheme.name}:</strong> ${targetValue}
+        </p>
+      ` + panelRowsHtml;
     }
 
     panel.innerHTML = `
