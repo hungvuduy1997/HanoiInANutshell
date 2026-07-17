@@ -72,7 +72,7 @@ export const PROPERTY_SCHEMA = {
     csvHeader: 'subcategory',
     label: 'Phân loại con',
     default: '',
-    targets: ['popup_row', 'panel_row']
+    targets: ['panel_row']
   },
   period: {
     csvSource: 'database',
