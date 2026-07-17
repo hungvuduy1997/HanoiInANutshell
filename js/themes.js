@@ -39,7 +39,7 @@ export const themes = {
   },
   subcategory: {
     name: "Phân loại phụ",
-    attribute: "sub_category",
+    attribute: "subcategory",
     isDynamicGradient: true,
     ranks: [
       { value: "Cách mạng", label: "Cách mạng" },
