@@ -42,7 +42,9 @@ export function attachInteractions(layer, feature) {
     }
   });
 
-  const themeRowHtml = targetValue ? `<br><span style="font-size: 11px; color: #555; font-style: italic;">${activeTheme.name}: ${targetValue}</span>` : '';
+  const themeRowHtml = targetValue 
+  ? `<br><span style="font-size: 11px; color: #555; font-style: italic;">${targetValue}</span>` 
+  : '';
 
   const popupHTML = `
     <div style="font-family: sans-serif; line-height: 1.4;">
