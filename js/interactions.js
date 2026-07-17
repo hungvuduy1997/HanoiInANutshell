@@ -2,12 +2,17 @@ import { getStreetCombinedData, getTheme } from './data.js';
 import { themes } from './themes.js';
 import { PROPERTY_SCHEMA } from './schema.js';
 
+/**
+ * Attaches interactive map behaviors to a specific geographic vector street layer.
+ * Configures responsive mouse popups and the structural detailed data panel.
+ */
 export function attachInteractions(layer, feature) {
   const props = feature.properties || {};
   const fullId = props.full_id;
 
   if (!fullId) return;
 
+  // Fetch consolidated attributes from the flat relational store
   const combinedData = getStreetCombinedData(fullId);
 
   // Retrieve the dynamic active theme classification context
@@ -34,7 +39,6 @@ export function attachInteractions(layer, feature) {
     }
   });
 
-  // Inject active theme classification dynamically as the primary popup detail row
   const themeRowHtml = targetValue ? `<br><span style="font-size: 11px; color: #555; font-style: italic;">${activeTheme.name}: ${targetValue}</span>` : '';
 
   const popupHTML = `
@@ -57,43 +61,14 @@ export function attachInteractions(layer, feature) {
     let panelSubheaderHtml = '';
     let panelRowsHtml = '';
 
-    // Inside js/interactions.js (Info Panel Generator)
+    // Define the render sequence from the relational schema keys
+    const renderSequence = Object.keys(PROPERTY_SCHEMA);
 
-// 1. Automatically grab every single key in the exact order defined in schema.js!
-const renderSequence = Object.keys(PROPERTY_SCHEMA);
-
-// 2. Loop through them and let the schema's 'targets' array decide if it belongs in the panel body
-renderSequence.forEach(key => {
-  const config = PROPERTY_SCHEMA[key];
-  if (!config) return;
-
-  const value = combinedData[key] || config.default;
-  if (!value || value === 'NULL' || value === '') return;
-
-  // If the schema config says this is destined for a panel row, render it!
-  if (config.targets.includes('panel_row')) {
-    if (key === 'trivia' || key === 'description') {
-      // Elegant block styling for longer text blocks
-      panelRowsHtml += `
-        <div class="panel-section block-section" style="margin: 12px 0;">
-          <span class="section-label" style="display: block; font-weight: bold; color: #444; margin-bottom: 4px;">${config.label}</span>
-          <p class="section-value" style="margin: 0; line-height: 1.5; color: #222;">${value}</p>
-        </div>
-      `;
-    } else {
-      // Clean inline styling for shorter metadata fields
-      panelRowsHtml += `
-        <p class="info-row" style="margin: 6px 0; color: #222;">
-          <strong>${config.label}:</strong> ${value}
-        </p>
-      `;
-    }
-  }
-});
-
-    // First process non-sequence targets (headers and subheaders)
-    Object.keys(PROPERTY_SCHEMA).forEach(key => {
+    // Parse structural headers and subheaders first
+    renderSequence.forEach(key => {
       const config = PROPERTY_SCHEMA[key];
+      if (!config) return;
+      
       const value = combinedData[key] || config.default;
       if (!value || value === 'NULL' || value === '') return;
 
@@ -105,7 +80,7 @@ renderSequence.forEach(key => {
       }
     });
 
-    // Process detailed rows in the exact sequence specified
+    // Process the detailed body rows exactly once in sequence order[cite: 2]
     renderSequence.forEach(key => {
       const config = PROPERTY_SCHEMA[key];
       if (!config) return;
@@ -115,7 +90,7 @@ renderSequence.forEach(key => {
 
       if (config.targets.includes('panel_row')) {
         if (key === 'trivia' || key === 'description') {
-          // Keep distinct class layouts for long prose paragraphs
+          // Elegant block layout for long paragraph content blocks
           panelRowsHtml += `
             <div class="panel-section block-section" style="margin: 12px 0;">
               <span class="section-label" style="display: block; font-weight: bold; color: #444; margin-bottom: 4px;">${config.label}</span>
@@ -123,6 +98,7 @@ renderSequence.forEach(key => {
             </div>
           `;
         } else {
+          // Clean, compact inline layout for short parameters
           panelRowsHtml += `
             <p class="info-row" style="margin: 6px 0; color: #222;">
               <strong>${config.label}:</strong> ${value}
@@ -148,6 +124,7 @@ renderSequence.forEach(key => {
     `;
     panel.style.display = 'block';
 
+    // Hook up immediate close button interactions
     const closeBtn = panel.querySelector('.close-panel-btn');
     if (closeBtn) {
       closeBtn.addEventListener('click', () => {

@@ -40,7 +40,7 @@ export function updateLegend(categories, theme, currentMode, getColorForValueFn)
   };
 
   // Branch 1: Dynamic Gradient Ranks (Array-based)
-  if (theme.isDynamicGradient && Array.isArray(categories)) {
+  if (theme.ranks && Array.isArray(categories)) {
     categories.forEach(item => {
       const valueStr = item.value;
       const labelStr = item.label || valueStr;

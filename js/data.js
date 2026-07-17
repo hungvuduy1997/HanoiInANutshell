@@ -99,10 +99,11 @@ function getSpectralGradientColor(percent, mode) {
 
 // Global color resolution engine
 export function getColorForValue(theme, value, mode) {
-  const fallbackColor = mode === 'dark' ? 'hsl(0, 0%, 60%)' : 'hsl(0, 0%, 70%)';
+  const fallbackColor = mode === 'dark' ? 'hsl(0, 0%, 20%)' : 'hsl(0, 0%, 70%)';
   if (!theme) return fallbackColor;
 
-  if (theme.isDynamicGradient) {
+  // If the theme has defined ranks (which all of yours do), calculate the gradient automatically!
+  if (theme.ranks && theme.ranks.length > 0) {
     const rankIndex = theme.ranks.findIndex(r => r.value === value);
     if (rankIndex !== -1 && theme.ranks.length > 1) {
       const percent = rankIndex / (theme.ranks.length - 1);
@@ -115,6 +116,7 @@ export function getColorForValue(theme, value, mode) {
     }
     return fallbackColor;
   } else {
+    // Fallback for legacy static category mappings if any exist
     const def = theme.categories ? theme.categories[value] : null;
     return def ? (mode === 'dark' ? def.darkColor : def.lightColor) : fallbackColor;
   }
@@ -269,7 +271,8 @@ export function applyTheme(themeKey, initialLoad = false) {
   rebuildLayers(theme);
   
   if (typeof updateLegend === 'function') {
-    const legendData = theme.isDynamicGradient ? theme.ranks : theme.categories;
+    // Dynamically fall back to categories if ranks aren't defined
+    const legendData = theme.ranks || theme.categories;
     updateLegend(legendData, theme, currentMode, getColorForValue);
   }
 }
@@ -300,11 +303,20 @@ async function rebuildLayers(theme) {
     const activeTheme = themes[currentThemeKey];
 
     for await (const feature of iterator) {
-      if (activeFilterValue !== null) {
-        const fullId = getNormalizedId(feature);
-        const combinedData = getStreetCombinedData(fullId);
-        const targetValue = combinedData[activeTheme.attribute] || 'Unknown';
+      const fullId = getNormalizedId(feature);
+      const combinedData = getStreetCombinedData(fullId);
 
+      // --- 1. NEW PRE-FILTER OPTIMIZATION ---
+      // If the theme has a filter method, check if this feature should be ignored immediately
+      if (activeTheme && typeof activeTheme.filter === 'function') {
+        if (!activeTheme.filter(combinedData)) {
+          continue; // Skip rendering, indexing, and mouse-interaction bindings entirely!
+        }
+      }
+
+      // --- 2. LEGEND CLICK HIGHLIGHT FILTER ---
+      if (activeFilterValue !== null) {
+        const targetValue = combinedData[activeTheme.attribute] || 'Unknown';
         if (targetValue !== activeFilterValue) {
           continue; 
         }

@@ -6,7 +6,7 @@ export const themes = {
   categorization: {
     name: "Phân loại",
     attribute: "category",
-    isDynamicGradient: true,    ranks: [
+    ranks: [
       { value: "Triều đại", label: "Triều đại" },
       { value: "Sự kiện lịch sử", label: "Sự kiện lịch sử" },
       { value: "Địa danh", label: "Địa danh" },
@@ -21,7 +21,10 @@ export const themes = {
   subcategory: {
     name: "Phân loại phụ",
     attribute: "subcategory",
-    isDynamicGradient: true,
+    filter: (combinedData) => {
+      const val = combinedData['subcategory'];
+      return val && val !== 'NULL' && val.trim() !== '';
+    },
     ranks: [
       { value: "Cách mạng", label: "Cách mạng" },
       { value: "Doanh nhân", label: "Doanh nhân" },
@@ -42,7 +45,10 @@ export const themes = {
   historical_epoch: {
     name: "Thời kỳ Lịch sử",
     attribute: "period",
-    isDynamicGradient: true,
+    filter: (combinedData) => {
+      const val = combinedData['period'];
+      return val && val !== 'NULL' && val.trim() !== '';
+    },
     ranks: [
       { value: "Hồng Bàng - sơ sử", label: "Hồng Bàng - sơ sử (trước 258 TCN)" },
       { value: "Bắc Thuộc & khởi nghĩa", label: "Bắc Thuộc & khởi nghĩa (258 TCN - 938 SCN)" },
@@ -56,6 +62,38 @@ export const themes = {
       { value: "Nhà Nguyễn & Pháp thuộc", label: "Nhà Nguyễn & Pháp thuộc (1802 - 1945)" },
       { value: "Cách mạng & kháng chiến", label: "Cách mạng & kháng chiến (1945 - 1975)" },
       { value: "Sau Giải phóng & hiện đại", label: "Sau Giải phóng & hiện đại (1975 - nay)" }
+    ]
+  },
+  Ke_Of_HN: {
+    name: "Các Kẻ ở Hà Nội",
+    attribute: "ke",
+    filter: (combinedData) => {
+      const val = combinedData['ke'];
+      return val && val !== 'NULL' && val.trim() !== '';
+    },
+    ranks: [
+      { value: "Kẻ Bưởi", label: "Kẻ Bưởi" },
+      { value: "Kẻ Cót", label: "Kẻ Cót" },
+      { value: "Kẻ Đăm", label: "Kẻ Đăm" },
+      { value: "Kẻ Đáy", label: "Kẻ Đáy" },
+      { value: "Kẻ Diễn", label: "Kẻ Diễn" },
+      { value: "Kẻ Đỏ", label: "Kẻ Đỏ" },
+      { value: "Kẻ Dựa", label: "Kẻ Dựa" },
+      { value: "Kẻ Giàn", label: "Kẻ Giàn" },
+      { value: "Kẻ Giàn/ Kẻ Dàn", label: "Kẻ Giàn/ Kẻ Dàn" },
+      { value: "Kẻ Láng", label: "Kẻ Láng" },
+      { value: "Kẻ Lủ", label: "Kẻ Lủ" },
+      { value: "Kẻ Mẩy", label: "Kẻ Mẩy" },
+      { value: "Kẻ Mỗ", label: "Kẻ Mỗ" },
+      { value: "Kẻ Mơ", label: "Kẻ Mơ" },
+      { value: "Kẻ Mọc", label: "Kẻ Mọc" },
+      { value: "Kẻ Mui", label: "Kẻ Mui" },
+      { value: "Kẻ Noi", label: "Kẻ Noi" },
+      { value: "Kẻ Sét", label: "Kẻ Sét" },
+      { value: "Kẻ Tạnh", label: "Kẻ Tạnh" },
+      { value: "Kẻ Vẽ", label: "Kẻ Vẽ" },
+      { value: "Kẻ Vịa/Vỉa", label: "Kẻ Vịa/Vỉa" },
+      { value: "Kẻ Vòng", label: "Kẻ Vòng" }
     ]
   }
 };
