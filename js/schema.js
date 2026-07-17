@@ -38,14 +38,14 @@ export const PROPERTY_SCHEMA = {
   street_name: {
     csvSource: 'geninfo',
     csvHeader: 'name',
-    label: 'Street Name',
-    default: 'Unnamed Street',
+    label: 'Tên đường phố',
+    default: 'Đường phố chưa biết tên',
     targets: ['popup_header', 'panel_header']
   },
   old_names: {
     csvSource: 'geninfo',
     csvHeader: 'old_name:processed',
-    label: 'Old Names',
+    label: 'Tên cũ',
     default: '',
     targets: ['panel_subheader']
   },
@@ -54,15 +54,15 @@ export const PROPERTY_SCHEMA = {
   category: {
     csvSource: 'database',
     csvHeader: 'category', // Matches themes.categorization.attribute exactly
-    label: 'Classification',
-    default: 'Unknown',
+    label: 'Phân loại chính',
+    default: 'Không rõ',
     targets: [] // Picked up by map engine styles & legend systems
   },
   period: {
     csvSource: 'database',
     csvHeader: 'period', // Matches themes.historical_epoch.attribute exactly
-    label: 'Historical Period',
-    default: 'Unknown',
+    label: 'Thời kỳ',
+    default: '',
     targets: []
   },
 
@@ -70,14 +70,14 @@ export const PROPERTY_SCHEMA = {
   subcategory: {
     csvSource: 'database',
     csvHeader: 'subcategory',
-    label: 'Sub-Category',
+    label: 'Phân loại phụ',
     default: '',
     targets: ['popup_row']
   },
   description: {
     csvSource: 'database',
     csvHeader: 'description',
-    label: 'Description',
+    label: 'Mô tả',
     default: '',
     targets: ['panel_row']
   },
@@ -86,7 +86,7 @@ export const PROPERTY_SCHEMA = {
   trivia: {
     csvSource: 'trivia',
     csvHeader: 'trivia',
-    label: 'Trivia & Anecdotes',
+    label: 'Thông tin khác',
     default: '',
     targets: ['panel_row']
   }
