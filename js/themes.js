@@ -6,12 +6,7 @@ export const themes = {
   categorization: {
     name: "Phân loại",
     attribute: "category",
-    isDynamicGradient: true,
-    lightStartOklch: { l: 0.56, c: 0.22, h: 27 },
-    lightEndOklch:   { l: 0.58, c: 0.12, h: 241 },
-    darkStartOklch:  { l: 0.56, c: 0.22, h: 27 },
-    darkEndOklch:    { l: 0.58, c: 0.12, h: 241 },
-    ranks: [
+    isDynamicGradient: true,    ranks: [
       { value: "Triều đại", label: "Triều đại" },
       { value: "Sự kiện lịch sử", label: "Sự kiện lịch sử" },
       { value: "Địa danh", label: "Địa danh" },
@@ -27,10 +22,6 @@ export const themes = {
     name: "Thời kỳ Lịch sử",
     attribute: "period",
     isDynamicGradient: true,
-    lightStartOklch: { l: 0.56, c: 0.22, h: 27 },
-    lightEndOklch:   { l: 0.58, c: 0.12, h: 241 },
-    darkStartOklch:  { l: 0.56, c: 0.22, h: 27 },
-    darkEndOklch:    { l: 0.58, c: 0.12, h: 241 },
     ranks: [
       { value: "Hồng Bàng - sơ sử", label: "Hồng Bàng - sơ sử (trước 258 TCN)" },
       { value: "Bắc Thuộc & khởi nghĩa", label: "Bắc Thuộc & khởi nghĩa (258 TCN - 938 SCN)" },
@@ -44,6 +35,27 @@ export const themes = {
       { value: "Nhà Nguyễn & Pháp thuộc", label: "Nhà Nguyễn & Pháp thuộc (1802 - 1945)" },
       { value: "Cách mạng & kháng chiến", label: "Cách mạng & kháng chiến (1945 - 1975)" },
       { value: "Sau Giải phóng & hiện đại", label: "Sau Giải phóng & hiện đại (1975 - nay)" }
+    ]
+  },
+  subcategory: {
+    name: "Phân loại phụ",
+    attribute: "sub_category",
+    isDynamicGradient: true,
+    ranks: [
+      { value: "Cách mạng", label: "Cách mạng" },
+      { value: "Doanh nhân", label: "Doanh nhân" },
+      { value: "Giáo dục", label: "Giáo dục" },
+      { value: "Kinh tế - xã hội", label: "Kinh tế - xã hội" },
+      { value: "Kỹ thuật", label: "Kỹ thuật" },
+      { value: "Lãnh đạo", label: "Lãnh đạo" },
+      { value: "Phong kiến", label: "Phong kiến" },
+      { value: "Quan chức", label: "Quan chức" },
+      { value: "Quân sự", label: "Quân sự" },
+      { value: "Thần thoại", label: "Thần thoại" },
+      { value: "Tổ nghề", label: "Tổ nghề" },
+      { value: "Tôn giáo", label: "Tôn giáo" },
+      { value: "Văn hoá - nghê thuật", label: "Văn hoá - nghê thuật" },
+      { value: "Y học", label: "Y học" }
     ]
   }
 };
