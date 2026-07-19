@@ -58,6 +58,7 @@ function getSpectralGradientColor(percent, mode) {
       { offset: 0.75, hex: '#abdda4' },
       { offset: 1.0,  hex: '#2b83ba' }
     ],
+    
     dark: [
       { offset: 0.0,  hex: '#ff4d4d' },
       { offset: 0.2,  hex: '#ff9f43' },
@@ -66,6 +67,16 @@ function getSpectralGradientColor(percent, mode) {
       { offset: 0.8,  hex: '#1e90ff' },
       { offset: 1.0,  hex: '#70a1ff' }
     ]
+   /**dark: [
+      { offset: 0,         hex: '#97ADC5'},
+      { offset: 0.143,     hex: '#B7C8D8'},
+      { offset: 0.286,     hex: '#FFF0D6'},
+      { offset: 0.429,     hex: '#FECDBE'},
+      { offset: 0.571,     hex: '#F59B90'},
+      { offset: 0.714,     hex: '#FFBA85'},
+      { offset: 0.857,     hex: '#C7C294'},
+      { offset: 1,         hex: '#A9AA74'}
+   ]*/
   };
 
   const p = Math.max(0, Math.min(1, percent));
