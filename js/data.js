@@ -307,7 +307,7 @@ async function rebuildLayers(theme) {
     };
 
     console.log("Streaming view-bounded binary elements via FlatGeobuf index...");
-    const iterator = flatgeobuf.deserialize('data/HIAN_FullDatabase.fgb', bbox);
+    const iterator = flatgeobuf.deserialize('data/HIAN_Geometry-260719.fgb', bbox);
     const visibleFeatures = [];
     
     const activeTheme = themes[currentThemeKey];
