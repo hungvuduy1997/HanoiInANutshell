@@ -2,6 +2,7 @@
  * Visual Layout Theme Definitions for the Road Database
  * Maps categorical attributes to specific HEX values for both Light and Dark conditions.
  * Add "hidden:true" for hidden themes.
+ * Add ranks: [{value: "<insert value here>", label: "<insert value here>"}] to explicitly create an order for theme
  */
 export const themes = {
   categorization: {
@@ -9,6 +10,7 @@ export const themes = {
     attribute: "category",
     ranks: [
       { value: "Triều đại", label: "Triều đại" },
+      { value: "Quốc hiệu", label: "Quốc hiệu"},
       { value: "Sự kiện lịch sử", label: "Sự kiện lịch sử" },
       { value: "Địa danh", label: "Địa danh" },
       { value: "Làng nghề", label: "Làng nghề" },
@@ -16,7 +18,7 @@ export const themes = {
       { value: "Nhân vật lịch sử", label: "Nhân vật lịch sử" },
       { value: "Tư tưởng xã hội", label: "Tư tưởng xã hội" },
       { value: "Khác", label: "Khác" },
-      { value: "Unknown", label: "Không rõ" }
+      { value: "Không rõ", label: "Không rõ" }
     ]
   },
   subcategory: {
@@ -25,23 +27,7 @@ export const themes = {
     filter: (combinedData) => {
       const val = combinedData['subcategory'];
       return val && val !== 'NULL' && val.trim() !== '';
-    },
-    ranks: [
-      { value: "Cách mạng", label: "Cách mạng" },
-      { value: "Doanh nhân", label: "Doanh nhân" },
-      { value: "Giáo dục", label: "Giáo dục" },
-      { value: "Kinh tế - xã hội", label: "Kinh tế - xã hội" },
-      { value: "Kỹ thuật", label: "Kỹ thuật" },
-      { value: "Lãnh đạo", label: "Lãnh đạo" },
-      { value: "Phong kiến", label: "Phong kiến" },
-      { value: "Quan chức", label: "Quan chức" },
-      { value: "Quân sự", label: "Quân sự" },
-      { value: "Thần thoại", label: "Thần thoại" },
-      { value: "Tổ nghề", label: "Tổ nghề" },
-      { value: "Tôn giáo", label: "Tôn giáo" },
-      { value: "Văn hoá - nghệ thuật", label: "Văn hoá - nghệ thuật" },
-      { value: "Y học", label: "Y học" }
-    ]
+    }
   },
   historical_epoch: {
     name: "Thời kỳ Lịch sử",
@@ -71,30 +57,6 @@ export const themes = {
     filter: (combinedData) => {
       const val = combinedData['ke'];
       return val && val !== 'NULL' && val.trim() !== '';
-    },
-    ranks: [
-      { value: "Kẻ Bưởi", label: "Kẻ Bưởi" },
-      { value: "Kẻ Cót", label: "Kẻ Cót" },
-      { value: "Kẻ Đăm", label: "Kẻ Đăm" },
-      { value: "Kẻ Đáy", label: "Kẻ Đáy" },
-      { value: "Kẻ Diễn", label: "Kẻ Diễn" },
-      { value: "Kẻ Đỏ", label: "Kẻ Đỏ" },
-      { value: "Kẻ Dựa", label: "Kẻ Dựa" },
-      { value: "Kẻ Giàn", label: "Kẻ Giàn" },
-      { value: "Kẻ Giàn/ Kẻ Dàn", label: "Kẻ Giàn/ Kẻ Dàn" },
-      { value: "Kẻ Láng", label: "Kẻ Láng" },
-      { value: "Kẻ Lủ", label: "Kẻ Lủ" },
-      { value: "Kẻ Mẩy", label: "Kẻ Mẩy" },
-      { value: "Kẻ Mỗ", label: "Kẻ Mỗ" },
-      { value: "Kẻ Mơ", label: "Kẻ Mơ" },
-      { value: "Kẻ Mọc", label: "Kẻ Mọc" },
-      { value: "Kẻ Mui", label: "Kẻ Mui" },
-      { value: "Kẻ Noi", label: "Kẻ Noi" },
-      { value: "Kẻ Sét", label: "Kẻ Sét" },
-      { value: "Kẻ Tạnh", label: "Kẻ Tạnh" },
-      { value: "Kẻ Vẽ", label: "Kẻ Vẽ" },
-      { value: "Kẻ Vịa/Vỉa", label: "Kẻ Vịa/Vỉa" },
-      { value: "Kẻ Vòng", label: "Kẻ Vòng" }
-    ]
+    }
   }
 };

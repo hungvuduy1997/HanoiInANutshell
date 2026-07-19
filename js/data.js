@@ -25,10 +25,11 @@ let activeFilterValue = null; // Currently selected filter value for highlightin
 
 // Explicit rendering stack priorities: low numbers at bottom, high numbers layered on top
 const highwayRenderWeight = {
-  'path': 1, 'footway': 1, 'pedestrian': 2, 'service': 3, 'living_street': 4,
-  'unclassified': 4, 'residential': 5, 'tertiary_link': 6, 'tertiary': 7,
-  'secondary_link': 8, 'secondary': 9, 'primary_link': 10, 'primary': 11,
-  'trunk_link': 12, 'trunk': 13, 'motorway_link': 14, 'motorway': 15
+  'unclassified': 1, 'elevator': 2, 'ladder': 3, 'corridor': 4, 'steps': 5,
+  'path': 6, 'footway': 7, 'bridleway': 8, 'pedestrian': 9, 'track': 10,
+  'busway': 11, 'living_street': 12, 'service': 13, 'raceway': 14, 'residential': 15,
+  'tertiary_link': 16, 'tertiary': 17, 'secondary_link': 18, 'secondary': 19, 'primary_link': 20,
+  'primary': 21, 'trunk_link': 22, 'trunk': 23, 'motorway_link': 24, 'motorway': 25
 };
 
 function parseCSV(url) {
@@ -132,8 +133,8 @@ const getHighwayWidthInMeters = (highway) => {
     case 'secondary': case 'secondary_link': return 8.0;
     case 'tertiary': case 'tertiary_link': return 6.0;
     case 'residential': case 'unclassified': case 'living_street': case 'construction': return 4.5;
-    case 'service': case 'pedestrian': case 'footway': case 'path': return 2.5;
-    default: return 4.0;
+    case 'service': case 'pedestrian': case 'footway': case 'path': return 1;
+    default: return 1;
   }
 };
 
@@ -171,7 +172,7 @@ const styleFunction = feature => {
   if (['pedestrian', 'footway', 'path'].includes(hw)) {
     dashPattern = `${dynamicPixelWeight * 2} ${dynamicPixelWeight * 2.5}`;
   }
-  if (hw === 'construction') {
+  if (hw === 'construction' || hw === 'proposed') {
     dashPattern = `${dynamicPixelWeight * 1} ${dynamicPixelWeight * 2}`;
   }
 
@@ -270,20 +271,60 @@ export function applyTheme(themeKey, initialLoad = false) {
   const theme = themes[themeKey];
   if (!theme) return;
   currentThemeKey = themeKey;
+  
+  // Rebuild the geographic vectors layer stack safely
   rebuildLayers(theme);
   
   if (typeof updateLegend === 'function') {
-    const legendData = theme.ranks || theme.categories;
+    let legendData = null;
+
+    // RULE 1: If hard-coded ranks exist, respect your custom defined display layout sequence
+    if (theme.ranks && theme.ranks.length > 0) {
+      legendData = theme.ranks;
+    } 
+    // RULE 2: If legacy manual category map objects exist, extract them directly
+    else if (theme.categories && Object.keys(theme.categories).length > 0) {
+      legendData = theme.categories;
+    } 
+    // RULE 3: FALLBACK DYNAMIC ENGINE - Scrape the cache, build unique entries, and sort alphabetically
+    else {
+      console.log(`Legend Engine: Attribute drop detected for "${themeKey}". Compiling dynamic parameters...`);
+      const data = window._csvStorageTables;
+      const uniqueValues = new Set();
+
+      if (data && data.geninfo) {
+        Object.keys(data.geninfo).forEach(fullId => {
+          // Resolve relational table values dynamically across CSV targets via schema
+          const combinedData = getStreetCombinedData(fullId);
+          const rawValue = combinedData[theme.attribute];
+
+          if (rawValue && rawValue !== 'NULL' && rawValue.toString().trim() !== '') {
+            uniqueValues.add(rawValue.toString().trim());
+          }
+        });
+      }
+
+      // Transform our unique values set into a clean alphabetical array layout map
+      legendData = Array.from(uniqueValues)
+        .sort((a, b) => a.localeCompare(b, 'vi', { sensitivity: 'base' })) // Natural Vietnamese text sorting alphabet
+        .map(val => ({
+          value: val,
+          label: val
+        }));
+
+      // Cache the dynamically compiled list directly onto the theme structure 
+      // so the global vector style color gradients (getColorForValue) function perfectly!
+      theme.ranks = legendData;
+    }
+
+    // Pass the organized dataset sequence off to the drawer UI renderer
     updateLegend(legendData, theme, currentMode, getColorForValue);
   }
 
-  // --- NEW URL PARAMETER TRACKER CODE ---
   if (map) {
     const zoom = map.getZoom();
     const center = map.getCenter();
-    const lat = center.lat.toFixed(5);
-    const lng = center.lng.toFixed(5);
-    window.history.replaceState(null, null, `#${themeKey}/${zoom}/${lat}/${lng}`);
+    window.history.replaceState(null, null, `#${themeKey}/${zoom}/${center.lat.toFixed(5)}/${center.lng.toFixed(5)}`);
   }
 }
 
