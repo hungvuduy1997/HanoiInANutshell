@@ -19,6 +19,8 @@ const csvStorageTables = {
   trivia: {}
 };
 
+window._csvStorageTables = csvStorageTables;
+
 let activeFilterValue = null; // Currently selected filter value for highlighting
 
 // Explicit rendering stack priorities: low numbers at bottom, high numbers layered on top
@@ -271,9 +273,17 @@ export function applyTheme(themeKey, initialLoad = false) {
   rebuildLayers(theme);
   
   if (typeof updateLegend === 'function') {
-    // Dynamically fall back to categories if ranks aren't defined
     const legendData = theme.ranks || theme.categories;
     updateLegend(legendData, theme, currentMode, getColorForValue);
+  }
+
+  // --- NEW URL PARAMETER TRACKER CODE ---
+  if (map) {
+    const zoom = map.getZoom();
+    const center = map.getCenter();
+    const lat = center.lat.toFixed(5);
+    const lng = center.lng.toFixed(5);
+    window.history.replaceState(null, null, `#${themeKey}/${zoom}/${lat}/${lng}`);
   }
 }
 

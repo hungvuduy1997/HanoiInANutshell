@@ -1,13 +1,35 @@
 import { setMode } from './data.js';
 
-// Inside js/map.js
+let defaultCenter = [21.028998, 105.852372];
+let defaultZoom = 17;
+let initialTheme = 'categorization'; 
+
+const hash = window.location.hash;
+if (hash && hash.startsWith('#')) {
+  const parts = hash.substring(1).split('/');
+  
+  if (parts.length === 4) {
+    const parsedTheme = parts[0];
+    const parsedZoom = parseFloat(parts[1]);
+    const parsedLat = parseFloat(parts[2]);
+    const parsedLng = parseFloat(parts[3]);
+    
+    if (!isNaN(parsedZoom) && !isNaN(parsedLat) && !isNaN(parsedLng)) {
+      initialTheme = parsedTheme;
+      defaultZoom = parsedZoom;
+      defaultCenter = [parsedLat, parsedLng];
+    }
+  }
+}
+
 export const map = L.map('map', {
-  center: [21.02899796430522, 105.85237212478512],
-  zoom: 17,
+  center: defaultCenter,
+  zoom: defaultZoom,
   zoomControl: true
 });
 
-// Replace your existing lightMap definition near the top with this:
+export { initialTheme };
+
 const lightMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
   attribution: '© OpenStreetMap, © CARTO',
   maxZoom: 20
@@ -18,17 +40,14 @@ const darkMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}
   maxZoom: 20
 });
 
-// OPTION 1: Pure Satellite Imagery without text labels
 const satelliteMap = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
   subdomains: ['0', '1', '2', '3'],
   attribution: '© Google Maps',
   maxZoom: 20
 });
 
-// Add a specific class hook to the satellite tiles once they are appended to the DOM 
 satelliteMap.on('tileload', (e) => {
   e.tile.classList.add('satellite-tile-target');
-  // Initialize current slider value immediately to newly loaded tiles
   const sliderValue = document.getElementById('satelliteSaturationSlider')?.value ?? 100;
   updateSatelliteSaturation(sliderValue);
 });
@@ -43,25 +62,19 @@ const modeToggle = document.getElementById('modeToggle');
 const sliderContainer = document.getElementById('satelliteFilterContainer');
 const saturationSlider = document.getElementById('satelliteSaturationSlider');
 
-/**
- * Sweeps through active satellite image tiles and updates their CSS grayscale metrics
- */
 function updateSatelliteSaturation(val) {
-  const grayscalePercent = 100 - val; // Sliding to left (0) means 100% grayscale desaturation
+  const grayscalePercent = 100 - val;
   const tiles = document.querySelectorAll('.satellite-tile-target');
   tiles.forEach(tile => {
     tile.style.filter = `grayscale(${grayscalePercent}%)`;
   });
 }
 
-// Bind input event to live-update tiles as you drag the slider track handle
 if (saturationSlider) {
   saturationSlider.addEventListener('input', (e) => {
     updateSatelliteSaturation(e.target.value);
   });
 }
-
-// Replace the entire viewToggle.addEventListener block inside js/map.js
 
 viewToggle.addEventListener('click', () => {
   if (currentMapType === 'leaflet') {
@@ -71,15 +84,12 @@ viewToggle.addEventListener('click', () => {
     if (currentLightMode === 'light') map.removeLayer(lightMap);
     else map.removeLayer(darkMap);
     
-    // 1. Add satellite layer to map
     satelliteMap.addTo(map);
     modeToggle.classList.add('hidden');
     if (sliderContainer) sliderContainer.classList.remove('hidden');
     
-    // 2. Force layer rebuild to apply light colors over the photography
     setMode(currentLightMode); 
     
-    // 3. Trigger the slow desaturation transition after tiles are placed
     setTimeout(() => {
       updateSatelliteSaturation(saturationSlider ? saturationSlider.value : 100);
     }, 50);
@@ -88,13 +98,10 @@ viewToggle.addEventListener('click', () => {
     currentMapType = 'leaflet';
     viewToggle.textContent = 'Vệ tinh';
     
-    // 1. First, smoothly slide saturation all the way back to full color (100%)
     updateSatelliteSaturation(100);
     if (sliderContainer) sliderContainer.classList.add('hidden');
     
-    // 2. Wait 800ms (matching your CSS transition length) for the color to completely bleed back in
     setTimeout(() => {
-      // 3. Cleanly swap layers only AFTER the transition has completed
       map.removeLayer(satelliteMap);
       
       if (currentLightMode === 'light') {
@@ -105,11 +112,10 @@ viewToggle.addEventListener('click', () => {
         setMode('dark');
       }
       modeToggle.classList.remove('hidden');
-    }, 800); // 800ms delay matches the 0.8s transition in style.css
+    }, 800);
   }
 });
 
-// Light Mode vs Dark Mode button interactions 
 modeToggle.addEventListener('click', () => {
   if (currentLightMode === 'light') {
     currentLightMode = 'dark';
@@ -127,5 +133,45 @@ modeToggle.addEventListener('click', () => {
       lightMap.addTo(map);
     }
     setMode('light');
+  }
+});
+
+import { getTheme, setTheme } from './data.js';
+
+map.on('moveend', () => {
+  const activeThemeKey = getTheme();
+  const zoom = map.getZoom();
+  const center = map.getCenter();
+  window.history.replaceState(null, null, `#${activeThemeKey}/${zoom}/${center.lat.toFixed(5)}/${center.lng.toFixed(5)}`);
+});
+
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash;
+  if (!hash || !hash.startsWith('#')) return;
+
+  const parts = hash.substring(1).split('/');
+  if (parts.length === 4) {
+    const targetTheme = parts[0];
+    const targetZoom = parseFloat(parts[1]);
+    const targetLat = parseFloat(parts[2]);
+    const targetLng = parseFloat(parts[3]);
+
+    if (!isNaN(targetZoom) && !isNaN(targetLat) && !isNaN(targetLng)) {
+      const currentCenter = map.getCenter();
+      const currentZoom = map.getZoom();
+      
+      const latDiff = Math.abs(currentCenter.lat - targetLat);
+      const lngDiff = Math.abs(currentCenter.lng - targetLng);
+      
+      if (currentZoom !== targetZoom || latDiff > 0.0001 || lngDiff > 0.0001) {
+        map.setView([targetLat, targetLng], targetZoom, { animate: true });
+      }
+
+      if (getTheme() !== targetTheme) {
+        setTheme(targetTheme);
+        const themeSelect = document.getElementById('themeSelect');
+        if (themeSelect) themeSelect.value = targetTheme;
+      }
+    }
   }
 });

@@ -1,6 +1,7 @@
 /**
  * Visual Layout Theme Definitions for the Road Database
  * Maps categorical attributes to specific HEX values for both Light and Dark conditions.
+ * Add "hidden:true" for hidden themes.
  */
 export const themes = {
   categorization: {
