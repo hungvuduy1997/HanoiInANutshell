@@ -135,11 +135,12 @@ const getHighwayWidthInMeters = (highway) => {
     case 'primary': case 'primary_link': return 12.0;
     case 'secondary': case 'secondary_link': return 8.0;
     case 'tertiary': case 'tertiary_link': return 5.5;
-    case 'residential': case 'unclassified': case 'service': case 'construction': return 3.5;
     
-    // Explicitly handle small paths so they don't fall through to the default!
+    // Explicitly group proposed with construction to give it a physical width representation
+    case 'residential': case 'unclassified': case 'service': case 'construction': case 'proposed': return 3.5;
+    
     case 'pedestrian': return 2.5;
-    case 'footway': case 'path': return 0.2; 
+    case 'footway': case 'path': return 1; 
     
     default: return 1; 
   }
@@ -173,30 +174,41 @@ const styleFunction = feature => {
   }
   
   const combinedData = getStreetCombinedData(fullId);
-  const activeTheme = themes[currentThemeKey]; 
+  const activeTheme = themes[currentThemeKey];
   const targetValue = combinedData[activeTheme.attribute] || 'Unknown';
-  const hw = combinedData.highway;
+  
+  const hw = props.highway || combinedData.highway; 
 
   const metersWidth = getHighwayWidthInMeters(hw);
   const dynamicPixelWeight = calculatePixelWeight(metersWidth);
 
   let dashPattern = null;
-  if (['pedestrian', 'footway', 'path'].includes(hw)) {
+  if (['pedestrian', 'footway'].includes(hw)) { 
     dashPattern = `${dynamicPixelWeight * 2} ${dynamicPixelWeight * 2.5}`;
   }
-  if (['construction', 'proposed', 'path'].includes(hw)) {
+  if (['construction', 'path'].includes(hw)) { 
     dashPattern = `${dynamicPixelWeight * 1} ${dynamicPixelWeight * 2}`;
+  }
+  if (hw === 'proposed') {
+    dashPattern = `${dynamicPixelWeight * 1.5} ${dynamicPixelWeight * 5}`;
   }
 
   let color = getColorForValue(activeTheme, targetValue, currentMode);
+  const dynamicOpacity = (hw === 'proposed') ? 0.4 : 1.0;
+
+  // Evaluate validity state for interactive layout assignment
+  const hasValidName = combinedData.street_name && 
+                       combinedData.street_name !== 'NULL' && 
+                       combinedData.street_name !== '' && 
+                       combinedData.street_name !== 'Đường phố chưa biết tên';
 
   return { 
     color: color, 
-    weight: dynamicPixelWeight, 
+    weight: dynamicPixelWeight,
     dashArray: dashPattern,
-    lineCap: 'round', 
-    opacity: 1,
-    interactive: true
+    lineCap: 'round',
+    opacity: dynamicOpacity,
+    interactive: hasValidName // Seamlessly handles internal canvas/SVG event hooks
   };
 };
 
@@ -396,19 +408,52 @@ async function rebuildLayers(theme) {
 
     const sortedGeoJsonStructure = { type: "FeatureCollection", features: sortedFeatures };
 
+    // Inside rebuildLayers(theme) in data.js ...
+
     const nextDataLayer = L.geoJson(sortedGeoJsonStructure, {
       style: styleFunction,
       onEachFeature: (f, l) => {
-        f.properties.full_id = getNormalizedId(f);
-        attachInteractions(l, f);
+        const normId = getNormalizedId(f);
+        f.properties.full_id = normId;
+        
+        // Fetch combined data row to evaluate name presence
+        const combinedData = getStreetCombinedData(normId);
+        const hasValidName = combinedData.street_name && 
+                             combinedData.street_name !== 'NULL' && 
+                             combinedData.street_name !== '' && 
+                             combinedData.street_name !== 'Đường phố chưa biết tên';
+
+        if (hasValidName) {
+          attachInteractions(l, f); // Bind popup & panel handlers only if named[cite: 3]
+        } else {
+          // Disable mouse pointer events entirely for this specific path feature
+          l.options.interactive = false;
+          if (l.on) {
+            l.on('add', () => {
+              if (l._path) l._path.style.pointerEvents = 'none';
+            });
+          }
+        }
       }
     });
 
     const nextBufferLayer = L.geoJson(sortedGeoJsonStructure, {
-      style: () => ({ color: 'transparent', weight: 15, opacity: 0, interactive: true }),
+      style: () => ({ color: 'transparent', weight: 15, opacity: 0, interactive: true }), //
       onEachFeature: (f, l) => {
-        f.properties.full_id = getNormalizedId(f);
-        attachInteractions(l, f);
+        const normId = getNormalizedId(f);
+        f.properties.full_id = normId;
+        
+        const combinedData = getStreetCombinedData(normId);
+        const hasValidName = combinedData.street_name && 
+                             combinedData.street_name !== 'NULL' && 
+                             combinedData.street_name !== '' && 
+                             combinedData.street_name !== 'Đường phố chưa biết tên';
+
+        if (hasValidName) {
+          attachInteractions(l, f); //[cite: 3]
+        } else {
+          l.options.interactive = false; // Turn off hover interaction for the invisible click buffer
+        }
       }
     });
 
