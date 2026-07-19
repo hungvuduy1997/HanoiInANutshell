@@ -9,7 +9,7 @@ let bufferLayer = null;
 let currentThemeKey = 'categorization'; 
 let currentMode = 'light';
 let lastBoundsStr = '';
-
+const GLOBAL_ROAD_SCALE = 0.8;
 let isZoomEventBound = false;
 
 // Dynamic cache tables allocated dynamically from the schema profiles
@@ -53,7 +53,8 @@ function getSpectralGradientColor(percent, mode) {
     light: [
       { offset: 0.0,  hex: '#d7191c' },
       { offset: 0.25, hex: '#fdae61' },
-      { offset: 0.5,  hex: '#ffffbf' },
+      { offset: 0.375,hex: '#ffbb00' },
+      { offset: 0.5,  hex: '#81eb61' },
       { offset: 0.75, hex: '#abdda4' },
       { offset: 1.0,  hex: '#2b83ba' }
     ],
@@ -126,14 +127,21 @@ export function getColorForValue(theme, value, mode) {
 }
 
 const getHighwayWidthInMeters = (highway) => {
-  switch (highway) {
-    case 'motorway': case 'motorway_link': return 15.0;
-    case 'trunk': case 'trunk_link': return 12.0;
-    case 'primary': case 'primary_link': return 10.0;
+  const hw = highway ? highway.toString().toLowerCase().trim() : '';
+
+  switch (hw) {
+    case 'motorway': case 'motorway_link': return 24.0;
+    case 'trunk': case 'trunk_link': return 18.0;
+    case 'primary': case 'primary_link': return 12.0;
     case 'secondary': case 'secondary_link': return 8.0;
-    case 'tertiary': case 'tertiary_link': return 6.0;
-    case 'residential': case 'unclassified': case 'service': case 'construction': return 4.5;
-    default: return 1;
+    case 'tertiary': case 'tertiary_link': return 5.5;
+    case 'residential': case 'unclassified': case 'service': case 'construction': return 3.5;
+    
+    // Explicitly handle small paths so they don't fall through to the default!
+    case 'pedestrian': return 2.5;
+    case 'footway': case 'path': return 0.2; 
+    
+    default: return 1; 
   }
 };
 
@@ -141,7 +149,12 @@ const calculatePixelWeight = (meters) => {
   const zoom = map.getZoom();
   const latInRadians = 21.0285 * (Math.PI / 180);
   const metersPerPixel = (40075016.686 * Math.cos(latInRadians)) / Math.pow(2, zoom + 8);
-  return Math.max(1, meters / metersPerPixel);
+  
+  // Calculate the raw pixels needed for the physical width
+  const rawPixels = meters / metersPerPixel;
+  
+  // Apply the global scaling factor, while keeping a minimum crisp ceiling of 0.5px
+  return Math.max(0.5, rawPixels * GLOBAL_ROAD_SCALE);
 };
 
 // Global style definition function for GeoJSON vectors
