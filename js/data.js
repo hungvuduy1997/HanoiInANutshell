@@ -184,7 +184,7 @@ const styleFunction = feature => {
   if (['pedestrian', 'footway', 'path'].includes(hw)) {
     dashPattern = `${dynamicPixelWeight * 2} ${dynamicPixelWeight * 2.5}`;
   }
-  if (hw === 'construction' || hw === 'proposed') {
+  if (['construction', 'proposed', 'path'].includes(hw)) {
     dashPattern = `${dynamicPixelWeight * 1} ${dynamicPixelWeight * 2}`;
   }
 
@@ -194,7 +194,7 @@ const styleFunction = feature => {
     color: color, 
     weight: dynamicPixelWeight, 
     dashArray: dashPattern,
-    lineCap: 'square', 
+    lineCap: 'round', 
     opacity: 1,
     interactive: true
   };
