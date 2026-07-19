@@ -132,8 +132,7 @@ const getHighwayWidthInMeters = (highway) => {
     case 'primary': case 'primary_link': return 10.0;
     case 'secondary': case 'secondary_link': return 8.0;
     case 'tertiary': case 'tertiary_link': return 6.0;
-    case 'residential': case 'unclassified': case 'living_street': case 'construction': return 4.5;
-    case 'service': case 'pedestrian': case 'footway': case 'path': return 1;
+    case 'residential': case 'unclassified': case 'service': case 'construction': return 4.5;
     default: return 1;
   }
 };
