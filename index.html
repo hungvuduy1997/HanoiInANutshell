@@ -13,13 +13,17 @@
   <!-- 1. The Core Map Background -->
   <div id="map"></div>
 
-  <!-- 2. Interactive Navigation & Search Row -->
+  <!-- 2. Top-Left Theme Description Box -->
+  <div id="themeDescriptionBox"></div>
+
+  <!-- 3. Interactive Navigation & Search Row -->
   <div class="map-controls-row" style="display: flex; gap: 8px; align-items: center;">
     <button id="modeToggle" class="control-btn">☀️</button>
     <button id="viewToggle" class="control-btn">Vệ tinh</button>
     <select id="themeSelect"></select>
+  </div> <!-- FIXED: Added missing closing tag here -->
 
-  <!-- 3. Dynamic Legend Drawer Component -->
+  <!-- 4. Dynamic Legend Drawer Component -->
   <div id="legendContainer">
     <button id="legendToggle">▼</button>
     <div id="legend" class="legend open">
@@ -28,10 +32,10 @@
     </div>
   </div>
 
-  <!-- 4. Detailed History Information Sidebar/Panel -->
+  <!-- 5. Detailed History Information Sidebar/Panel -->
   <div id="infoPanel"></div>
   
-  <!-- 5. Advanced Satellite Filter Modifiers Container -->
+  <!-- 6. Advanced Satellite Filter Modifiers Container -->
   <div id="satelliteFilterContainer" class="hidden">
     <div class="ruler-container">
       <div class="ruler-track-ticks"></div>
@@ -42,10 +46,10 @@
         <span>100%</span>
       </div>
     </div>
-  </div> <!-- Fixed: Extraneous duplicated closing tag removed here -->
+  </div>
 
   <!-- ========================================== -->
-  <!-- 6. Third-Party CDN Dependency Pipelines    -->
+  <!-- 7. Third-Party CDN Dependency Pipelines    -->
   <!-- ========================================== -->
   <!-- Map Engine Runtime Core Library -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -54,7 +58,7 @@
   <!-- Binary Spatial Database Decoder Streams -->
   <script src="https://unpkg.com/flatgeobuf@3.30.0/dist/flatgeobuf-geojson.min.js"></script>
 
-  <!-- 7. Application Modular Orchestrator Entrypoint -->
+  <!-- 8. Application Modular Orchestrator Entrypoint -->
   <script type="module" src="js/app.js"></script>
 </body>
 </html>

@@ -45,6 +45,21 @@ function parseCSV(url) {
 }
 
 /**
+ * Updates the description box UI based on theme settings
+ */
+function updateThemeDescription(theme) {
+  const descBox = document.getElementById('themeDescriptionBox');
+  if (!descBox) return;
+
+  if (theme && theme.description && theme.description.trim() !== '') {
+    descBox.innerHTML = `<strong>${theme.name || ''}</strong><br>${theme.description}`;
+    descBox.style.display = 'block';
+  } else {
+    descBox.style.display = 'none';
+  }
+}
+
+/**
  * Maps any procedural step percentage (0.0 to 1.0) directly to a mode-specific
  * multi-stop Spectral color ramp, interpolating smoothly between coordinates.
  */
@@ -58,7 +73,6 @@ function getSpectralGradientColor(percent, mode) {
       { offset: 0.75, hex: '#abdda4' },
       { offset: 1.0,  hex: '#2b83ba' }
     ],
-    
     dark: [
       { offset: 0.0,  hex: '#ff4d4d' },
       { offset: 0.2,  hex: '#ff9f43' },
@@ -67,16 +81,6 @@ function getSpectralGradientColor(percent, mode) {
       { offset: 0.8,  hex: '#1e90ff' },
       { offset: 1.0,  hex: '#70a1ff' }
     ]
-   /**dark: [
-      { offset: 0,         hex: '#97ADC5'},
-      { offset: 0.143,     hex: '#B7C8D8'},
-      { offset: 0.286,     hex: '#FFF0D6'},
-      { offset: 0.429,     hex: '#FECDBE'},
-      { offset: 0.571,     hex: '#F59B90'},
-      { offset: 0.714,     hex: '#FFBA85'},
-      { offset: 0.857,     hex: '#C7C294'},
-      { offset: 1,         hex: '#A9AA74'}
-   ]*/
   };
 
   const p = Math.max(0, Math.min(1, percent));
@@ -117,7 +121,6 @@ export function getColorForValue(theme, value, mode) {
   const fallbackColor = mode === 'dark' ? 'hsl(0, 0%, 20%)' : 'hsl(0, 0%, 70%)';
   if (!theme) return fallbackColor;
 
-  // If the theme has defined ranks (which all of yours do), calculate the gradient automatically!
   if (theme.ranks && theme.ranks.length > 0) {
     const rankIndex = theme.ranks.findIndex(r => r.value === value);
     if (rankIndex !== -1 && theme.ranks.length > 1) {
@@ -131,7 +134,6 @@ export function getColorForValue(theme, value, mode) {
     }
     return fallbackColor;
   } else {
-    // Fallback for legacy static category mappings if any exist
     const def = theme.categories ? theme.categories[value] : null;
     return def ? (mode === 'dark' ? def.darkColor : def.lightColor) : fallbackColor;
   }
@@ -147,7 +149,6 @@ const getHighwayWidthInMeters = (highway) => {
     case 'secondary': case 'secondary_link': return 8.0;
     case 'tertiary': case 'tertiary_link': return 5.5;
     
-    // Explicitly group proposed with construction to give it a physical width representation
     case 'residential': case 'unclassified': case 'service': case 'construction': case 'proposed': return 3.5;
     
     case 'pedestrian': return 2.5;
@@ -162,10 +163,7 @@ const calculatePixelWeight = (meters) => {
   const latInRadians = 21.0285 * (Math.PI / 180);
   const metersPerPixel = (40075016.686 * Math.cos(latInRadians)) / Math.pow(2, zoom + 8);
   
-  // Calculate the raw pixels needed for the physical width
   const rawPixels = meters / metersPerPixel;
-  
-  // Apply the global scaling factor, while keeping a minimum crisp ceiling of 0.5px
   return Math.max(0.5, rawPixels * GLOBAL_ROAD_SCALE);
 };
 
@@ -207,7 +205,6 @@ const styleFunction = feature => {
   let color = getColorForValue(activeTheme, targetValue, currentMode);
   const dynamicOpacity = (hw === 'proposed') ? 0.4 : 1.0;
 
-  // Evaluate validity state for interactive layout assignment
   const hasValidName = combinedData.street_name && 
                        combinedData.street_name !== 'NULL' && 
                        combinedData.street_name !== '' && 
@@ -219,7 +216,7 @@ const styleFunction = feature => {
     dashArray: dashPattern,
     lineCap: 'round',
     opacity: dynamicOpacity,
-    interactive: hasValidName // Seamlessly handles internal canvas/SVG event hooks
+    interactive: hasValidName
   };
 };
 
@@ -282,7 +279,6 @@ export function getStreetCombinedData(fullId) {
 
   const compiledRecord = { full_id: fullId };
 
-  // Read explicitly from the master schema layout maps
   Object.keys(PROPERTY_SCHEMA).forEach(propertyKey => {
     const config = PROPERTY_SCHEMA[propertyKey];
     let sourceRow = {};
@@ -309,19 +305,19 @@ export function applyTheme(themeKey, initialLoad = false) {
   
   // Rebuild the geographic vectors layer stack safely
   rebuildLayers(theme);
+
+  // Update theme description UI
+  updateThemeDescription(theme);
   
   if (typeof updateLegend === 'function') {
     let legendData = null;
 
-    // RULE 1: If hard-coded ranks exist, respect your custom defined display layout sequence
     if (theme.ranks && theme.ranks.length > 0) {
       legendData = theme.ranks;
     } 
-    // RULE 2: If legacy manual category map objects exist, extract them directly
     else if (theme.categories && Object.keys(theme.categories).length > 0) {
       legendData = theme.categories;
     } 
-    // RULE 3: FALLBACK DYNAMIC ENGINE - Scrape the cache, build unique entries, and sort alphabetically
     else {
       console.log(`Legend Engine: Attribute drop detected for "${themeKey}". Compiling dynamic parameters...`);
       const data = window._csvStorageTables;
@@ -329,7 +325,6 @@ export function applyTheme(themeKey, initialLoad = false) {
 
       if (data && data.geninfo) {
         Object.keys(data.geninfo).forEach(fullId => {
-          // Resolve relational table values dynamically across CSV targets via schema
           const combinedData = getStreetCombinedData(fullId);
           const rawValue = combinedData[theme.attribute];
 
@@ -339,20 +334,16 @@ export function applyTheme(themeKey, initialLoad = false) {
         });
       }
 
-      // Transform our unique values set into a clean alphabetical array layout map
       legendData = Array.from(uniqueValues)
-        .sort((a, b) => a.localeCompare(b, 'vi', { sensitivity: 'base' })) // Natural Vietnamese text sorting alphabet
+        .sort((a, b) => a.localeCompare(b, 'vi', { sensitivity: 'base' }))
         .map(val => ({
           value: val,
           label: val
         }));
 
-      // Cache the dynamically compiled list directly onto the theme structure 
-      // so the global vector style color gradients (getColorForValue) function perfectly!
       theme.ranks = legendData;
     }
 
-    // Pass the organized dataset sequence off to the drawer UI renderer
     updateLegend(legendData, theme, currentMode, getColorForValue);
   }
 
@@ -392,15 +383,14 @@ async function rebuildLayers(theme) {
       const fullId = getNormalizedId(feature);
       const combinedData = getStreetCombinedData(fullId);
 
-      // --- 1. NEW PRE-FILTER OPTIMIZATION ---
-      // If the theme has a filter method, check if this feature should be ignored immediately
+      // 1. PRE-FILTER OPTIMIZATION
       if (activeTheme && typeof activeTheme.filter === 'function') {
         if (!activeTheme.filter(combinedData)) {
-          continue; // Skip rendering, indexing, and mouse-interaction bindings entirely!
+          continue; 
         }
       }
 
-      // --- 2. LEGEND CLICK HIGHLIGHT FILTER ---
+      // 2. LEGEND CLICK HIGHLIGHT FILTER
       if (activeFilterValue !== null) {
         const targetValue = combinedData[activeTheme.attribute] || 'Unknown';
         if (targetValue !== activeFilterValue) {
@@ -419,15 +409,12 @@ async function rebuildLayers(theme) {
 
     const sortedGeoJsonStructure = { type: "FeatureCollection", features: sortedFeatures };
 
-    // Inside rebuildLayers(theme) in data.js ...
-
     const nextDataLayer = L.geoJson(sortedGeoJsonStructure, {
       style: styleFunction,
       onEachFeature: (f, l) => {
         const normId = getNormalizedId(f);
         f.properties.full_id = normId;
         
-        // Fetch combined data row to evaluate name presence
         const combinedData = getStreetCombinedData(normId);
         const hasValidName = combinedData.street_name && 
                              combinedData.street_name !== 'NULL' && 
@@ -435,9 +422,8 @@ async function rebuildLayers(theme) {
                              combinedData.street_name !== 'Đường phố chưa biết tên';
 
         if (hasValidName) {
-          attachInteractions(l, f); // Bind popup & panel handlers only if named[cite: 3]
+          attachInteractions(l, f);
         } else {
-          // Disable mouse pointer events entirely for this specific path feature
           l.options.interactive = false;
           if (l.on) {
             l.on('add', () => {
@@ -449,7 +435,7 @@ async function rebuildLayers(theme) {
     });
 
     const nextBufferLayer = L.geoJson(sortedGeoJsonStructure, {
-      style: () => ({ color: 'transparent', weight: 15, opacity: 0, interactive: true }), //
+      style: () => ({ color: 'transparent', weight: 15, opacity: 0, interactive: true }),
       onEachFeature: (f, l) => {
         const normId = getNormalizedId(f);
         f.properties.full_id = normId;
@@ -461,9 +447,9 @@ async function rebuildLayers(theme) {
                              combinedData.street_name !== 'Đường phố chưa biết tên';
 
         if (hasValidName) {
-          attachInteractions(l, f); //[cite: 3]
+          attachInteractions(l, f);
         } else {
-          l.options.interactive = false; // Turn off hover interaction for the invisible click buffer
+          l.options.interactive = false;
         }
       }
     });

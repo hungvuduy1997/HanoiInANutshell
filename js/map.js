@@ -25,8 +25,10 @@ if (hash && hash.startsWith('#')) {
 export const map = L.map('map', {
   center: defaultCenter,
   zoom: defaultZoom,
-  zoomControl: true
+  zoomControl: false
 });
+
+L.control.zoom({ position: 'bottomright' }).addTo(map);
 
 export { initialTheme };
 

@@ -7,6 +7,7 @@
 export const themes = {
   categorization: {
     name: "Phân loại",
+    description: "",
     attribute: "category",
     ranks: [
       { value: "Triều đại", label: "Triều đại" },
@@ -17,12 +18,12 @@ export const themes = {
       { value: "Tôn giáo", label: "Tôn giáo" },
       { value: "Nhân vật lịch sử", label: "Nhân vật lịch sử" },
       { value: "Tư tưởng xã hội", label: "Tư tưởng xã hội" },
-      { value: "Khác", label: "Khác" },
-      { value: "Không rõ", label: "Không rõ" }
+      { value: "Khác", label: "Khác" }
     ]
   },
   subcategory: {
     name: "Phân loại phụ",
+    description: "",
     attribute: "subcategory",
     filter: (combinedData) => {
       const val = combinedData['subcategory'];
@@ -31,6 +32,7 @@ export const themes = {
   },
   historical_epoch: {
     name: "Thời kỳ Lịch sử",
+    description: "",
     attribute: "period",
     filter: (combinedData) => {
       const val = combinedData['period'];
@@ -53,6 +55,7 @@ export const themes = {
   },
   Ke_Of_HN: {
     name: "Các Kẻ ở Hà Nội",
+    description: "",
     attribute: "ke",
     filter: (combinedData) => {
       const val = combinedData['ke'];
@@ -61,6 +64,7 @@ export const themes = {
   },
   Thap_Tam_Trai: {
     name: "Thập Tam Trại",
+    description: "",
     attribute: "name_processed",
     filter: (combinedData) => {
       const val = combinedData['name_processed'];
