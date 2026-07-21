@@ -140,6 +140,9 @@ export const PROPERTY_SCHEMA = {
   name_processed: {
     csvSource: 'geninfo',
     csvHeader: 'name:processed',
+    label: 'Tên đã chuẩn hóa',
+    default: '',
+    targets: []
   },
 
   // --- PROPERTIES OUT OF hian_trivia.csv ---
