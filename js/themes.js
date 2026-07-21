@@ -62,6 +62,14 @@ export const themes = {
   Thap_Tam_Trai: {
     name: "Thập Tam Trại",
     attribute: "name_processed",
+    filter: (combinedData) => {
+      const val = combinedData['name_processed'];
+      const validTrai = [
+        "Ngọc Hà", "Vĩnh Phúc", "Liễu Giai", "Ngọc Khánh", 
+        "Vạn Phúc", "Kim Mã", "Giảng Võ", "Vạn Bảo", "Hào Nam", "Thịnh Hào"
+      ];
+      return val && validTrai.includes(val.trim());
+    },
     ranks: [
       { value: "Ngọc Hà", label: "Ngọc Hà" },
       { value: "Vĩnh Phúc", label: "Vĩnh Phúc" },
