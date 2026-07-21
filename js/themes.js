@@ -58,5 +58,21 @@ export const themes = {
       const val = combinedData['ke'];
       return val && val !== 'NULL' && val.trim() !== '';
     }
+  },
+  Thap_Tam_Trai: {
+    name: "Thập Tam Trại",
+    attribute: "name:processed",
+    ranks: [
+      { value: "Ngọc Hà", label: "Ngọc Hà" },
+      { value: "Vĩnh Phúc", label: "Vĩnh Phúc" },
+      { value: "Liễu Giai", label: "Liễu Giai" },
+      { value: "Ngọc Khánh", label: "Ngọc Khánh" },
+      { value: "Vạn Phúc", label: "Vạn Phúc" },
+      { value: "Kim Mã", label: "Kim Mã" },
+      { value: "Giảng Võ", label: "Giảng Võ" },
+      { value: "Vạn Bảo", label: "Vạn Bảo" },
+      { value: "Hào Nam", label: "Hào Nam" },
+      { value: "Thịnh Hào", label: "Thịnh Hào" }
+    ]
   }
 };
