@@ -137,6 +137,10 @@ export const PROPERTY_SCHEMA = {
     default: '',
     targets: ['panel_row']
   },
+  name_processed: {
+    csvSource: 'geninfo',
+    csvHeader: 'name:processed',
+  },
 
   // --- PROPERTIES OUT OF hian_trivia.csv ---
   trivia: {

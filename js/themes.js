@@ -61,7 +61,7 @@ export const themes = {
   },
   Thap_Tam_Trai: {
     name: "Thập Tam Trại",
-    attribute: "name:processed",
+    attribute: "name_processed",
     ranks: [
       { value: "Ngọc Hà", label: "Ngọc Hà" },
       { value: "Vĩnh Phúc", label: "Vĩnh Phúc" },
