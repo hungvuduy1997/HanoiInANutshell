@@ -64,7 +64,7 @@ export const themes = {
   },
   Thap_Tam_Trai: {
     name: "Thập Tam Trại",
-    description: "",
+    description: "Thập Tam Trại",
     attribute: "name_processed",
     filter: (combinedData) => {
       const val = combinedData['name_processed'];

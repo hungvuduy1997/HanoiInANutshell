@@ -118,14 +118,18 @@ export function attachInteractions(layer, feature) {
       }
     });
 
-    // Cleanly prepend the active theme's highlighted classification at the top of the body
-    if (targetValue) {
-      panelRowsHtml = `
-        <p class="info-row" style="margin: 6px 0; color: #222;">
-          <strong>${activeTheme.name}:</strong> ${targetValue}
-        </p>
-      ` + panelRowsHtml;
-    }
+  // Cleanly prepend the active theme's highlighted classification at the top of the body
+  // (Filters out meaningless values like "TRUE", "FALSE", "1", "0", etc.)
+  const invalidDisplayValues = ['TRUE', 'FALSE', '1', '0', 'NULL', 'UNDEFINED'];
+  const cleanTargetVal = targetValue ? targetValue.toString().toUpperCase().trim() : '';
+
+  if (targetValue && !invalidDisplayValues.includes(cleanTargetVal)) {
+    panelRowsHtml = `
+      <p class="info-row" style="margin: 6px 0; color: #222;">
+        <strong>${activeTheme.name}:</strong> ${targetValue}
+      </p>
+    ` + panelRowsHtml;
+  }
 
     panel.innerHTML = `
       <div class="info-content" style="position: relative;">
