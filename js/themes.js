@@ -96,7 +96,7 @@ export const themes = {
       return val && val !== 'NULL' && val.trim() !== '';
     },
     categories: {
-      "TRUE": { lightColor: "#2966a3", darkColor: "#f0b03a", label: "Danh nhân địa phương" }
+      "TRUE": { lightColor: "hsl(210, 55%, 33%)", darkColor: "hsl(35, 85%, 50%)", label: "Danh nhân địa phương" }
     }
   }
 };
