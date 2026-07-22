@@ -86,5 +86,17 @@ export const themes = {
       { value: "Hào Nam", label: "Hào Nam" },
       { value: "Thịnh Hào", label: "Thịnh Hào" }
     ]
+  },
+  Local_Hero: {
+    name: "Danh nhân địa phương",
+    description: "",
+    attribute: "localhero",
+    filter: (combinedData) => {
+      const val = combinedData['localhero'];
+      return val && val !== 'NULL' && val.trim() !== '';
+    },
+    categories: {
+      "TRUE": { lightColor: "#2966a3", darkColor: "#f0b03a", label: "Danh nhân địa phương" }
+    }
   }
 };

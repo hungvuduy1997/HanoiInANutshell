@@ -27,7 +27,7 @@ export function attachInteractions(layer, feature) {
   let popupRowsHtml = '';
 
   Object.keys(PROPERTY_SCHEMA).forEach(key => {
-    // SKIP if this key is the active theme's primary attribute (it gets its own highlighted themeRowHtml below!)
+    // SKIP if this key is the active theme's primary attribute (handled conditionally below)
     if (activeTheme && key === activeTheme.attribute) return;
 
     const config = PROPERTY_SCHEMA[key];
@@ -42,9 +42,11 @@ export function attachInteractions(layer, feature) {
     }
   });
 
-  const themeRowHtml = targetValue 
-  ? `<br><span style="font-size: 11px; color: #555; font-style: italic;">${targetValue}</span>` 
-  : '';
+  // Only render the theme subtitle if it's meaningful (not "TRUE", "FALSE", "1", or empty)
+  let themeRowHtml = '';
+  if (targetValue && !['TRUE', 'FALSE', '1', '0', 'NULL'].includes(targetValue.toString().toUpperCase().trim())) {
+    themeRowHtml = `<br><span style="font-size: 11px; color: #666; font-style: italic;">${targetValue}</span>`;
+  }
 
   const popupHTML = `
     <div style="font-family: sans-serif; line-height: 1.4;">

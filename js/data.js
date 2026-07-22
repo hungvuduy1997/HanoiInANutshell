@@ -3,6 +3,7 @@ import { themes } from './themes.js';
 import { attachInteractions } from './interactions.js';
 import { updateLegend } from './legend.js';
 import { DATA_SOURCES, PROPERTY_SCHEMA } from './schema.js'; // Centered relational truth schema
+import { getCurrentModeString } from './map.js';
 
 let dataLayer = null;
 let bufferLayer = null;
@@ -350,7 +351,8 @@ export function applyTheme(themeKey, initialLoad = false) {
   if (map) {
     const zoom = map.getZoom();
     const center = map.getCenter();
-    window.history.replaceState(null, null, `#${themeKey}/${zoom}/${center.lat.toFixed(5)}/${center.lng.toFixed(5)}`);
+    const activeModeStr = typeof getCurrentModeString === 'function' ? getCurrentModeString() : 'light';
+    window.history.replaceState(null, null, `#${themeKey}/${activeModeStr}/${zoom}/${center.lat.toFixed(5)}/${center.lng.toFixed(5)}`);
   }
 }
 

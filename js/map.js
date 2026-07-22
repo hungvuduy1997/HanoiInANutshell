@@ -1,36 +1,41 @@
-import { setMode } from './data.js';
+import { setMode, getTheme, setTheme } from './data.js';
 
 let defaultCenter = [21.028998, 105.852372];
 let defaultZoom = 17;
 let initialTheme = 'categorization'; 
+let initialMode = 'light'; // Default mode
 
 const hash = window.location.hash;
 if (hash && hash.startsWith('#')) {
   const parts = hash.substring(1).split('/');
   
-  if (parts.length === 4) {
+  // Format: #theme/mode/zoom/lat/lng
+  if (parts.length === 5) {
     const parsedTheme = parts[0];
-    const parsedZoom = parseFloat(parts[1]);
-    const parsedLat = parseFloat(parts[2]);
-    const parsedLng = parseFloat(parts[3]);
+    const parsedMode = parts[1];
+    const parsedZoom = parseFloat(parts[2]);
+    const parsedLat = parseFloat(parts[3]);
+    const parsedLng = parseFloat(parts[4]);
     
     if (!isNaN(parsedZoom) && !isNaN(parsedLat) && !isNaN(parsedLng)) {
       initialTheme = parsedTheme;
+      if (['light', 'dark', 'satellite'].includes(parsedMode)) {
+        initialMode = parsedMode;
+      }
       defaultZoom = parsedZoom;
       defaultCenter = [parsedLat, parsedLng];
     }
   }
 }
 
+export { initialTheme, initialMode };
+
+// Initialize Map Instance
 export const map = L.map('map', {
   center: defaultCenter,
   zoom: defaultZoom,
   zoomControl: false
 });
-
-L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-export { initialTheme };
 
 const lightMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
   attribution: '© OpenStreetMap, © CARTO',
@@ -64,6 +69,11 @@ const modeToggle = document.getElementById('modeToggle');
 const sliderContainer = document.getElementById('satelliteFilterContainer');
 const saturationSlider = document.getElementById('satelliteSaturationSlider');
 
+export function getCurrentModeString() {
+  if (currentMapType === 'satellite') return 'satellite';
+  return currentLightMode;
+}
+
 function updateSatelliteSaturation(val) {
   const grayscalePercent = 100 - val;
   const tiles = document.querySelectorAll('.satellite-tile-target');
@@ -72,79 +82,73 @@ function updateSatelliteSaturation(val) {
   });
 }
 
+function applyModeFromUrl(targetMode) {
+  if (targetMode === 'satellite') {
+    if (currentMapType !== 'satellite') {
+      currentMapType = 'satellite';
+      if (viewToggle) viewToggle.textContent = 'Bản đồ';
+      if (map.hasLayer(lightMap)) map.removeLayer(lightMap);
+      if (map.hasLayer(darkMap)) map.removeLayer(darkMap);
+      satelliteMap.addTo(map);
+      if (modeToggle) modeToggle.classList.add('hidden');
+      if (sliderContainer) sliderContainer.classList.remove('hidden');
+      setMode(currentLightMode);
+    }
+  } else {
+    if (currentMapType === 'satellite') {
+      currentMapType = 'leaflet';
+      if (viewToggle) viewToggle.textContent = 'Vệ tinh';
+      updateSatelliteSaturation(100);
+      if (sliderContainer) sliderContainer.classList.add('hidden');
+      map.removeLayer(satelliteMap);
+      if (modeToggle) modeToggle.classList.remove('hidden');
+    }
+
+    if (targetMode === 'dark') {
+      currentLightMode = 'dark';
+      if (modeToggle) modeToggle.innerHTML = '🌙';
+      if (map.hasLayer(lightMap)) map.removeLayer(lightMap);
+      darkMap.addTo(map);
+      setMode('dark');
+    } else {
+      currentLightMode = 'light';
+      if (modeToggle) modeToggle.innerHTML = '☀️';
+      if (map.hasLayer(darkMap)) map.removeLayer(darkMap);
+      lightMap.addTo(map);
+      setMode('light');
+    }
+  }
+}
+
 if (saturationSlider) {
   saturationSlider.addEventListener('input', (e) => {
     updateSatelliteSaturation(e.target.value);
   });
 }
 
-viewToggle.addEventListener('click', () => {
-  if (currentMapType === 'leaflet') {
-    currentMapType = 'satellite';
-    viewToggle.textContent = 'Bản đồ';
-    
-    if (currentLightMode === 'light') map.removeLayer(lightMap);
-    else map.removeLayer(darkMap);
-    
-    satelliteMap.addTo(map);
-    modeToggle.classList.add('hidden');
-    if (sliderContainer) sliderContainer.classList.remove('hidden');
-    
-    setMode(currentLightMode); 
-    
-    setTimeout(() => {
-      updateSatelliteSaturation(saturationSlider ? saturationSlider.value : 100);
-    }, 50);
-
-  } else {
-    currentMapType = 'leaflet';
-    viewToggle.textContent = 'Vệ tinh';
-    
-    updateSatelliteSaturation(100);
-    if (sliderContainer) sliderContainer.classList.add('hidden');
-    
-    setTimeout(() => {
-      map.removeLayer(satelliteMap);
-      
-      if (currentLightMode === 'light') {
-        lightMap.addTo(map);
-        setMode('light');
-      } else {
-        darkMap.addTo(map);
-        setMode('dark');
-      }
-      modeToggle.classList.remove('hidden');
-    }, 800);
-  }
-});
-
-modeToggle.addEventListener('click', () => {
-  if (currentLightMode === 'light') {
-    currentLightMode = 'dark';
-    modeToggle.innerHTML = '🌙';
+if (viewToggle) {
+  viewToggle.addEventListener('click', () => {
     if (currentMapType === 'leaflet') {
-      map.removeLayer(lightMap);
-      darkMap.addTo(map);
+      applyModeFromUrl('satellite');
+    } else {
+      applyModeFromUrl(currentLightMode);
     }
-    setMode('dark');
-  } else {
-    currentLightMode = 'light';
-    modeToggle.innerHTML = '☀️';
-    if (currentMapType === 'leaflet') {
-      map.removeLayer(darkMap);
-      lightMap.addTo(map);
-    }
-    setMode('light');
-  }
-});
+  });
+}
 
-import { getTheme, setTheme } from './data.js';
+if (modeToggle) {
+  modeToggle.addEventListener('click', () => {
+    const nextMode = currentLightMode === 'light' ? 'dark' : 'light';
+    applyModeFromUrl(nextMode);
+  });
+}
 
 map.on('moveend', () => {
   const activeThemeKey = getTheme();
+  const activeModeStr = getCurrentModeString();
   const zoom = map.getZoom();
   const center = map.getCenter();
-  window.history.replaceState(null, null, `#${activeThemeKey}/${zoom}/${center.lat.toFixed(5)}/${center.lng.toFixed(5)}`);
+  window.history.replaceState(null, null, `#${activeThemeKey}/${activeModeStr}/${zoom}/${center.lat.toFixed(5)}/${center.lng.toFixed(5)}`);
 });
 
 window.addEventListener('hashchange', () => {
@@ -152,11 +156,12 @@ window.addEventListener('hashchange', () => {
   if (!hash || !hash.startsWith('#')) return;
 
   const parts = hash.substring(1).split('/');
-  if (parts.length === 4) {
+  if (parts.length === 5) {
     const targetTheme = parts[0];
-    const targetZoom = parseFloat(parts[1]);
-    const targetLat = parseFloat(parts[2]);
-    const targetLng = parseFloat(parts[3]);
+    const targetMode = parts[1];
+    const targetZoom = parseFloat(parts[2]);
+    const targetLat = parseFloat(parts[3]);
+    const targetLng = parseFloat(parts[4]);
 
     if (!isNaN(targetZoom) && !isNaN(targetLat) && !isNaN(targetLng)) {
       const currentCenter = map.getCenter();
@@ -173,6 +178,10 @@ window.addEventListener('hashchange', () => {
         setTheme(targetTheme);
         const themeSelect = document.getElementById('themeSelect');
         if (themeSelect) themeSelect.value = targetTheme;
+      }
+
+      if (targetMode !== getCurrentModeString()) {
+        applyModeFromUrl(targetMode);
       }
     }
   }

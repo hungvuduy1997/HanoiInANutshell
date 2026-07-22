@@ -65,12 +65,12 @@ export const PROPERTY_SCHEMA = {
     csvHeader: 'category', // Matches themes.categorization.attribute exactly
     label: 'Phân loại chính',
     default: 'Không rõ',
-    targets: [] // Picked up by map engine styles & legend systems
+    targets: ['panel_row']
   },
   subcategory: {
     csvSource: 'database',
     csvHeader: 'subcategory',
-    label: 'Phân loại con',
+    label: 'Phân loại phụ',
     default: '',
     targets: ['panel_row']
   },
@@ -152,5 +152,12 @@ export const PROPERTY_SCHEMA = {
     label: 'Thông tin thú vị',
     default: '',
     targets: ['panel_row']
+  },
+    localhero: {
+    csvSource: 'trivia',
+    csvHeader: 'localhero',
+    label: 'Danh nhân địa phương',
+    default: '',
+    targets: []
   }
 };
