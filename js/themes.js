@@ -64,7 +64,13 @@ export const themes = {
   },
   Thap_Tam_Trai: {
     name: "Thập Tam Trại",
-    description: "Thập Tam Trại",
+    description: ["Thập Tam Trại là một khu vực gắn với lịch sử hình thành của Hà Nội.",
+      "Theo tương truyền, khu vực này được hình thành vào thời Lý.",
+      "Ông Hoàng Phúc Trung (có chỗ ghi tên là Nguyễn Quý Công) đã có công tìm được xác công chúa con gái vua Lý Nhân Tông bị đắm thuyền khi đi chơi trên sông Thiên Đức (một nhánh của sông Đuống).",
+      "Vua muốn ban thưởng, nhưng ông không nhận, chỉ xin cho dân làng Lệ Mật được khai phá vùng đất phía Tây thành Thăng Long, hình thành Thập Tam Trại.",
+      "Rất khó xác định được Thập Tam Trại gốc có bao nhiêu làng, gồm những làng nào.",
+      "Cũng có nhiều nguồn thông tin khác nhau, nên chỉ có thể tổng hợp và xác định được khu vực Thập Tam Trại bao gồm các làng Ngọc Hà, Hữu Tiệp, Giảng Võ, Thủ Lệ, Liễu Giai, Cống Yên, Cống Vị, Vạn Phúc/ Vạn Bảo, Đại Yên, Vĩnh Phúc, Kim Mã, Ngọc Khánh, Hào Nam/ Thịnh Hào, Xuân Biểu.",
+      "Mỗi làng chịu một trách nhiệm riêng với triều đình, trong đó Ngọc Hà, Hữu Tiệp trồng hoa; Giảng Võ luyện võ cho quân lính; Kim Mã nuôi ngựa cho triều đình."].join(' '),
     attribute: "name_processed",
     filter: (combinedData) => {
       const val = combinedData['name_processed'];
