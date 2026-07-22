@@ -33,6 +33,8 @@ const highwayRenderWeight = {
   'primary': 21, 'trunk_link': 22, 'trunk': 23, 'motorway_link': 24, 'motorway': 25
 };
 
+const RESTRICTED_HIGHWAY_TYPES = ['unclassified', 'elevator', 'ladder', 'corridor', 'steps', 'path', 'bridleway', 'pedestrian', 'track']
+
 function parseCSV(url) {
   return new Promise((resolve, reject) => {
     Papa.parse(url, {
@@ -411,50 +413,67 @@ async function rebuildLayers(theme) {
 
     const sortedGeoJsonStructure = { type: "FeatureCollection", features: sortedFeatures };
 
-    const nextDataLayer = L.geoJson(sortedGeoJsonStructure, {
-      style: styleFunction,
-      onEachFeature: (f, l) => {
-        const normId = getNormalizedId(f);
-        f.properties.full_id = normId;
-        
-        const combinedData = getStreetCombinedData(normId);
-        const hasValidName = combinedData.street_name && 
-                             combinedData.street_name !== 'NULL' && 
-                             combinedData.street_name !== '' && 
-                             combinedData.street_name !== 'Đường phố chưa biết tên';
+// Inside async function rebuildLayers(theme) in js/data.js
 
-        if (hasValidName) {
-          attachInteractions(l, f);
-        } else {
-          l.options.interactive = false;
-          if (l.on) {
-            l.on('add', () => {
-              if (l._path) l._path.style.pointerEvents = 'none';
-            });
-          }
-        }
+const nextDataLayer = L.geoJson(sortedGeoJsonStructure, {
+  style: styleFunction,
+  onEachFeature: (f, l) => {
+    const normId = getNormalizedId(f);
+    f.properties.full_id = normId;
+    
+    const combinedData = getStreetCombinedData(normId);
+    
+    // 1. Check if street name is missing/invalid
+    const isNameMissing = !combinedData.street_name || 
+                          combinedData.street_name === 'NULL' || 
+                          combinedData.street_name === '' || 
+                          combinedData.street_name === 'Đường phố chưa biết tên';
+
+    // 2. Check if the road type is in your restricted list
+    const roadType = (combinedData.highway || f.properties.highway || '').toLowerCase().trim();
+    const isRestrictedType = RESTRICTED_HIGHWAY_TYPES.includes(roadType);
+
+    // 3. Un-clickable ONLY IF it's a restricted type AND has no name
+    const isUnclickable = isRestrictedType && isNameMissing;
+
+    if (!isUnclickable) {
+      attachInteractions(l, f);
+    } else {
+      l.options.interactive = false;
+      if (l.on) {
+        l.on('add', () => {
+          if (l._path) l._path.style.pointerEvents = 'none';
+        });
       }
-    });
+    }
+  }
+});
 
-    const nextBufferLayer = L.geoJson(sortedGeoJsonStructure, {
-      style: () => ({ color: 'transparent', weight: 15, opacity: 0, interactive: true }),
-      onEachFeature: (f, l) => {
-        const normId = getNormalizedId(f);
-        f.properties.full_id = normId;
-        
-        const combinedData = getStreetCombinedData(normId);
-        const hasValidName = combinedData.street_name && 
-                             combinedData.street_name !== 'NULL' && 
-                             combinedData.street_name !== '' && 
-                             combinedData.street_name !== 'Đường phố chưa biết tên';
+const nextBufferLayer = L.geoJson(sortedGeoJsonStructure, {
+  style: () => ({ color: 'transparent', weight: 15, opacity: 0, interactive: true }),
+  onEachFeature: (f, l) => {
+    const normId = getNormalizedId(f);
+    f.properties.full_id = normId;
+    
+    const combinedData = getStreetCombinedData(normId);
+    
+    const isNameMissing = !combinedData.street_name || 
+                          combinedData.street_name === 'NULL' || 
+                          combinedData.street_name === '' || 
+                          combinedData.street_name === 'Đường phố chưa biết tên';
 
-        if (hasValidName) {
-          attachInteractions(l, f);
-        } else {
-          l.options.interactive = false;
-        }
-      }
-    });
+    const roadType = (combinedData.highway || f.properties.highway || '').toLowerCase().trim();
+    const isRestrictedType = RESTRICTED_HIGHWAY_TYPES.includes(roadType);
+
+    const isUnclickable = isRestrictedType && isNameMissing;
+
+    if (!isUnclickable) {
+      attachInteractions(l, f);
+    } else {
+      l.options.interactive = false;
+    }
+  }
+});
 
     nextDataLayer.addTo(map);
     nextBufferLayer.addTo(map);

@@ -84,7 +84,7 @@ export const PROPERTY_SCHEMA = {
   profession: {
     csvSource: 'database',
     csvHeader: 'profession',
-    label: 'Nghề nghiệp chính',
+    label: 'Thân thế & Sự nghiệp',
     default: '',
     targets: ['panel_row']
   },
@@ -149,7 +149,7 @@ export const PROPERTY_SCHEMA = {
   trivia: {
     csvSource: 'trivia',
     csvHeader: 'trivia',
-    label: 'Thông tin thú vị',
+    label: 'Thông tin bên lề',
     default: '',
     targets: ['panel_row']
   },

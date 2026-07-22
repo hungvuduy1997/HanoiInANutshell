@@ -1,15 +1,44 @@
 import { setMode, getTheme, setTheme } from './data.js';
 
+// --------------------------------------------------------
+// 1. DEVICE DETECTOR & MIN-ZOOM THRESHOLDS
+// --------------------------------------------------------
+function getDeviceMinZoom() {
+  const width = window.innerWidth;
+
+  if (width <= 600) {
+    // 📱 Mobile Phones: Restrict zoom-out to level 15 so performance stays fast
+    return 15; 
+  } else if (width <= 1024) {
+    // 📱 Tablets: Moderate limit (level 13)
+    return 13; 
+  } else {
+    // 💻 Laptops / Desktops: No restrictive limit (level 10)
+    return 10; 
+  }
+}
+
+// Default map view settings
 let defaultCenter = [21.028998, 105.852372];
 let defaultZoom = 17;
 let initialTheme = 'categorization'; 
-let initialMode = 'light'; // Default mode
+let initialMode = 'light';
 
+// Calculate current device's minimum zoom limit
+const deviceMinZoom = getDeviceMinZoom();
+
+// Ensure initial starting zoom isn't lower than the device allows
+if (defaultZoom < deviceMinZoom) {
+  defaultZoom = deviceMinZoom;
+}
+
+// --------------------------------------------------------
+// 2. PARSE INITIAL HASH URL (#theme/mode/zoom/lat/lng)
+// --------------------------------------------------------
 const hash = window.location.hash;
 if (hash && hash.startsWith('#')) {
   const parts = hash.substring(1).split('/');
   
-  // Format: #theme/mode/zoom/lat/lng
   if (parts.length === 5) {
     const parsedTheme = parts[0];
     const parsedMode = parts[1];
@@ -22,7 +51,8 @@ if (hash && hash.startsWith('#')) {
       if (['light', 'dark', 'satellite'].includes(parsedMode)) {
         initialMode = parsedMode;
       }
-      defaultZoom = parsedZoom;
+      // Clamp incoming URL zoom level so phones don't load lower than deviceMinZoom
+      defaultZoom = Math.max(parsedZoom, deviceMinZoom);
       defaultCenter = [parsedLat, parsedLng];
     }
   }
@@ -30,13 +60,18 @@ if (hash && hash.startsWith('#')) {
 
 export { initialTheme, initialMode };
 
-// Initialize Map Instance
+// --------------------------------------------------------
+// 3. INITIALIZE LEAFLET MAP INSTANCE
+// --------------------------------------------------------
 export const map = L.map('map', {
   center: defaultCenter,
   zoom: defaultZoom,
+  minZoom: deviceMinZoom, // <--- Enforces the zoom limit
+  maxZoom: 20,
   zoomControl: false
 });
 
+// Tile Layers Setup
 const lightMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
   attribution: '© OpenStreetMap, © CARTO',
   maxZoom: 20
@@ -120,6 +155,7 @@ function applyModeFromUrl(targetMode) {
   }
 }
 
+// UI Controls
 if (saturationSlider) {
   saturationSlider.addEventListener('input', (e) => {
     updateSatelliteSaturation(e.target.value);
@@ -143,6 +179,7 @@ if (modeToggle) {
   });
 }
 
+// Sync map movement to URL Hash
 map.on('moveend', () => {
   const activeThemeKey = getTheme();
   const activeModeStr = getCurrentModeString();
@@ -151,6 +188,23 @@ map.on('moveend', () => {
   window.history.replaceState(null, null, `#${activeThemeKey}/${activeModeStr}/${zoom}/${center.lat.toFixed(5)}/${center.lng.toFixed(5)}`);
 });
 
+// --------------------------------------------------------
+// 4. GLOBAL WINDOW EVENT LISTENERS
+// --------------------------------------------------------
+
+// A. Listen for screen resize (e.g. switching portrait/landscape on mobile or resizing browser)
+window.addEventListener('resize', () => {
+  const currentMinZoom = getDeviceMinZoom();
+  if (map.getMinZoom() !== currentMinZoom) {
+    map.setMinZoom(currentMinZoom);
+    // If user's current zoom is zoomed out further than the new limit allows, pull it up
+    if (map.getZoom() < currentMinZoom) {
+      map.setZoom(currentMinZoom);
+    }
+  }
+});
+
+// B. Listen for browser URL Hash changes
 window.addEventListener('hashchange', () => {
   const hash = window.location.hash;
   if (!hash || !hash.startsWith('#')) return;
@@ -170,8 +224,11 @@ window.addEventListener('hashchange', () => {
       const latDiff = Math.abs(currentCenter.lat - targetLat);
       const lngDiff = Math.abs(currentCenter.lng - targetLng);
       
-      if (currentZoom !== targetZoom || latDiff > 0.0001 || lngDiff > 0.0001) {
-        map.setView([targetLat, targetLng], targetZoom, { animate: true });
+      // Ensure incoming targetZoom doesn't break the device limit
+      const safeZoom = Math.max(targetZoom, map.getMinZoom());
+
+      if (currentZoom !== safeZoom || latDiff > 0.0001 || lngDiff > 0.0001) {
+        map.setView([targetLat, targetLng], safeZoom, { animate: true });
       }
 
       if (getTheme() !== targetTheme) {
