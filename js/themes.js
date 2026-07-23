@@ -75,12 +75,13 @@ export const themes = {
     filter: (combinedData) => {
       const val = combinedData['name_processed'];
       const validTrai = [
-        "Ngọc Hà", "Vĩnh Phúc", "Liễu Giai", "Ngọc Khánh", 
+        "Lệ Mật", "Ngọc Hà", "Vĩnh Phúc", "Liễu Giai", "Ngọc Khánh", 
         "Vạn Phúc", "Kim Mã", "Kim Mã Thượng", "Giảng Võ", "Vạn Bảo", "Hào Nam", "Thịnh Hào"
       ];
       return val && validTrai.includes(val.trim());
     },
     ranks: [
+      { value: "Lệ Mật", label: "Lệ Mật" },
       { value: "Ngọc Hà", label: "Ngọc Hà" },
       { value: "Vĩnh Phúc", label: "Vĩnh Phúc" },
       { value: "Liễu Giai", label: "Liễu Giai" },
