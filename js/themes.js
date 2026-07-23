@@ -32,7 +32,7 @@ export const themes = {
   },
   historical_epoch: {
     name: "Thời kỳ Lịch sử",
-    description: "",
+    description: "Bản đồ thể hiện các thời kỳ lịch sử gắn liền với danh nhân, sự kiện và triều đại được dùng để đặt tên đường phố tại Hà Nội.",
     attribute: "period",
     filter: (combinedData) => {
       const val = combinedData['period'];
