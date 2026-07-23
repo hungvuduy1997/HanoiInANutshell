@@ -22,7 +22,7 @@ export const themes = {
     ]
   },
   subcategory: {
-    name: "Phân loại phụ",
+    name: "Lĩnh vực hoạt động",
     description: "",
     attribute: "subcategory",
     filter: (combinedData) => {
