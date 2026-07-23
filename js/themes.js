@@ -98,13 +98,10 @@ export const themes = {
   Local_Hero: {
     name: "Danh nhân địa phương",
     description: "",
-    attribute: "localhero",
+    attribute: "name_processed",
     filter: (combinedData) => {
       const val = combinedData['localhero'];
-      return val && val !== 'NULL' && val.trim() !== '';
-    },
-    categories: {
-      "TRUE": { lightColor: "hsl(210, 55%, 33%)", darkColor: "hsl(35, 85%, 50%)", label: "Danh nhân địa phương" }
+      return val && String(val).trim().toUpperCase() === 'TRUE';
     }
   }
 };

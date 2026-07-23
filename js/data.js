@@ -323,12 +323,20 @@ export function applyTheme(themeKey, initialLoad = false) {
     } 
     else {
       console.log(`Legend Engine: Attribute drop detected for "${themeKey}". Compiling dynamic parameters...`);
+      // Inside applyTheme() in js/data.js:
       const data = window._csvStorageTables;
       const uniqueValues = new Set();
 
       if (data && data.geninfo) {
         Object.keys(data.geninfo).forEach(fullId => {
           const combinedData = getStreetCombinedData(fullId);
+
+          // 1. Run the theme's filter FIRST (if one exists)
+          if (theme.filter && !theme.filter(combinedData)) {
+            return; // Skip streets that don't pass the filter!
+          }
+
+          // 2. Extract the attribute value ONLY from features that passed
           const rawValue = combinedData[theme.attribute];
 
           if (rawValue && rawValue !== 'NULL' && rawValue.toString().trim() !== '') {
