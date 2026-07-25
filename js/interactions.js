@@ -131,9 +131,14 @@ export function attachInteractions(layer, feature) {
 
     const invalidDisplayValues = ['TRUE', 'FALSE', '1', '0', 'NULL', 'UNDEFINED'];
     if (cleanDisplayLabel && !invalidDisplayValues.includes(cleanDisplayLabel.toUpperCase())) {
+      // 1. Get the property configuration directly from PROPERTY_SCHEMA
+      const schemaConfig = PROPERTY_SCHEMA[activeTheme?.attribute];
+      // 2. Use schema label if available (e.g. "Kẻ"), otherwise fall back to theme name
+      const displayPropertyLabel = schemaConfig?.label || activeTheme?.name;
+
       panelRowsHtml = `
         <p class="info-row" style="margin: 6px 0; color: #222;">
-          <strong>${activeTheme.name}:</strong> ${cleanDisplayLabel}
+          <strong>${displayPropertyLabel}:</strong> ${cleanDisplayLabel}
         </p>
       ` + panelRowsHtml;
     }
