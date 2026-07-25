@@ -71,6 +71,8 @@ export const map = L.map('map', {
   zoomControl: false
 });
 
+L.control.zoom({ position: 'bottomright' }).addTo(map);
+
 // Tile Layers Setup
 const lightMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
   attribution: '© OpenStreetMap, © CARTO',
