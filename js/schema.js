@@ -130,6 +130,13 @@ export const PROPERTY_SCHEMA = {
     default: '',
     targets: ['panel_row']
   },
+  specialization: {
+    csvSource: 'database',
+    csvHeader: 'specialization',
+    label: 'Nghề đặc thù',
+    default: '',
+    targets: ['panel_row']
+  },
   description: {
     csvSource: 'database',
     csvHeader: 'description',
