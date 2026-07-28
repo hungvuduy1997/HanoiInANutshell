@@ -75,8 +75,23 @@ function getSpectralGradientColor(percent, mode) {
       { offset: 0.5,  hex: '#81eb61' },
       { offset: 0.75, hex: '#abdda4' },
       { offset: 1.0,  hex: '#2b83ba' }
-    ],
-    dark: [
+    ],/**
+    [
+      { offset: 0.0,  hex: '#d77a61' },
+      { offset: 0.2,  hex: '#e4b0ba' },
+      { offset: 0.4,  hex: '#e9c46a' },
+      { offset: 0.6,  hex: '#b6c99a' },
+      { offset: 0.8,  hex: '#8fb4c7' },
+      { offset: 1.0,  hex: '#b08bbb' }
+    ],*/
+    dark: /**[
+      { offset: 0.0,  hex: '#d77a61' },
+      { offset: 0.2,  hex: '#e4b0ba' },
+      { offset: 0.4,  hex: '#e9c46a' },
+      { offset: 0.6,  hex: '#b6c99a' },
+      { offset: 0.8,  hex: '#8fb4c7' },
+      { offset: 1.0,  hex: '#b08bbb' }
+    ]*/[
       { offset: 0.0,  hex: '#ff4d4d' },
       { offset: 0.2,  hex: '#ff9f43' },
       { offset: 0.4,  hex: '#fff200' },
