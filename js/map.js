@@ -71,6 +71,11 @@ export const map = L.map('map', {
   zoomControl: false
 });
 
+// Create a custom pane so the user location marker always renders ON TOP of road geometries
+map.createPane('userLocationPane');
+map.getPane('userLocationPane').style.zIndex = '650';
+map.getPane('userLocationPane').style.pointerEvents = 'none'; // Allows clicks to pass through if needed
+
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
 // Tile Layers Setup
@@ -223,7 +228,8 @@ map.on('locationfound', (e) => {
       color: '#ffffff',
       weight: 2,
       opacity: 1,
-      fillOpacity: 0.9
+      fillOpacity: 0.9,
+      pane: 'userLocationPane'
     }),
     // Outer accuracy circle
     L.circle(e.latlng, {
@@ -231,7 +237,8 @@ map.on('locationfound', (e) => {
       color: '#1e88e5',
       weight: 1,
       fillColor: '#1e88e5',
-      fillOpacity: 0.15
+      fillOpacity: 0.15,
+      pane: 'userLocationPane'
     })
   ]).addTo(map);
 });
