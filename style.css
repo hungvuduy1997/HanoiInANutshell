@@ -71,9 +71,10 @@ body, html {
 }
 
 /* --- SIDEBAR INFO PANEL --- */
+/* --- SIDEBAR INFO PANEL --- */
 #infoPanel {
   position: absolute; 
-  top: 70px; /* Offset safely down below the top button layout row */
+  top: 70px; 
   right: 20px; 
   z-index: 1000;
   background: white; 
@@ -85,6 +86,30 @@ body, html {
   border-radius: 6px; 
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+  box-sizing: border-box;
+}
+
+/* Make the close button sticky relative to the scrolled panel */
+.close-panel-btn {
+  position: sticky !important;
+  top: 0;
+  float: right;
+  z-index: 10;
+  background: white !important;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #666;
+  margin-top: -5px;
+  margin-right: -5px;
+}
+
+.close-panel-btn:hover {
+  color: #000;
+  background: #f0f0f0 !important;
 }
 
 /* --- COLLAPSIBLE LEGEND PANEL (BOTTOM LEFT) --- */

@@ -153,6 +153,7 @@ export function attachInteractions(layer, feature) {
       </div>
     `;
     panel.style.display = 'block';
+    panel.scrollTop = 'block';
 
     const closeBtn = panel.querySelector('.close-panel-btn');
     if (closeBtn) {
