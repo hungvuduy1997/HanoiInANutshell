@@ -55,7 +55,7 @@ export const themes = {
   },
   Ke_Of_HN: {
     name: "Các Kẻ ở Hà Nội",
-    description: "",
+    description: "Trong tiếng Việt cổ, 'Kẻ' nghĩa là một vùng đất, một không gian cư trú, một cộng đồng người. Tại Hà Nội, các làng 'Kẻ' vốn là tên Nôm dân dã của các làng cổ (một số có từ thời Hùng Vương), phần lớn bên cạnh các dòng sông xung quanh kinh thành, tạo thành một vành đai nông - thủ công nghiệp phụ trợ cho kinh thành.",
     attribute: "ke",
     filter: (combinedData) => {
       const val = combinedData['ke'];
