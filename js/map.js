@@ -193,7 +193,53 @@ map.on('moveend', () => {
 // --------------------------------------------------------
 // 4. GLOBAL WINDOW EVENT LISTENERS
 // --------------------------------------------------------
+// Variable to store the user location marker/circle layer
+let userLocationMarker = null;
 
+const locateBtn = document.getElementById('locateToggle');
+
+if (locateBtn) {
+  locateBtn.addEventListener('click', () => {
+    // 1. Trigger Leaflet's built-in geolocation service
+    map.locate({ setView: true, maxZoom: 18 });
+  });
+}
+
+// 2. Event when location is successfully found
+map.on('locationfound', (e) => {
+  const radius = e.accuracy;
+
+  // Remove previous marker if user moves or re-clicks
+  if (userLocationMarker) {
+    map.removeLayer(userLocationMarker);
+  }
+
+  // Create a custom blue pulsing marker or standard circle
+  userLocationMarker = L.layerGroup([
+    // Blue dot at user position
+    L.circleMarker(e.latlng, {
+      radius: 8,
+      fillColor: '#1e88e5',
+      color: '#ffffff',
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.9
+    }),
+    // Outer accuracy circle
+    L.circle(e.latlng, {
+      radius: radius,
+      color: '#1e88e5',
+      weight: 1,
+      fillColor: '#1e88e5',
+      fillOpacity: 0.15
+    })
+  ]).addTo(map);
+});
+
+// 3. Event when location access fails or is denied
+map.on('locationerror', (e) => {
+  alert("Không thể xác định vị trí của bạn. Vui lòng cho phép quyền truy cập vị trí trên trình duyệt.");
+});
 // A. Listen for screen resize (e.g. switching portrait/landscape on mobile or resizing browser)
 window.addEventListener('resize', () => {
   const currentMinZoom = getDeviceMinZoom();
