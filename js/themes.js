@@ -51,7 +51,15 @@ export const themes = {
       { value: "Nhà Nguyễn & Pháp thuộc", label: "Nhà Nguyễn & Pháp thuộc (1802 - 1945)" },
       { value: "Cách mạng & kháng chiến", label: "Cách mạng & kháng chiến (1945 - 1975)" },
       { value: "Sau Giải phóng & hiện đại", label: "Sau Giải phóng & hiện đại (1975 - nay)" }
-    ]
+    ],
+  Local_Hero: {
+    name: "Danh nhân địa phương",
+    description: "",
+    attribute: "name_processed",
+    filter: (combinedData) => {
+      const val = combinedData['localhero'];
+      return val && String(val).trim().toUpperCase() === 'TRUE';
+    }
   },
   Ke_Of_HN: {
     name: "Các Kẻ ở Hà Nội",
@@ -94,14 +102,6 @@ export const themes = {
       { value: "Hào Nam", label: "Hào Nam" },
       { value: "Thịnh Hào", label: "Thịnh Hào" }
     ]
-  },
-  Local_Hero: {
-    name: "Danh nhân địa phương",
-    description: "",
-    attribute: "name_processed",
-    filter: (combinedData) => {
-      const val = combinedData['localhero'];
-      return val && String(val).trim().toUpperCase() === 'TRUE';
-    }
+  }
   }
 };
