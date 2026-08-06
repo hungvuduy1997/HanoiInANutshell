@@ -400,8 +400,11 @@ async function rebuildLayers(theme) {
       maxY: bounds.getNorth()
     };
 
-    console.log("Streaming view-bounded binary elements via FlatGeobuf index...");
-    const iterator = flatgeobuf.deserialize('data/HIAN_Geometry-260719.fgb', bbox);
+    // Dynamically resolves FGB path from active theme or defaults to fallback schema configuration
+    const fgbFilePath = theme?.fgbSource || (DATA_SOURCES.geninfo.fgbDefault || 'data/HIAN_Geometry-260719.fgb');
+
+    console.log(`Streaming view-bounded binary elements via FlatGeobuf index (${fgbFilePath})...`);
+    const iterator = flatgeobuf.deserialize(fgbFilePath, bbox);
     const visibleFeatures = [];
     
     const activeTheme = themes[currentThemeKey];
@@ -436,67 +439,93 @@ async function rebuildLayers(theme) {
 
     const sortedGeoJsonStructure = { type: "FeatureCollection", features: sortedFeatures };
 
-// Inside async function rebuildLayers(theme) in js/data.js
+    // Inside async function rebuildLayers(theme) in js/data.js
 
-const nextDataLayer = L.geoJson(sortedGeoJsonStructure, {
-  style: styleFunction,
-  onEachFeature: (f, l) => {
-    const normId = getNormalizedId(f);
-    f.properties.full_id = normId;
-    
-    const combinedData = getStreetCombinedData(normId);
-    
-    // 1. Check if street name is missing/invalid
-    const isNameMissing = !combinedData.street_name || 
-                          combinedData.street_name === 'NULL' || 
-                          combinedData.street_name === '' || 
-                          combinedData.street_name === 'Đường phố chưa biết tên';
+    const nextDataLayer = L.geoJson(sortedGeoJsonStructure, {
+      style: styleFunction,
+      pointToLayer: (feature, latlng) => {
+        const normId = getNormalizedId(feature);
+        const combinedData = getStreetCombinedData(normId);
+        const activeTheme = themes[currentThemeKey];
+        const targetValue = combinedData[activeTheme?.attribute] || 'Unknown';
+        const color = getColorForValue(activeTheme, targetValue, currentMode);
 
-    // 2. Check if the road type is in your restricted list
-    const roadType = (combinedData.highway || f.properties.highway || '').toLowerCase().trim();
-    const isRestrictedType = RESTRICTED_HIGHWAY_TYPES.includes(roadType);
-
-    // 3. Un-clickable ONLY IF it's a restricted type AND has no name
-    const isUnclickable = isRestrictedType && isNameMissing;
-
-    if (!isUnclickable) {
-      attachInteractions(l, f);
-    } else {
-      l.options.interactive = false;
-      if (l.on) {
-        l.on('add', () => {
-          if (l._path) l._path.style.pointerEvents = 'none';
+        return L.circleMarker(latlng, {
+          radius: 6,
+          fillColor: color,
+          color: '#ffffff',
+          weight: 1.5,
+          opacity: 1,
+          fillOpacity: 0.9,
+          interactive: true
         });
+      },
+      onEachFeature: (f, l) => {
+        const normId = getNormalizedId(f);
+        f.properties.full_id = normId;
+        
+        const combinedData = getStreetCombinedData(normId);
+        
+        // 1. Check if street name is missing/invalid
+        const isNameMissing = !combinedData.street_name || 
+                              combinedData.street_name === 'NULL' || 
+                              combinedData.street_name === '' || 
+                              combinedData.street_name === 'Đường phố chưa biết tên';
+
+        // 2. Check if the road type is in your restricted list
+        const roadType = (combinedData.highway || f.properties.highway || '').toLowerCase().trim();
+        const isRestrictedType = RESTRICTED_HIGHWAY_TYPES.includes(roadType);
+
+        // 3. Un-clickable ONLY IF it's a restricted type AND has no name
+        const isUnclickable = isRestrictedType && isNameMissing;
+
+        if (!isUnclickable) {
+          attachInteractions(l, f);
+        } else {
+          l.options.interactive = false;
+          if (l.on) {
+            l.on('add', () => {
+              if (l._path) l._path.style.pointerEvents = 'none';
+            });
+          }
+        }
       }
-    }
-  }
-});
+    });
 
-const nextBufferLayer = L.geoJson(sortedGeoJsonStructure, {
-  style: () => ({ color: 'transparent', weight: 15, opacity: 0, interactive: true }),
-  onEachFeature: (f, l) => {
-    const normId = getNormalizedId(f);
-    f.properties.full_id = normId;
-    
-    const combinedData = getStreetCombinedData(normId);
-    
-    const isNameMissing = !combinedData.street_name || 
-                          combinedData.street_name === 'NULL' || 
-                          combinedData.street_name === '' || 
-                          combinedData.street_name === 'Đường phố chưa biết tên';
+    const nextBufferLayer = L.geoJson(sortedGeoJsonStructure, {
+      style: () => ({ color: 'transparent', weight: 15, opacity: 0, interactive: true }),
+      pointToLayer: (feature, latlng) => {
+        return L.circleMarker(latlng, {
+          radius: 25,
+          stroke: false,
+          fill: true,
+          fillOpacity: 0,
+          interactive: true
+        });
+      },
+      onEachFeature: (f, l) => {
+        const normId = getNormalizedId(f);
+        f.properties.full_id = normId;
+        
+        const combinedData = getStreetCombinedData(normId);
+        
+        const isNameMissing = !combinedData.street_name || 
+                              combinedData.street_name === 'NULL' || 
+                              combinedData.street_name === '' || 
+                              combinedData.street_name === 'Đường phố chưa biết tên';
 
-    const roadType = (combinedData.highway || f.properties.highway || '').toLowerCase().trim();
-    const isRestrictedType = RESTRICTED_HIGHWAY_TYPES.includes(roadType);
+        const roadType = (combinedData.highway || f.properties.highway || '').toLowerCase().trim();
+        const isRestrictedType = RESTRICTED_HIGHWAY_TYPES.includes(roadType);
 
-    const isUnclickable = isRestrictedType && isNameMissing;
+        const isUnclickable = isRestrictedType && isNameMissing;
 
-    if (!isUnclickable) {
-      attachInteractions(l, f);
-    } else {
-      l.options.interactive = false;
-    }
-  }
-});
+        if (!isUnclickable) {
+          attachInteractions(l, f);
+        } else {
+          l.options.interactive = false;
+        }
+      }
+    });
 
     nextDataLayer.addTo(map);
     nextBufferLayer.addTo(map);
