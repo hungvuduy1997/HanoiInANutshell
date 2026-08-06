@@ -10,15 +10,13 @@ export const themes = {
     description: "",
     attribute: "category",
     ranks: [
-      { value: "Triều đại", label: "Triều đại" },
-      { value: "Quốc hiệu", label: "Quốc hiệu"},
-      { value: "Sự kiện lịch sử", label: "Sự kiện lịch sử" },
-      { value: "Địa danh", label: "Địa danh" },
-      { value: "Làng nghề", label: "Làng nghề" },
-      { value: "Tôn giáo", label: "Tôn giáo" },
-      { value: "Nhân vật lịch sử", label: "Nhân vật lịch sử" },
-      { value: "Tư tưởng xã hội", label: "Tư tưởng xã hội" },
-      { value: "Khác", label: "Khác" }
+      {value: "Triều đại/ Quốc hiệu", label: "Triều đại/ Quốc hiệu"},
+      {value: "Sự kiện lịch sử", label: "Sự kiện lịch sử"},
+      {value: "Địa danh", label: "Địa danh"},
+      {value: "Di tích", label: "Di tích"},
+      {value: "Nhân vật lịch sử", label: "Nhân vật lịch sử"},
+      {value: "Tư tưởng xã hội", label: "Tư tưởng xã hội"},
+      {value: "Khác", label: "Khác"}
     ]
   },
   subcategory: {
