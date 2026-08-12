@@ -2313,7 +2313,7 @@ Ngõ 78 Đường Kim Giang - Định Công,Kim Giang,Định Công,,
 Ngõ 80 Đường Kim Giang - Định Công,Kim Giang,Định Công,,
 Ngõ 92 Đường Kim Giang - Định Công,Kim Giang,Định Công,,
 Tập Thể Dược 80 Đường Kim Giang - Định Công,Kim Giang,Định Công,,
-Kđt Kim Văn - Kim Lũ - Định Công,Kim Văn - Kim Lũ,Định Công,,
+Kđt Kim Văn - Kim Lũ - Định Công,#N/A,#N/A,,
 Hẻm 192/236/2 Phố Lê Trọng Tấn - Định Công,Lê Trọng Tấn,Định Công,,
 Hẻm 192/248/25 Phố Lê Trọng Tấn - Định Công,Lê Trọng Tấn,Định Công,,
 Ngách 192/236 Phố Lê Trọng Tấn - Định Công,Lê Trọng Tấn,Định Công,,
@@ -7589,9 +7589,9 @@ Ngõ 81 Phố Láng Hạ - Ô Chợ Dừa,Láng Hạ,Ô Chợ Dừa,,
 Ngõ 85 Phố Láng Hạ - Ô Chợ Dừa,Láng Hạ,Ô Chợ Dừa,,
 Ngõ 87 Phố Láng Hạ - Ô Chợ Dừa,Láng Hạ,Ô Chợ Dừa,,
 Phố Láng Hạ - Ô Chợ Dừa,Láng Hạ,Ô Chợ Dừa,,
-Ngõ 148 Phố Mai Anh Tuấn - Ô Chợ Dừa,Mai Anh Tuấn,Ô Chợ Dừa,,TRUE
-Ngõ 156 Phố Mai Anh Tuấn - Ô Chợ Dừa,Mai Anh Tuấn,Ô Chợ Dừa,,TRUE
-Phố Mai Anh Tuấn - Ô Chợ Dừa,Mai Anh Tuấn,Ô Chợ Dừa,,TRUE
+Ngõ 148 Phố Mai Anh Tuấn - Ô Chợ Dừa,Mai Anh Tuấn,Ô Chợ Dừa,,
+Ngõ 156 Phố Mai Anh Tuấn - Ô Chợ Dừa,Mai Anh Tuấn,Ô Chợ Dừa,,
+Phố Mai Anh Tuấn - Ô Chợ Dừa,Mai Anh Tuấn,Ô Chợ Dừa,,
 Ngõ 104 Phố Nguyễn Phúc Lai - Ô Chợ Dừa,Nguyễn Phúc Lai,Ô Chợ Dừa,,
 Ngõ 12 Phố Nguyễn Phúc Lai - Ô Chợ Dừa,Nguyễn Phúc Lai,Ô Chợ Dừa,,
 Ngõ 16 Phố Nguyễn Phúc Lai - Ô Chợ Dừa,Nguyễn Phúc Lai,Ô Chợ Dừa,,
@@ -7630,24 +7630,24 @@ Phố Tôn Đức Thắng - Ô Chợ Dừa,Tôn Đức Thắng,Ô Chợ Dừa,,
 Ngõ Trại Tóc - Ô Chợ Dừa,Trại Tóc,Ô Chợ Dừa,,
 Ngõ 11 Phố Trịnh Hoài Đức - Ô Chợ Dừa,Trịnh Hoài Đức,Ô Chợ Dừa,,
 Phố Trịnh Hoài Đức - Ô Chợ Dừa,Trịnh Hoài Đức,Ô Chợ Dừa,,
-Hẻm 2/1/1 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,
-Ngách 2/1 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,
-Ngách 29/44 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,
-Ngách 29/46 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,
-Ngách 29/48 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,
-Ngõ 18 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,
-Ngõ 2 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,
-Ngõ 23 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,
-Ngõ 29 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,
-Ngõ 3 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,
-Ngõ 8 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,
-Ngõ 8A Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,
-Ngõ 8B Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,
-Ngõ 8C Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,
-Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,
+Hẻm 2/1/1 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
+Ngách 2/1 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
+Ngách 29/44 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
+Ngách 29/46 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
+Ngách 29/48 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
+Ngõ 18 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
+Ngõ 2 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
+Ngõ 23 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
+Ngõ 29 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
+Ngõ 3 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
+Ngõ 8 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
+Ngõ 8A Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
+Ngõ 8B Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
+Ngõ 8C Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
+Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
 "Phố Hoàng Cầu - Ô Chợ Dừa, Đống Đa",Hoàng Cầu,"Ô Chợ Dừa, Đống Đa",,
 "Phố Láng Hạ - Ô Chợ Dừa, Đống Đa",Láng Hạ,"Ô Chợ Dừa, Đống Đa",,
-"Phố Mai Anh Tuấn - Ô Chợ Dừa, Đống Đa",Mai Anh Tuấn,"Ô Chợ Dừa, Đống Đa",,TRUE
+"Phố Mai Anh Tuấn - Ô Chợ Dừa, Đống Đa",Mai Anh Tuấn,"Ô Chợ Dừa, Đống Đa",,
 "Phố Ô Chợ Dừa - Ô Chợ Dừa, Đống Đa",Ô Chợ Dừa,"Ô Chợ Dừa, Đống Đa",,
 "Ngõ 88 Thái Hà - Ô Chợ Dừa, Đống Đa",Thái Hà,"Ô Chợ Dừa, Đống Đa",,
 "Phố Thái Hà - Ô Chợ Dừa, Đống Đa",Thái Hà,"Ô Chợ Dừa, Đống Đa",,
