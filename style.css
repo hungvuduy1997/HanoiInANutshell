@@ -25,7 +25,6 @@ body, html {
   gap: 10px;
 }
 
-/* Update this specific block right here: */
 .control-btn, #themeSelect {
   position: static !important; 
   background: white;
@@ -34,10 +33,9 @@ body, html {
   padding: 8px 14px;
   border-radius: 6px;
   
-  /* FORCE THE FONT TO A CLEAN SANS-SERIF TYPEFACE */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 13px;
-  font-weight: 500; /* Gives it a crisp, deliberate modern look */
+  font-weight: 500;
   
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
@@ -48,6 +46,13 @@ body, html {
 
 .control-btn:hover, #themeSelect:hover {
   background: #f5f5f5;
+}
+
+/* Truncate long theme names gracefully */
+#themeSelect {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 /* --- CONDITIONAL VISIBILITY ANIMATION FOR MODETOGGLE --- */
@@ -70,7 +75,50 @@ body, html {
   margin: 0;
 }
 
-/* --- SIDEBAR INFO PANEL --- */
+/* --- TOP-LEFT THEME DESCRIPTION BOX --- */
+#themeDescriptionBox {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  color: #222;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  font-size: 13px;
+  line-height: 1.4;
+  max-height: 200px;
+  max-width: 250px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  display: none;
+  pointer-events: auto;
+}
+
+.close-desc-btn {
+  position: sticky !important;
+  top: 0;
+  float: right;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  color: #666;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: -4px;
+  margin-right: -8px;
+}
+
+.close-desc-btn:hover {
+  color: #000;
+  background: #f0f0f0 !important;
+}
+
 /* --- SIDEBAR INFO PANEL --- */
 #infoPanel {
   position: absolute; 
@@ -89,7 +137,6 @@ body, html {
   box-sizing: border-box;
 }
 
-/* Make the close button sticky relative to the scrolled panel */
 .close-panel-btn {
   position: sticky !important;
   top: 0;
@@ -147,7 +194,6 @@ body, html {
   transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out, padding 0.3s ease-in-out;
 }
 
-/* Collapse override states */
 #legendContainer.collapsed #legend {
   max-height: 0;
   opacity: 0;
@@ -159,37 +205,7 @@ body, html {
 .legend-item { display: flex; align-items: center; margin-bottom: 4px; font-size: 12px; }
 .legend-color { width: 15px; height: 15px; margin-right: 8px; border-radius: 2px; }
 
-/* --- CUSTOM SPECIAL VECTOR EFFECTS --- */
-.glow-line { 
-  filter: drop-shadow(0 0 2px rgba(255,255,255,0.5)); 
-}
-
-/* --- LEAFLET POP-UP TYPOGRAPHY --- */
-.leaflet-popup-content-wrapper {
-  font-family: "Helvetica Neue", Roboto, sans-serif;
-  border-radius: 6px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-}
-
-/* Target the text inside the pop-up specifically */
-.leaflet-popup-content {
-  font-size: 13px;
-  line-height: 1.5;
-  color: #333;
-  margin: 12px 15px; /* Clean internal margins */
-}
-
-/* Style the attribute titles/labels inside the pop-up */
-.leaflet-popup-content strong {
-  font-weight: 600;
-  color: #000;
-  text-transform: capitalize; /* Changes display text casing style if desired */
-}
-
-/* Prevent pure black flashes behind your smooth new tiles */
-.dark-mode #map {
-  background-color: #242426 !important; 
-}
+/* --- SATELLITE CONTROLS & RULER (DESKTOP DEFAULT) --- */
 #satelliteFilterContainer {
   position: fixed;
   bottom: 25px;
@@ -217,7 +233,6 @@ body, html {
   width: 200px;
 }
 
-/* Generates procedural geometric tick lines mimicking a drafting rule */
 .ruler-track-ticks {
   height: 6px;
   width: 100%;
@@ -248,30 +263,99 @@ body, html {
   color: #666;
 }
 
-/* Add this at the bottom of style.css */
 .satellite-tile-target {
   transition: filter 0.8s ease-in-out !important;
 }
 
-/* --- TOP-LEFT THEME DESCRIPTION BOX --- */
-#themeDescriptionBox {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1000;
-  background: rgba(255, 255, 255, 0.95);
-  color: #222;
-  padding: 10px 14px;
+/* --- CUSTOM VECTOR & POPUP EFFECTS --- */
+.glow-line { 
+  filter: drop-shadow(0 0 2px rgba(255,255,255,0.5)); 
+}
+
+.leaflet-popup-content-wrapper {
+  font-family: "Helvetica Neue", Roboto, sans-serif;
   border-radius: 6px;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+.leaflet-popup-content {
   font-size: 13px;
-  line-height: 1.4;
-  max-height: 200px;
-  max-width: 250px;
-  overflow-y: auto;
-  padding: 10px;
-  box-sizing: border-box;
-  display: none; /* Hidden by default until populated */
-  pointer-events: auto;
+  line-height: 1.5;
+  color: #333;
+  margin: 12px 15px;
+}
+
+.leaflet-popup-content strong {
+  font-weight: 600;
+  color: #000;
+  text-transform: capitalize;
+}
+
+.dark-mode #map {
+  background-color: #242426 !important; 
+}
+
+/* --- MOBILE RESPONSIVE OVERRIDES --- */
+@media screen and (max-width: 600px) {
+  /* Restrict select dropdown width */
+  #themeSelect {
+    max-width: 120px;
+  }
+
+  /* Duck description box below top button row */
+  #themeDescriptionBox {
+    top: 66px;
+    left: 20px;
+    max-width: calc(100vw - 40px);
+  }
+
+  /* Cap legend vertical space on small viewports */
+  #legend {
+    max-height: 200px;
+  }
+
+  #legendContainer {
+    max-width: calc(100vw - 40px);
+  }
+
+  /* --- VERTICAL SATELLITE SLIDER ON MOBILE (RIGHT-ALIGNED, ABOVE ZOOM CONTROLS) --- */
+  #satelliteFilterContainer {
+    bottom: 100px;
+    right: 10px;
+    top: auto;
+    left: auto;
+    transform: none;
+    
+    width: 30px;
+    padding: 10px 0;
+    box-sizing: border-box;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .ruler-container {
+    width: 30px;
+    height: 140px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #satelliteSaturationSlider {
+    writing-mode: bt-lr;
+    writing-mode: vertical-lr;
+    direction: rtl; /* 0% at bottom, 100% at top */
+    width: 6px;
+    height: 140px;
+    accent-color: #222;
+  }
+
+  /* Hide decorative ticks and text labels on mobile to keep 34px width */
+  .ruler-track-ticks, 
+  .ruler-labels {
+    display: none !important;
+  }
 }

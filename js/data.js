@@ -55,8 +55,18 @@ function updateThemeDescription(theme) {
   if (!descBox) return;
 
   if (theme && theme.description && theme.description.trim() !== '') {
-    descBox.innerHTML = `<strong>${theme.name || ''}</strong><br>${theme.description}`;
+    descBox.innerHTML = `
+      <button class="close-desc-btn" id="closeDescBtn" aria-label="Close description">&times;</button>
+      <div><strong>${theme.name || ''}</strong><br>${theme.description}</div>
+    `;
     descBox.style.display = 'block';
+
+    const closeBtn = document.getElementById('closeDescBtn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        descBox.style.display = 'none';
+      });
+    }
   } else {
     descBox.style.display = 'none';
   }
