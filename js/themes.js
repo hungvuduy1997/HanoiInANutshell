@@ -47,8 +47,7 @@ export const themes = {
       { value: "Phân tranh", label: "Phân tranh (1527 - 1788)" },
       { value: "Nhà Tây Sơn", label: "Nhà Tây Sơn (1788 - 1802)" },
       { value: "Nhà Nguyễn & Pháp thuộc", label: "Nhà Nguyễn & Pháp thuộc (1802 - 1945)" },
-      { value: "Cách mạng & kháng chiến", label: "Cách mạng & kháng chiến (1945 - 1975)" },
-      { value: "Sau Giải phóng & hiện đại", label: "Sau Giải phóng & hiện đại (1975 - nay)" }
+      { value: "Cách mạng & kháng chiến", label: "Cách mạng & kháng chiến (1945 - 1975)" }
     ]
   },
   Local_Hero: {
