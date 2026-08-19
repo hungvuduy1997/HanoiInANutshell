@@ -151,6 +151,13 @@ export const PROPERTY_SCHEMA = {
     default: '',
     targets: []
   },
+  theme: {
+    csvSource: 'database',
+    csvHeader: 'theme',
+    label: 'Chủ đề',
+    default: '',
+    targets: []
+    },
 
   // --- PROPERTIES OUT OF hian_trivia.csv ---
   trivia: {
