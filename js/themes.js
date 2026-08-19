@@ -100,7 +100,7 @@ export const themes = {
       { value: "Hào Nam", label: "Hào Nam" },
       { value: "Thịnh Hào", label: "Thịnh Hào" }
     ]
-  },
+  },/**
   navalbattle: {
     name: "Thuỷ chiến nhà Trần",
     attribute: "name_processed", // Color/rank features by name
@@ -110,5 +110,5 @@ export const themes = {
       // Splits "Thuỷ chiến nhà Trần, ..." by commas and checks if the theme is present
       return val.split(',').map(t => t.trim()).includes("Thuỷ chiến nhà Trần");
     }
-  } // Ensure this closing brace exists!
+  } // Ensure this closing brace exists!*/
 };
