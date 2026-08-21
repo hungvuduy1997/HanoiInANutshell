@@ -82,7 +82,7 @@ export const themes = {
       const val = combinedData['name_processed'];
       const validTrai = [
         "Lệ Mật", "Ngọc Hà", "Vĩnh Phúc", "Liễu Giai", "Ngọc Khánh", 
-        "Vạn Phúc", "Kim Mã", "Kim Mã Thượng", "Giảng Võ", "Vạn Bảo", "Hào Nam", "Thịnh Hào"
+        "Kim Mã", "Kim Mã Thượng", "Giảng Võ", "Vạn Bảo", "Vạn Phúc (Ngọc Hà)", "Hào Nam", "Thịnh Hào"
       ];
       return val && validTrai.includes(val.trim());
     },
@@ -92,12 +92,11 @@ export const themes = {
       { value: "Vĩnh Phúc", label: "Vĩnh Phúc" },
       { value: "Liễu Giai", label: "Liễu Giai" },
       { value: "Ngọc Khánh", label: "Ngọc Khánh" },
-      { value: "Vạn Phúc", label: "Vạn Phúc" },
       { value: "Kim Mã", label: "Kim Mã" },
       { value: "Kim Mã Thượng", label: "Kim Mã Thượng"},
       { value: "Giảng Võ", label: "Giảng Võ" },
       { value: "Vạn Bảo", label: "Vạn Bảo" },
-      { value: "Vạn Phúc", label: "Vạn Phúc"},
+      { value: "Vạn Phúc (Ngọc Hà)", label: "Vạn Phúc"},
       { value: "Hào Nam", label: "Hào Nam" },
       { value: "Thịnh Hào", label: "Thịnh Hào" }
     ]
