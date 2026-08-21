@@ -97,6 +97,7 @@ export const themes = {
       { value: "Kim Mã Thượng", label: "Kim Mã Thượng"},
       { value: "Giảng Võ", label: "Giảng Võ" },
       { value: "Vạn Bảo", label: "Vạn Bảo" },
+      { value: "Vạn Phúc", label: "Vạn Phúc"},
       { value: "Hào Nam", label: "Hào Nam" },
       { value: "Thịnh Hào", label: "Thịnh Hào" }
     ]
