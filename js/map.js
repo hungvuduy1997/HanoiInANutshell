@@ -1,4 +1,5 @@
 import { setMode, getTheme, setTheme } from './data.js';
+import { CARTO_KEY } from './config.js';
 
 // --------------------------------------------------------
 // 1. DEVICE DETECTOR & MIN-ZOOM THRESHOLDS
@@ -79,12 +80,12 @@ map.getPane('userLocationPane').style.pointerEvents = 'none'; // Allows clicks t
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
 // Tile Layers Setup
-const lightMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+const lightMap = L.tileLayer(`https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png?key=${CARTO_KEY}`, {
   attribution: '© OpenStreetMap, © CARTO',
   maxZoom: 20
 });
 
-const darkMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+const darkMap = L.tileLayer(`https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png?key=${CARTO_KEY}`, {
   attribution: '© OpenStreetMap, © CARTO',
   maxZoom: 20
 });
