@@ -1,20 +1,20 @@
+// app.js
+
 import { loadData, setTheme, getTheme } from './data.js';
 import { themes } from './themes.js';
 import { map, initialTheme } from './map.js'; 
 import { applyTheme } from './data.js';
 
-// --------------------------------------------------------
-// 1. INITIALIZE THEME & UI SELECTORS
-// --------------------------------------------------------
 applyTheme(initialTheme); 
-
 loadData();
 
+// --------------------------------------------------------
+// THEME SELECTOR UI
+// --------------------------------------------------------
 const themeSelect = document.getElementById('themeSelect');
 
 Object.keys(themes).forEach(key => {
   if (themes[key].hidden) return;
-
   const opt = document.createElement('option');
   opt.value = key;
   opt.textContent = themes[key].name;
@@ -29,7 +29,6 @@ if (!themeSelect.value && themes[activeThemeKey]) {
   secretOpt.value = activeThemeKey;
   secretOpt.textContent = `🔒 ${themes[activeThemeKey].name}`;
   secretOpt.disabled = true; 
-  
   themeSelect.appendChild(secretOpt);
   themeSelect.value = activeThemeKey;
 }
@@ -42,58 +41,31 @@ if (modeToggle) {
 }
 
 // --------------------------------------------------------
-// 2. SPATIAL INDEXING & BBOX FLATGEOBUF STREAMING
+// SINGLE FETCH FLATGEOBUF LOADER (Fixes HTTP 206 Waterfall)
 // --------------------------------------------------------
-// Single LayerGroup on Canvas renderer to hold screen-visible features
-const fgbLayerGroup = L.layerGroup().addTo(map);
+const fgbUrl = 'data/HIAN_Geometry-260719.fgb';
 
-// Set to track loaded feature IDs and avoid duplicate rendering during pan/zoom
-const loadedFeatureIds = new Set();
-
-async function loadVisibleFgbFeatures() {
-  // Get current map bounding box coordinates
-  const bounds = map.getBounds();
-  const bbox = {
-    minX: bounds.getWest(),
-    minY: bounds.getSouth(),
-    maxX: bounds.getEast(),
-    maxY: bounds.getNorth()
-  };
-
-  // Adjust path to your .fgb dataset file if necessary
-  const fgbUrl = 'data/HIAN_Geometry-260719.fgb'; 
-
+async function loadFgbData() {
   try {
-    // Stream only features overlapping current screen viewport using FlatGeobuf's R-tree index
-    const iter = flatgeobuf.geojson.deserialize(fgbUrl, bbox);
+    // 1. Single HTTP request to fetch the entire file into memory (200 OK)
+    const response = await fetch(fgbUrl);
+    
+    // 2. Stream directly into Leaflet's Canvas layer without range requests
+    const fgbLayer = flatgeobuf.L.leafletData(response.body, {
+      style: () => ({
+        color: '#1e88e5',
+        weight: 1.5,
+        opacity: 0.8
+      })
+    });
 
-    for await (const feature of iter) {
-      // Deduplicate already rendered entities
-      const id = feature.properties?.id || feature.id;
-      if (id && loadedFeatureIds.has(id)) continue;
-      if (id) loadedFeatureIds.add(id);
-
-      const layer = L.geoJSON(feature, {
-        onEachFeature: (feat, layerInstance) => {
-          // Bind popups, clicks, or sidebar info panel handlers here
-          layerInstance.on('click', () => {
-            // Handle street click event
-          });
-        }
-      });
-
-      layer.addTo(fgbLayerGroup);
-    }
+    fgbLayer.addTo(map);
   } catch (err) {
-    console.error('Error streaming FlatGeobuf spatial index:', err);
+    console.error('Error loading FlatGeobuf:', err);
   }
 }
 
-// Trigger streaming when map is ready and whenever panning/zooming finishes
+// Load ONCE when the map is ready (No moveend listeners needed!)
 map.whenReady(() => {
-  loadVisibleFgbFeatures();
-});
-
-map.on('moveend', () => {
-  loadVisibleFgbFeatures();
+  loadFgbData();
 });
