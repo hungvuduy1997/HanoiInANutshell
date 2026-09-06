@@ -69,7 +69,8 @@ export const map = L.map('map', {
   zoom: defaultZoom,
   minZoom: deviceMinZoom, // <--- Enforces the zoom limit
   maxZoom: 20,
-  zoomControl: false
+  zoomControl: false,
+  renderer: L.canvas({ padding: 0.5 })
 });
 
 // Create a custom pane so the user location marker always renders ON TOP of road geometries
