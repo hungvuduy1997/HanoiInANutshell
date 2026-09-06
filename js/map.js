@@ -67,20 +67,20 @@ export { initialTheme, initialMode };
 export const map = L.map('map', {
   center: defaultCenter,
   zoom: defaultZoom,
-  minZoom: deviceMinZoom, // <--- Enforces the zoom limit
+  minZoom: deviceMinZoom, // Enforces the zoom limit
   maxZoom: 20,
   zoomControl: false,
   renderer: L.canvas({ padding: 0.5 })
 });
 
-// Create a custom pane so the user location marker always renders ON TOP of road geometries
+// Create a custom pane so user location marker renders ON TOP of road geometries
 map.createPane('userLocationPane');
 map.getPane('userLocationPane').style.zIndex = '650';
-map.getPane('userLocationPane').style.pointerEvents = 'none'; // Allows clicks to pass through if needed
+map.getPane('userLocationPane').style.pointerEvents = 'none';
 
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-// Vector & Raster Tile Layers Setup
+// Vector Tile Layers Setup (MapLibre GL container opacity is handled via CSS)
 const lightMap = L.maplibreGL({
   style: `https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json?key=${CARTO_KEY}`,
   attribution: '© OpenStreetMap, © CARTO'
@@ -91,10 +91,12 @@ const darkMap = L.maplibreGL({
   attribution: '© OpenStreetMap, © CARTO'
 });
 
+// Raster Tile Layer (Leaflet tile layers DO support native opacity)
 const satelliteMap = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
   subdomains: ['0', '1', '2', '3'],
   attribution: '© Google Maps',
-  maxZoom: 20
+  maxZoom: 20,
+  opacity: 0.8
 });
 
 satelliteMap.on('tileload', (e) => {
@@ -103,10 +105,18 @@ satelliteMap.on('tileload', (e) => {
   updateSatelliteSaturation(sliderValue);
 });
 
-lightMap.addTo(map);
+// Set initial map base layer & container theme background
+const mapEl = document.getElementById('map');
+if (initialMode === 'dark') {
+  darkMap.addTo(map);
+  mapEl.classList.add('dark-mode');
+} else {
+  lightMap.addTo(map);
+  mapEl.classList.add('light-mode');
+}
 
-let currentMapType = 'leaflet'; 
-let currentLightMode = 'light'; 
+let currentMapType = initialMode === 'satellite' ? 'satellite' : 'leaflet'; 
+let currentLightMode = initialMode === 'satellite' ? 'light' : initialMode; 
 
 const viewToggle = document.getElementById('viewToggle');
 const modeToggle = document.getElementById('modeToggle');
@@ -127,6 +137,8 @@ function updateSatelliteSaturation(val) {
 }
 
 function applyModeFromUrl(targetMode) {
+  const mapContainer = document.getElementById('map');
+
   if (targetMode === 'satellite') {
     if (currentMapType !== 'satellite') {
       currentMapType = 'satellite';
@@ -134,6 +146,10 @@ function applyModeFromUrl(targetMode) {
       if (map.hasLayer(lightMap)) map.removeLayer(lightMap);
       if (map.hasLayer(darkMap)) map.removeLayer(darkMap);
       satelliteMap.addTo(map);
+      
+      mapContainer.classList.remove('light-mode', 'dark-mode');
+      mapContainer.classList.add('satellite-mode');
+
       if (modeToggle) modeToggle.classList.add('hidden');
       if (sliderContainer) sliderContainer.classList.remove('hidden');
       setMode(currentLightMode);
@@ -153,12 +169,20 @@ function applyModeFromUrl(targetMode) {
       if (modeToggle) modeToggle.innerHTML = '🌙';
       if (map.hasLayer(lightMap)) map.removeLayer(lightMap);
       darkMap.addTo(map);
+
+      mapContainer.classList.remove('light-mode', 'satellite-mode');
+      mapContainer.classList.add('dark-mode');
+
       setMode('dark');
     } else {
       currentLightMode = 'light';
       if (modeToggle) modeToggle.innerHTML = '☀️';
       if (map.hasLayer(darkMap)) map.removeLayer(darkMap);
       lightMap.addTo(map);
+
+      mapContainer.classList.remove('dark-mode', 'satellite-mode');
+      mapContainer.classList.add('light-mode');
+
       setMode('light');
     }
   }
@@ -200,30 +224,23 @@ map.on('moveend', () => {
 // --------------------------------------------------------
 // 4. GLOBAL WINDOW EVENT LISTENERS
 // --------------------------------------------------------
-// Variable to store the user location marker/circle layer
 let userLocationMarker = null;
-
 const locateBtn = document.getElementById('locateToggle');
 
 if (locateBtn) {
   locateBtn.addEventListener('click', () => {
-    // 1. Trigger Leaflet's built-in geolocation service
     map.locate({ setView: true, maxZoom: 18 });
   });
 }
 
-// 2. Event when location is successfully found
 map.on('locationfound', (e) => {
   const radius = e.accuracy;
 
-  // Remove previous marker if user moves or re-clicks
   if (userLocationMarker) {
     map.removeLayer(userLocationMarker);
   }
 
-  // Create a custom blue pulsing marker or standard circle
   userLocationMarker = L.layerGroup([
-    // Blue dot at user position
     L.circleMarker(e.latlng, {
       radius: 8,
       fillColor: '#1e88e5',
@@ -233,7 +250,6 @@ map.on('locationfound', (e) => {
       fillOpacity: 0.9,
       pane: 'userLocationPane'
     }),
-    // Outer accuracy circle
     L.circle(e.latlng, {
       radius: radius,
       color: '#1e88e5',
@@ -245,24 +261,20 @@ map.on('locationfound', (e) => {
   ]).addTo(map);
 });
 
-// 3. Event when location access fails or is denied
-map.on('locationerror', (e) => {
+map.on('locationerror', () => {
   alert("Không thể xác định vị trí của bạn. Vui lòng cho phép quyền truy cập vị trí trên trình duyệt.");
 });
 
-// A. Listen for screen resize (e.g. switching portrait/landscape on mobile or resizing browser)
 window.addEventListener('resize', () => {
   const currentMinZoom = getDeviceMinZoom();
   if (map.getMinZoom() !== currentMinZoom) {
     map.setMinZoom(currentMinZoom);
-    // If user's current zoom is zoomed out further than the new limit allows, pull it up
     if (map.getZoom() < currentMinZoom) {
       map.setZoom(currentMinZoom);
     }
   }
 });
 
-// B. Listen for browser URL Hash changes
 window.addEventListener('hashchange', () => {
   const hash = window.location.hash;
   if (!hash || !hash.startsWith('#')) return;
@@ -282,7 +294,6 @@ window.addEventListener('hashchange', () => {
       const latDiff = Math.abs(currentCenter.lat - targetLat);
       const lngDiff = Math.abs(currentCenter.lng - targetLng);
       
-      // Ensure incoming targetZoom doesn't break the device limit
       const safeZoom = Math.max(targetZoom, map.getMinZoom());
 
       if (currentZoom !== safeZoom || latDiff > 0.0001 || lngDiff > 0.0001) {

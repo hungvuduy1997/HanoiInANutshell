@@ -7,10 +7,36 @@ body, html {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
+/* Map Container with smooth background transition */
 #map { 
   height: 100vh; 
   width: 100%; 
   z-index: 1; 
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* --- MAPLIBRE CANVAS BASE MAP OPACITY CONTROL --- */
+/* Target MapLibre's GL Canvas layer container to dim vector tile base maps */
+.leaflet-gl-layer {
+  opacity: 0.5 !important;
+  transition: opacity 0.1s ease-in-out;
+}
+
+/* Light/Dark/Satellite Backdrop Colors for Opacity Dimming */
+#map.light-mode {
+  background-color: #ffffff !important;
+}
+
+#map.dark-mode {
+  background-color: #0d0d0d !important;
+}
+
+#map.dark-mode .leaflet-gl-layer {
+  opacity: 0.2 !important;
+}
+
+#map.satellite-mode {
+  background-color: #0d0d0d !important;
 }
 
 /* --- MAP CONTROL ROW (TOP RIGHT) --- */
@@ -48,7 +74,6 @@ body, html {
   background: #f5f5f5;
 }
 
-/* Truncate long theme names gracefully */
 #themeSelect {
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -205,7 +230,7 @@ body, html {
 .legend-item { display: flex; align-items: center; margin-bottom: 4px; font-size: 12px; }
 .legend-color { width: 15px; height: 15px; margin-right: 8px; border-radius: 2px; }
 
-/* --- SATELLITE CONTROLS & RULER (DESKTOP DEFAULT) --- */
+/* --- SATELLITE CONTROLS & RULER --- */
 #satelliteFilterContainer {
   position: fixed;
   bottom: 25px;
@@ -291,25 +316,18 @@ body, html {
   text-transform: capitalize;
 }
 
-.dark-mode #map {
-  background-color: #242426 !important; 
-}
-
 /* --- MOBILE RESPONSIVE OVERRIDES --- */
 @media screen and (max-width: 600px) {
-  /* Restrict select dropdown width */
   #themeSelect {
     max-width: 120px;
   }
 
-  /* Duck description box below top button row */
   #themeDescriptionBox {
     top: 66px;
     left: 20px;
     max-width: calc(100vw - 40px);
   }
 
-  /* Cap legend vertical space on small viewports */
   #legend {
     max-height: 200px;
   }
@@ -318,7 +336,6 @@ body, html {
     max-width: calc(100vw - 40px);
   }
 
-  /* --- VERTICAL SATELLITE SLIDER ON MOBILE (RIGHT-ALIGNED, ABOVE ZOOM CONTROLS) --- */
   #satelliteFilterContainer {
     bottom: 100px;
     right: 10px;
@@ -347,13 +364,12 @@ body, html {
   #satelliteSaturationSlider {
     writing-mode: bt-lr;
     writing-mode: vertical-lr;
-    direction: rtl; /* 0% at bottom, 100% at top */
+    direction: rtl;
     width: 6px;
     height: 140px;
     accent-color: #222;
   }
 
-  /* Hide decorative ticks and text labels on mobile to keep 34px width */
   .ruler-track-ticks, 
   .ruler-labels {
     display: none !important;
