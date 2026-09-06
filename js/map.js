@@ -79,15 +79,15 @@ map.getPane('userLocationPane').style.pointerEvents = 'none'; // Allows clicks t
 
 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-// Tile Layers Setup
-const lightMap = L.tileLayer(`https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png?key=${CARTO_KEY}`, {
-  attribution: '© OpenStreetMap, © CARTO',
-  maxZoom: 20
+// Vector & Raster Tile Layers Setup
+const lightMap = L.maplibreGL({
+  style: `https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json?key=${CARTO_KEY}`,
+  attribution: '© OpenStreetMap, © CARTO'
 });
 
-const darkMap = L.tileLayer(`https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png?key=${CARTO_KEY}`, {
-  attribution: '© OpenStreetMap, © CARTO',
-  maxZoom: 20
+const darkMap = L.maplibreGL({
+  style: `https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json?key=${CARTO_KEY}`,
+  attribution: '© OpenStreetMap, © CARTO'
 });
 
 const satelliteMap = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
@@ -248,6 +248,7 @@ map.on('locationfound', (e) => {
 map.on('locationerror', (e) => {
   alert("Không thể xác định vị trí của bạn. Vui lòng cho phép quyền truy cập vị trí trên trình duyệt.");
 });
+
 // A. Listen for screen resize (e.g. switching portrait/landscape on mobile or resizing browser)
 window.addEventListener('resize', () => {
   const currentMinZoom = getDeviceMinZoom();
