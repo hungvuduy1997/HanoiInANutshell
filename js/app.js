@@ -61,7 +61,7 @@ async function loadVisibleFgbFeatures() {
   };
 
   // Adjust path to your .fgb dataset file if necessary
-  const fgbUrl = 'data/hian_db.fgb'; 
+  const fgbUrl = 'data/HIAN_Geometry-260719.fgb'; 
 
   try {
     // Stream only features overlapping current screen viewport using FlatGeobuf's R-tree index
