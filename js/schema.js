@@ -15,6 +15,19 @@
  *      - Empty Array ([])  --> Handled dynamically by styling/rendering engines (e.g., road widths or map colors).
  */
 
+export const MAP_TYPES = {
+  streets: {
+    id: 'streets',
+    name: 'Đường phố Hà Nội',
+    fgbSource: 'data/HIAN_Geometry-260719.fgb'
+  },
+  cuaOHanoi: {
+    id: 'cuaOHanoi',
+    name: 'Cửa Ô Hà Nội',
+    fgbSource: 'data/HIAN_CuaOHanoi.fgb'
+  }
+};
+
 export const DATA_SOURCES = {
   geninfo: {
     file: 'data/hian_geninfo.csv',

@@ -4,8 +4,12 @@
  * Add "hidden:true" for hidden themes.
  * Add ranks: [{value: "<insert value here>", label: "<insert value here>"}] to explicitly create an order for theme
  */
+
+import { MAP_TYPES } from './schema.js';
+
 export const themes = {
   categorization: {
+    mapType: 'streets',
     name: "Phân loại",
     description: "",
     attribute: "category",
@@ -17,18 +21,22 @@ export const themes = {
       {value: "Nhân vật lịch sử", label: "Nhân vật lịch sử"},
       {value: "Tư tưởng xã hội", label: "Tư tưởng xã hội"},
       {value: "Khác", label: "Khác"}
-    ]
+    ],
+    fgbSource: MAP_TYPES.streets.fgbSource
   },
   subcategory: {
+    mapType: 'streets',
     name: "Lĩnh vực hoạt động",
     description: "",
     attribute: "subcategory",
     filter: (combinedData) => {
       const val = combinedData['subcategory'];
       return val && val !== 'NULL' && val.trim() !== '';
-    }
+    },
+    fgbSource: MAP_TYPES.streets.fgbSource
   },
   historical_epoch: {
+    mapType: 'streets',
     name: "Thời kỳ Lịch sử",
     description: "Bản đồ thể hiện các thời kỳ lịch sử gắn liền với danh nhân, sự kiện và triều đại được dùng để đặt tên đường phố tại Hà Nội.",
     attribute: "period",
@@ -48,27 +56,33 @@ export const themes = {
       { value: "Nhà Tây Sơn", label: "Nhà Tây Sơn (1788 - 1802)" },
       { value: "Nhà Nguyễn & Pháp thuộc", label: "Nhà Nguyễn & Pháp thuộc (1802 - 1945)" },
       { value: "Cách mạng & kháng chiến", label: "Cách mạng & kháng chiến (1945 - 1975)" }
-    ]
+    ],
+    fgbSource: MAP_TYPES.streets.fgbSource
   },
   Local_Hero: {
+    mapType: 'streets',
     name: "Danh nhân địa phương",
     description: "",
     attribute: "name_processed",
     filter: (combinedData) => {
       const val = combinedData['localhero'];
       return val && String(val).trim().toUpperCase() === 'TRUE';
-    }
+    },
+    fgbSource: MAP_TYPES.streets.fgbSource
   },
   Ke_Of_HN: {
+    mapType: 'streets',
     name: "Các Kẻ ở Hà Nội",
     description: "Trong tiếng Việt cổ, 'Kẻ' nghĩa là một vùng đất, một không gian cư trú, một cộng đồng người. Tại Hà Nội, các làng 'Kẻ' vốn là tên Nôm dân dã của các làng cổ (một số có từ thời Hùng Vương), phần lớn bên cạnh các dòng sông xung quanh kinh thành, tạo thành một vành đai nông - thủ công nghiệp phụ trợ cho kinh thành.",
     attribute: "ke",
     filter: (combinedData) => {
       const val = combinedData['ke'];
       return val && val !== 'NULL' && val.trim() !== '';
-    }
+    },
+    fgbSource: MAP_TYPES.streets.fgbSource
   },
   Thap_Tam_Trai: {
+    mapType: 'streets',
     name: "Thập Tam Trại",
     description: ["Thập Tam Trại là một khu vực gắn với lịch sử hình thành của Hà Nội.",
       "Theo tương truyền, khu vực này được hình thành vào thời Lý.",
@@ -99,7 +113,8 @@ export const themes = {
       { value: "Vạn Phúc (Ngọc Hà)", label: "Vạn Phúc"},
       { value: "Hào Nam", label: "Hào Nam" },
       { value: "Thịnh Hào", label: "Thịnh Hào" }
-    ]
+    ],
+    fgbSource: MAP_TYPES.streets.fgbSource
   },/**
   navalbattle: {
     name: "Thuỷ chiến nhà Trần",

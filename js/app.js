@@ -1,49 +1,74 @@
-import { initMap } from './map.js';
-import { loadData, setTheme, getTheme } from './data.js';
+import { MAP_TYPES } from './schema.js';
 import { themes } from './themes.js';
+import { setTheme, getTheme, loadData } from './data.js';
+import { initMap } from './map.js';
 
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    // 1. Initialize Map
-    initMap();
-
-    // 2. Load relational CSV tables and FlatGeobuf layers
-    await loadData();
-
-    // 3. Populate themeSelect dropdown options
-    populateThemeSelector();
-
-    console.log('Hanoi In A Nutshell initialized successfully!');
-  } catch (error) {
-    console.error('Initialization error:', error);
-  }
-});
-
-function populateThemeSelector() {
+function setupDropdownCascading() {
+  const mapTypeSelect = document.getElementById('mapTypeSelect');
   const themeSelect = document.getElementById('themeSelect');
-  if (!themeSelect) return;
 
-  // Clear existing static/empty HTML options
-  themeSelect.innerHTML = '';
+  if (!mapTypeSelect || !themeSelect) return;
 
-  const activeThemeKey = getTheme();
-
-  // Dynamically create <option> tags for every theme in themes.js
-  Object.keys(themes).forEach((key) => {
-    const themeObj = themes[key];
-    const option = document.createElement('option');
-    option.value = key;
-    option.textContent = themeObj.name || key;
-
-    if (key === activeThemeKey) {
-      option.selected = true;
-    }
-
-    themeSelect.appendChild(option);
+  // 1. Populate "Loại bản đồ"
+  mapTypeSelect.innerHTML = '';
+  Object.keys(MAP_TYPES).forEach(typeKey => {
+    const opt = document.createElement('option');
+    opt.value = typeKey;
+    opt.textContent = MAP_TYPES[typeKey].name;
+    mapTypeSelect.appendChild(opt);
   });
 
-  // Attach switch listener
+  // 2. Helper to filter "Chủ đề" based on selected "Loại bản đồ"
+  function populateThemesForMapType(selectedMapType, targetThemeKey = null) {
+    themeSelect.innerHTML = '';
+
+    const matchingThemes = Object.keys(themes).filter(
+      key => themes[key].mapType === selectedMapType
+    );
+
+    matchingThemes.forEach(themeKey => {
+      const opt = document.createElement('option');
+      opt.value = themeKey;
+      opt.textContent = themes[themeKey].name;
+      themeSelect.appendChild(opt);
+    });
+
+    // Select target theme or fall back to first option
+    const activeKey = targetThemeKey && matchingThemes.includes(targetThemeKey)
+      ? targetThemeKey
+      : matchingThemes[0];
+
+    if (activeKey) {
+      themeSelect.value = activeKey;
+      setTheme(activeKey);
+    }
+  }
+
+  // 3. Event Listener: When Map Type changes
+  mapTypeSelect.addEventListener('change', (e) => {
+    populateThemesForMapType(e.target.value);
+  });
+
+  // 4. Event Listener: When Theme changes
   themeSelect.addEventListener('change', (e) => {
     setTheme(e.target.value);
   });
+
+  // 5. Initial Sync with current active theme
+  const currentThemeKey = getTheme() || 'categorization';
+  const currentMapType = themes[currentThemeKey]?.mapType || 'streets';
+  mapTypeSelect.value = currentMapType;
+  populateThemesForMapType(currentMapType, currentThemeKey);
 }
+
+// Complete initialization cycle
+document.addEventListener('DOMContentLoaded', async () => {
+  // 1. Initialize Map engine
+  initMap();
+  
+  // 2. Link dropdown cascading UI
+  setupDropdownCascading();
+  
+  // 3. Load CSV data and fetch spatial geometries
+  await loadData();
+});
