@@ -2,7 +2,7 @@ import { map } from './map.js';
 import { themes } from './themes.js';
 import { attachInteractions } from './interactions.js';
 import { updateLegend } from './legend.js';
-import { DATA_SOURCES, PROPERTY_SCHEMA } from './schema.js'; // Centered relational truth schema
+import { DATA_SOURCES, PROPERTY_SCHEMA } from './schema.js';
 import { getCurrentModeString } from './map.js';
 
 let dataLayer = null;
@@ -33,7 +33,7 @@ const highwayRenderWeight = {
   'primary': 21, 'trunk_link': 22, 'trunk': 23, 'motorway_link': 24, 'motorway': 25
 };
 
-const RESTRICTED_HIGHWAY_TYPES = ['unclassified', 'elevator', 'ladder', 'corridor', 'steps', 'path', 'bridleway', 'pedestrian', 'track']
+const RESTRICTED_HIGHWAY_TYPES = ['unclassified', 'elevator', 'ladder', 'corridor', 'steps', 'path', 'bridleway', 'pedestrian', 'track'];
 
 function parseCSV(url) {
   return new Promise((resolve, reject) => {
@@ -85,23 +85,8 @@ function getSpectralGradientColor(percent, mode) {
       { offset: 0.5,  hex: '#81eb61' },
       { offset: 0.75, hex: '#abdda4' },
       { offset: 1.0,  hex: '#2b83ba' }
-    ],/**
-    [
-      { offset: 0.0,  hex: '#d77a61' },
-      { offset: 0.2,  hex: '#e4b0ba' },
-      { offset: 0.4,  hex: '#e9c46a' },
-      { offset: 0.6,  hex: '#b6c99a' },
-      { offset: 0.8,  hex: '#8fb4c7' },
-      { offset: 1.0,  hex: '#b08bbb' }
-    ],*/
-    dark: /**[
-      { offset: 0.0,  hex: '#d77a61' },
-      { offset: 0.2,  hex: '#e4b0ba' },
-      { offset: 0.4,  hex: '#e9c46a' },
-      { offset: 0.6,  hex: '#b6c99a' },
-      { offset: 0.8,  hex: '#8fb4c7' },
-      { offset: 1.0,  hex: '#b08bbb' }
-    ]*/[
+    ],
+    dark: [
       { offset: 0.0,  hex: '#ff4d4d' },
       { offset: 0.2,  hex: '#ff9f43' },
       { offset: 0.4,  hex: '#fff200' },
@@ -212,7 +197,7 @@ const styleFunction = feature => {
   
   const combinedData = getStreetCombinedData(fullId);
   const activeTheme = themes[currentThemeKey];
-  const targetValue = combinedData[activeTheme.attribute] || 'Unknown';
+  const targetValue = combinedData[activeTheme?.attribute] || 'Unknown';
   
   const hw = props.highway || combinedData.highway; 
 
@@ -248,7 +233,6 @@ const styleFunction = feature => {
   };
 };
 
-// Top-level function wrapper to safely manipulate active filter selection state
 export function toggleLegendFilter(value) {
   if (activeFilterValue === value) {
     activeFilterValue = null; 
@@ -260,9 +244,6 @@ export function toggleLegendFilter(value) {
   return activeFilterValue;
 }
 
-/**
- * Parses and processes decentralized CSV structures algorithmically via rules from schema.js
- */
 async function loadRelationalData() {
   try {
     console.log("Centralized Engine: Parsing relational CSV data stores...");
@@ -293,9 +274,6 @@ async function loadRelationalData() {
   }
 }
 
-/**
- * Dynamically resolves data elements across separated CSV layers using parameters from schema.js
- */
 export function getStreetCombinedData(fullId) {
   const genInfoRow = csvStorageTables.geninfo[fullId] || {};
   
@@ -323,6 +301,29 @@ export function getStreetCombinedData(fullId) {
 
 export async function loadData() {
   await loadRelationalData();
+  
+  if (!isZoomEventBound && map) {
+    map.on('moveend', () => {
+      const newBounds = map.getBounds().toBBoxString();
+      if (newBounds !== lastBoundsStr) {
+        lastBoundsStr = newBounds;
+        rebuildLayers(themes[currentThemeKey]);
+      }
+    });
+
+    map.on('click', () => {
+      const panel = document.getElementById('infoPanel');
+      if (panel) { panel.innerHTML = ''; panel.style.display = 'none'; }
+      
+      if (activeFilterValue !== null) {
+        activeFilterValue = null;
+        applyTheme(currentThemeKey);
+      }
+    });
+    
+    isZoomEventBound = true;
+  }
+
   applyTheme(currentThemeKey, true);
 }
 
@@ -331,10 +332,7 @@ export function applyTheme(themeKey, initialLoad = false) {
   if (!theme) return;
   currentThemeKey = themeKey;
   
-  // Rebuild the geographic vectors layer stack safely
   rebuildLayers(theme);
-
-  // Update theme description UI
   updateThemeDescription(theme);
   
   if (typeof updateLegend === 'function') {
@@ -347,8 +345,6 @@ export function applyTheme(themeKey, initialLoad = false) {
       legendData = theme.categories;
     } 
     else {
-      console.log(`Legend Engine: Attribute drop detected for "${themeKey}". Compiling dynamic parameters...`);
-      // Inside applyTheme() in js/data.js:
       const data = window._csvStorageTables;
       const uniqueValues = new Set();
 
@@ -356,14 +352,11 @@ export function applyTheme(themeKey, initialLoad = false) {
         Object.keys(data.geninfo).forEach(fullId => {
           const combinedData = getStreetCombinedData(fullId);
 
-          // 1. Run the theme's filter FIRST (if one exists)
           if (theme.filter && !theme.filter(combinedData)) {
-            return; // Skip streets that don't pass the filter!
+            return;
           }
 
-          // 2. Extract the attribute value ONLY from features that passed
           const rawValue = combinedData[theme.attribute];
-
           if (rawValue && rawValue !== 'NULL' && rawValue.toString().trim() !== '') {
             uniqueValues.add(rawValue.toString().trim());
           }
@@ -410,32 +403,30 @@ async function rebuildLayers(theme) {
       maxY: bounds.getNorth()
     };
 
-    // Dynamically resolves FGB path from active theme or defaults to fallback schema configuration
     const fgbFilePath = theme?.fgbSource || (DATA_SOURCES.geninfo.fgbDefault || 'data/HIAN_Geometry-260719.fgb');
-
-    console.log(`Streaming view-bounded binary elements via FlatGeobuf index (${fgbFilePath})...`);
-    const iterator = flatgeobuf.deserialize(fgbFilePath, bbox);
-    const visibleFeatures = [];
     
+    // Explicitly demand identity (uncompressed) binary range chunks from server
+    const iterator = flatgeobuf.deserialize(
+      fgbFilePath, 
+      bbox, 
+      null, 
+      { headers: { 'Accept-Encoding': 'identity' } }
+    );
+    
+    const visibleFeatures = [];
     const activeTheme = themes[currentThemeKey];
 
     for await (const feature of iterator) {
       const fullId = getNormalizedId(feature);
       const combinedData = getStreetCombinedData(fullId);
 
-      // 1. PRE-FILTER OPTIMIZATION
       if (activeTheme && typeof activeTheme.filter === 'function') {
-        if (!activeTheme.filter(combinedData)) {
-          continue; 
-        }
+        if (!activeTheme.filter(combinedData)) continue; 
       }
 
-      // 2. LEGEND CLICK HIGHLIGHT FILTER
       if (activeFilterValue !== null) {
-        const targetValue = combinedData[activeTheme.attribute] || 'Unknown';
-        if (targetValue !== activeFilterValue) {
-          continue; 
-        }
+        const targetValue = combinedData[activeTheme?.attribute] || 'Unknown';
+        if (targetValue !== activeFilterValue) continue; 
       }
 
       visibleFeatures.push(feature);
@@ -448,8 +439,6 @@ async function rebuildLayers(theme) {
     });
 
     const sortedGeoJsonStructure = { type: "FeatureCollection", features: sortedFeatures };
-
-    // Inside async function rebuildLayers(theme) in js/data.js
 
     const nextDataLayer = L.geoJson(sortedGeoJsonStructure, {
       style: styleFunction,
@@ -475,18 +464,13 @@ async function rebuildLayers(theme) {
         f.properties.full_id = normId;
         
         const combinedData = getStreetCombinedData(normId);
-        
-        // 1. Check if street name is missing/invalid
         const isNameMissing = !combinedData.street_name || 
                               combinedData.street_name === 'NULL' || 
                               combinedData.street_name === '' || 
                               combinedData.street_name === 'Đường phố chưa biết tên';
 
-        // 2. Check if the road type is in your restricted list
         const roadType = (combinedData.highway || f.properties.highway || '').toLowerCase().trim();
         const isRestrictedType = RESTRICTED_HIGHWAY_TYPES.includes(roadType);
-
-        // 3. Un-clickable ONLY IF it's a restricted type AND has no name
         const isUnclickable = isRestrictedType && isNameMissing;
 
         if (!isUnclickable) {
@@ -518,7 +502,6 @@ async function rebuildLayers(theme) {
         f.properties.full_id = normId;
         
         const combinedData = getStreetCombinedData(normId);
-        
         const isNameMissing = !combinedData.street_name || 
                               combinedData.street_name === 'NULL' || 
                               combinedData.street_name === '' || 
@@ -526,7 +509,6 @@ async function rebuildLayers(theme) {
 
         const roadType = (combinedData.highway || f.properties.highway || '').toLowerCase().trim();
         const isRestrictedType = RESTRICTED_HIGHWAY_TYPES.includes(roadType);
-
         const isUnclickable = isRestrictedType && isNameMissing;
 
         if (!isUnclickable) {
@@ -545,28 +527,6 @@ async function rebuildLayers(theme) {
 
     dataLayer = nextDataLayer;
     bufferLayer = nextBufferLayer;
-
-    if (!isZoomEventBound) {
-      map.on('moveend', () => {
-        const newBounds = map.getBounds().toBBoxString();
-        if (newBounds !== lastBoundsStr) {
-          lastBoundsStr = newBounds;
-          rebuildLayers(themes[currentThemeKey]);
-        }
-      });
-
-      map.on('click', () => {
-        const panel = document.getElementById('infoPanel');
-        if (panel) { panel.innerHTML = ''; panel.style.display = 'none'; }
-        
-        if (activeFilterValue !== null) {
-          activeFilterValue = null;
-          applyTheme(currentThemeKey);
-        }
-      });
-      
-      isZoomEventBound = true;
-    }
 
   } catch (error) {
     console.error("Error drawing indexed FlatGeobuf layers:", error);
