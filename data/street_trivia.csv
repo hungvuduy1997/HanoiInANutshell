@@ -1128,8 +1128,8 @@ Ngõ 75 Đường Ngọc Thuỵ - Bồ Đề,Ngọc Thuỵ,Bồ Đề,,
 Ngõ 78 Đường Ngọc Thuỵ - Bồ Đề,Ngọc Thuỵ,Bồ Đề,,
 Ngõ 86 Đường Ngọc Thuỵ - Bồ Đề,Ngọc Thuỵ,Bồ Đề,,
 Ngõ 97 Đường Ngọc Thuỵ - Bồ Đề,Ngọc Thuỵ,Bồ Đề,,
-Đường Nguyễn Gia Bồng - Bồ Đề,Nguyễn Gia Bồng,Bồ Đề,,
-Ngõ 59 Đường Nguyễn Gia Bồng - Bồ Đề,Nguyễn Gia Bồng,Bồ Đề,,
+Đường Nguyễn Gia Bồng - Bồ Đề,Nguyễn Gia Bồng,Bồ Đề,,TRUE
+Ngõ 59 Đường Nguyễn Gia Bồng - Bồ Đề,Nguyễn Gia Bồng,Bồ Đề,,TRUE
 Đường Nguyễn Sơn - Bồ Đề,Nguyễn Sơn,Bồ Đề,,
 Hẻm 117/20/17 Phố Nguyễn Sơn - Bồ Đề,Nguyễn Sơn,Bồ Đề,,
 Hẻm 158/38/29 Phố Nguyễn Sơn - Bồ Đề,Nguyễn Sơn,Bồ Đề,,
@@ -1595,7 +1595,7 @@ Ngõ 85 Đường Xuân Thuỷ - Cầu Giấy,Xuân Thuỷ,Cầu Giấy,,
 "Cầu Yên Hoà - Cầu Giấy, Láng",Yên Hoà,"Cầu Giấy, Láng",,
 "Đường Cầu Giấy - Cầu Giấy, Nghĩa Đô",Cầu Giấy,"Cầu Giấy, Nghĩa Đô",,
 "Phố Chùa Hà - Cầu Giấy, Nghĩa Đô",Chùa Hà,"Cầu Giấy, Nghĩa Đô",,
-"Phố Nguyễn Đỗ Cung - Cầu Giấy, Nghĩa Đô",Nguyễn Đỗ Cung,"Cầu Giấy, Nghĩa Đô",,
+"Phố Nguyễn Đỗ Cung - Cầu Giấy, Nghĩa Đô",Nguyễn Đỗ Cung,"Cầu Giấy, Nghĩa Đô",,TRUE
 "Đường Nguyễn Khánh Toàn - Cầu Giấy, Nghĩa Đô",Nguyễn Khánh Toàn,"Cầu Giấy, Nghĩa Đô",,
 "Đường Nguyễn Phong Sắc - Cầu Giấy, Nghĩa Đô",Nguyễn Phong Sắc,"Cầu Giấy, Nghĩa Đô",,
 "Đường Nguyễn Văn Huyên - Cầu Giấy, Nghĩa Đô",Nguyễn Văn Huyên,"Cầu Giấy, Nghĩa Đô",,
@@ -2432,7 +2432,7 @@ Phố Láng Hạ - Đống Đa,Láng Hạ,Đống Đa,,
 Ngõ Liên Việt - Đống Đa,Liên Việt,Đống Đa,,
 Ngõ 68 Phố Nam Đồng - Đống Đa,Nam Đồng,Đống Đa,,
 Cầu Vượt Ngã Tư Sở - Đống Đa,Ngã Tư Sở,Đống Đa,,
-Phố Nguyễn Hy Quang - Đống Đa,Nguyễn Hy Quang,Đống Đa,,
+Phố Nguyễn Hy Quang - Đống Đa,Nguyễn Hy Quang,Đống Đa,,TRUE
 Ngách 180/84 Phố Nguyễn Lương Bằng - Đống Đa,Nguyễn Lương Bằng,Đống Đa,,
 Ngách 64/21 Phố Nguyễn Lương Bằng - Đống Đa,Nguyễn Lương Bằng,Đống Đa,,
 Ngách 64/33 Phố Nguyễn Lương Bằng - Đống Đa,Nguyễn Lương Bằng,Đống Đa,,
@@ -4148,7 +4148,7 @@ Phố Nguyễn Siêu - Hoàn Kiếm,Nguyễn Siêu,Hoàn Kiếm,"Phố được 
 Phố được đặt tên là Nguyễn Siêu vì trước đây nhà của ông ở khu làng ven bờ sông. Ông sống ở đó từ nhỏ, sau thành tài, mở trường dạy học ngay bên cạnh bờ sông.",TRUE
 Phố Nguyễn Thiện Thuật - Hoàn Kiếm,Nguyễn Thiện Thuật,Hoàn Kiếm,,
 Phố Nguyễn Thiếp - Hoàn Kiếm,Nguyễn Thiếp,Hoàn Kiếm,,
-Phố Nguyễn Văn Tố - Hoàn Kiếm,Nguyễn Văn Tố,Hoàn Kiếm,,
+Phố Nguyễn Văn Tố - Hoàn Kiếm,Nguyễn Văn Tố,Hoàn Kiếm,,TRUE
 Phố Nguyễn Xí - Hoàn Kiếm,Nguyễn Xí,Hoàn Kiếm,,
 Ngõ Nhà Chung - Hoàn Kiếm,Nhà Chung,Hoàn Kiếm,,
 Phố Nhà Chung - Hoàn Kiếm,Nhà Chung,Hoàn Kiếm,,
@@ -4238,7 +4238,7 @@ Ngõ 65 Phố Bằng Liệt - Hoàng Liệt,Bằng Liệt,Hoàng Liệt,,
 Ngõ 77 Phố Bằng Liệt - Hoàng Liệt,Bằng Liệt,Hoàng Liệt,,
 Ngõ 89 Phố Bằng Liệt - Hoàng Liệt,Bằng Liệt,Hoàng Liệt,,
 Phố Bằng Liệt - Hoàng Liệt,Bằng Liệt,Hoàng Liệt,,
-Phố Bùi Quốc Khái - Hoàng Liệt,Bùi Quốc Khái,Hoàng Liệt,,
+Phố Bùi Quốc Khái - Hoàng Liệt,Bùi Quốc Khái,Hoàng Liệt,,TRUE
 Phố Đạm Phương - Hoàng Liệt,Đạm Phương,Hoàng Liệt,,
 Đường Giải Phóng - Hoàng Liệt,Giải Phóng,Hoàng Liệt,,
 Hẻm 2/16/18 Phố Hoàng Liệt - Hoàng Liệt,Hoàng Liệt,Hoàng Liệt,,
@@ -6939,7 +6939,7 @@ Ngõ 152 Phố Nguyễn Đình Hoàn - Nghĩa Đô,Nguyễn Đình Hoàn,Nghĩa 
 Ngõ 176 Phố Nguyễn Đình Hoàn - Nghĩa Đô,Nguyễn Đình Hoàn,Nghĩa Đô,,
 Ngõ 56 Phố Nguyễn Đình Hoàn - Nghĩa Đô,Nguyễn Đình Hoàn,Nghĩa Đô,,
 Phố Nguyễn Đình Hoàn - Nghĩa Đô,Nguyễn Đình Hoàn,Nghĩa Đô,,
-Phố Nguyễn Đỗ Cung - Nghĩa Đô,Nguyễn Đỗ Cung,Nghĩa Đô,,
+Phố Nguyễn Đỗ Cung - Nghĩa Đô,Nguyễn Đỗ Cung,Nghĩa Đô,,TRUE
 Đường Nguyễn Khánh Toàn - Nghĩa Đô,Nguyễn Khánh Toàn,Nghĩa Đô,,
 Hẻm 118/8/1 Đường Nguyễn Khánh Toàn - Nghĩa Đô,Nguyễn Khánh Toàn,Nghĩa Đô,,
 Hẻm 158/1/2 Đường Nguyễn Khánh Toàn - Nghĩa Đô,Nguyễn Khánh Toàn,Nghĩa Đô,,
@@ -7590,9 +7590,9 @@ Ngõ 81 Phố Láng Hạ - Ô Chợ Dừa,Láng Hạ,Ô Chợ Dừa,,
 Ngõ 85 Phố Láng Hạ - Ô Chợ Dừa,Láng Hạ,Ô Chợ Dừa,,
 Ngõ 87 Phố Láng Hạ - Ô Chợ Dừa,Láng Hạ,Ô Chợ Dừa,,
 Phố Láng Hạ - Ô Chợ Dừa,Láng Hạ,Ô Chợ Dừa,,
-Ngõ 148 Phố Mai Anh Tuấn - Ô Chợ Dừa,Mai Anh Tuấn,Ô Chợ Dừa,,
-Ngõ 156 Phố Mai Anh Tuấn - Ô Chợ Dừa,Mai Anh Tuấn,Ô Chợ Dừa,,
-Phố Mai Anh Tuấn - Ô Chợ Dừa,Mai Anh Tuấn,Ô Chợ Dừa,,
+Ngõ 148 Phố Mai Anh Tuấn - Ô Chợ Dừa,Mai Anh Tuấn,Ô Chợ Dừa,,TRUE
+Ngõ 156 Phố Mai Anh Tuấn - Ô Chợ Dừa,Mai Anh Tuấn,Ô Chợ Dừa,,TRUE
+Phố Mai Anh Tuấn - Ô Chợ Dừa,Mai Anh Tuấn,Ô Chợ Dừa,,TRUE
 Ngõ 104 Phố Nguyễn Phúc Lai - Ô Chợ Dừa,Nguyễn Phúc Lai,Ô Chợ Dừa,,
 Ngõ 12 Phố Nguyễn Phúc Lai - Ô Chợ Dừa,Nguyễn Phúc Lai,Ô Chợ Dừa,,
 Ngõ 16 Phố Nguyễn Phúc Lai - Ô Chợ Dừa,Nguyễn Phúc Lai,Ô Chợ Dừa,,
@@ -7648,7 +7648,7 @@ Ngõ 8C Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
 Phố Vũ Thạnh - Ô Chợ Dừa,Vũ Thạnh,Ô Chợ Dừa,,TRUE
 "Phố Hoàng Cầu - Ô Chợ Dừa, Đống Đa",Hoàng Cầu,"Ô Chợ Dừa, Đống Đa",,
 "Phố Láng Hạ - Ô Chợ Dừa, Đống Đa",Láng Hạ,"Ô Chợ Dừa, Đống Đa",,
-"Phố Mai Anh Tuấn - Ô Chợ Dừa, Đống Đa",Mai Anh Tuấn,"Ô Chợ Dừa, Đống Đa",,
+"Phố Mai Anh Tuấn - Ô Chợ Dừa, Đống Đa",Mai Anh Tuấn,"Ô Chợ Dừa, Đống Đa",,TRUE
 "Phố Ô Chợ Dừa - Ô Chợ Dừa, Đống Đa",Ô Chợ Dừa,"Ô Chợ Dừa, Đống Đa",,
 "Ngõ 88 Thái Hà - Ô Chợ Dừa, Đống Đa",Thái Hà,"Ô Chợ Dừa, Đống Đa",,
 "Phố Thái Hà - Ô Chợ Dừa, Đống Đa",Thái Hà,"Ô Chợ Dừa, Đống Đa",,
@@ -10165,11 +10165,11 @@ Ngõ 23 Đường Lê Văn Lương - Thanh Xuân,Lê Văn Lương,Thanh Xuân,,
 Ngõ 25A Đường Lê Văn Lương - Thanh Xuân,Lê Văn Lương,Thanh Xuân,,
 Ngõ 27 Đường Lê Văn Lương - Thanh Xuân,Lê Văn Lương,Thanh Xuân,,
 Ngõ 39 Đường Lê Văn Lương - Thanh Xuân,Lê Văn Lương,Thanh Xuân,,
-Ngõ 17 Phố Lê Văn Thiêm - Thanh Xuân,Lê Văn Thiêm,Thanh Xuân,,
-Ngõ 23 Phố Lê Văn Thiêm - Thanh Xuân,Lê Văn Thiêm,Thanh Xuân,,
-Ngõ 29 Phố Lê Văn Thiêm - Thanh Xuân,Lê Văn Thiêm,Thanh Xuân,,
-Ngõ 33 Phố Lê Văn Thiêm - Thanh Xuân,Lê Văn Thiêm,Thanh Xuân,,
-Phố Lê Văn Thiêm - Thanh Xuân,Lê Văn Thiêm,Thanh Xuân,,
+Ngõ 17 Phố Lê Văn Thiêm - Thanh Xuân,Lê Văn Thiêm,Thanh Xuân,,TRUE
+Ngõ 23 Phố Lê Văn Thiêm - Thanh Xuân,Lê Văn Thiêm,Thanh Xuân,,TRUE
+Ngõ 29 Phố Lê Văn Thiêm - Thanh Xuân,Lê Văn Thiêm,Thanh Xuân,,TRUE
+Ngõ 33 Phố Lê Văn Thiêm - Thanh Xuân,Lê Văn Thiêm,Thanh Xuân,,TRUE
+Phố Lê Văn Thiêm - Thanh Xuân,Lê Văn Thiêm,Thanh Xuân,,TRUE
 Đường Lương Thế Vinh - Thanh Xuân,Lương Thế Vinh,Thanh Xuân,,
 Đường TT3C Lương Thế Vinh - Thanh Xuân,Lương Thế Vinh,Thanh Xuân,,
 Đường TT4 Lương Thế Vinh - Thanh Xuân,Lương Thế Vinh,Thanh Xuân,,
@@ -13351,7 +13351,7 @@ Ngõ 75 Nhuệ Giang - Xuân Phương,Sông Nhuệ,Xuân Phương,,
 Ngõ 77 Nhuệ Giang - Xuân Phương,Sông Nhuệ,Xuân Phương,,
 Đại Lộ Thăng Long - Xuân Phương,Thăng Long,Xuân Phương,,
 Đại Lộ Thăng Long (Láng - Hoà Lạc) - Xuân Phương,Thăng Long,Xuân Phương,,
-Phố Thị Cẩm - Xuân Phương,Thị Cẩm,Xuân Phương,,
+Phố Thị Cẩm - Xuân Phương,#N/A,#N/A,,
 Phố Trịnh Văn Bô - Xuân Phương,Trịnh Văn Bô,Xuân Phương,,
 Hẻm 35/7/1 Phố Tu Hoàng - Xuân Phương,Tu Hoàng,Xuân Phương,,
 Ngách 35/34 Phố Tu Hoàng - Xuân Phương,Tu Hoàng,Xuân Phương,,

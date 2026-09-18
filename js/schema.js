@@ -19,29 +19,29 @@ export const MAP_TYPES = {
   streets: {
     id: 'streets',
     name: 'Đường phố Hà Nội',
-    fgbSource: 'data/HIAN_Geometry-260719.fgb'
+    fgbSource: 'data/street.fgb'
   },
   cuaOHanoi: {
     id: 'cuaOHanoi',
     name: 'Cửa Ô Hà Nội',
-    fgbSource: 'data/HIAN_CuaOHanoi.fgb'
+    fgbSource: 'data/gates.geojson'
   }
 };
 
 export const DATA_SOURCES = {
   geninfo: {
-    file: 'data/hian_geninfo.csv',
+    file: 'data/street_geninfo.csv',
     primaryKey: 'full_id',        // Root identifier matching map geometries
     label: 'Geographic Base Table'
   },
   database: {
-    file: 'data/hian_db.csv',
-    primaryKey: 'name',           // Looked up via geninfo['name:processed']
+    file: 'data/street_db.csv',
+    primaryKey: 'street_name',           // Looked up via geninfo['name:processed']
     foreignKeyInGenInfo: 'name:processed',
     label: 'Historical Attributes Table'
   },
   trivia: {
-    file: 'data/hian_trivia.csv',
+    file: 'data/street_trivia.csv',
     primaryKey: 'name:trivia',    // Looked up via geninfo['name:trivia']
     foreignKeyInGenInfo: 'name:trivia',
     label: 'Trivia & Anecdotes Table'
@@ -49,7 +49,7 @@ export const DATA_SOURCES = {
 };
 
 export const PROPERTY_SCHEMA = {
-  // --- PROPERTIES OUT OF hian_geninfo.csv ---
+  // --- PROPERTIES OUT OF street_geninfo.csv ---
   highway: {
     csvSource: 'geninfo',
     csvHeader: 'highway',
@@ -72,87 +72,87 @@ export const PROPERTY_SCHEMA = {
     targets: ['panel_subheader']
   },
 
-  // --- THEME ATTRIBUTES OUT OF hian_db.csv ---
+  // --- THEME ATTRIBUTES OUT OF street_db.csv ---
   category: {
     csvSource: 'database',
-    csvHeader: 'category', // Matches themes.categorization.attribute exactly
+    csvHeader: 'street_category', // Matches themes.categorization.attribute exactly
     label: 'Phân loại chính',
     default: 'Không rõ',
     targets: ['panel_row']
   },
   subcategory: {
     csvSource: 'database',
-    csvHeader: 'subcategory',
+    csvHeader: 'street_subcategory',
     label: 'Phân loại phụ',
     default: '',
     targets: ['panel_row']
   },
   period: {
     csvSource: 'database',
-    csvHeader: 'period', // Matches themes.historical_epoch.attribute exactly
+    csvHeader: 'street_period', // Matches themes.historical_epoch.attribute exactly
     label: 'Thời kỳ',
     default: '',
     targets: ['panel_row']
   },
   profession: {
     csvSource: 'database',
-    csvHeader: 'profession',
+    csvHeader: 'street_profession',
     label: 'Thân thế & Sự nghiệp',
     default: '',
     targets: ['panel_row']
   },
     birthanddeath: {
     csvSource: 'database',
-    csvHeader: 'birthanddeath',
+    csvHeader: 'street_birthanddeath',
     label: 'Ngày sinh & mất',
     default: '',
     targets: ['panel_row']
   },
   title: {
     csvSource: 'database',
-    csvHeader: 'title',
+    csvHeader: 'street_title',
     label: 'Chức vụ / Danh hiệu',
     default: '',
     targets: ['panel_row']
   },
   equititle: {
     csvSource: 'database',
-    csvHeader: 'equititle',
+    csvHeader: 'street_equititle',
     label: 'Danh hiệu tương đương',
     default: '',
     targets: ['panel_row']
   },
   family: {
     csvSource: 'database',
-    csvHeader: 'family',
+    csvHeader: 'street_family',
     label: 'Mối quan hệ gia đình',
     default: '',
     targets: ['panel_row']
   },
   ke: {
     csvSource: 'database',
-    csvHeader: 'ke',
+    csvHeader: 'street_ke',
     label: 'Kẻ',
     default: '',
     targets: ['panel_row']
   },
   othernames: {
     csvSource: 'database',
-    csvHeader: 'othernames',
+    csvHeader: 'street_othernames',
     label: 'Tên gọi khác',
     default: '',
     targets: ['panel_row']
   },
   specialization: {
     csvSource: 'database',
-    csvHeader: 'specialization',
-    label: 'Nghề đặc thù',
+    csvHeader: 'street_specialization',
+    label: 'Nghề nghiệp đặc thù',
     default: '',
     targets: ['panel_row']
   },
   description: {
     csvSource: 'database',
-    csvHeader: 'description',
+    csvHeader: 'street_description',
     label: 'Mô tả',
     default: '',
     targets: ['panel_row']
@@ -166,13 +166,13 @@ export const PROPERTY_SCHEMA = {
   },
   theme: {
     csvSource: 'database',
-    csvHeader: 'theme',
+    csvHeader: 'street_theme',
     label: 'Chủ đề',
     default: '',
     targets: []
     },
 
-  // --- PROPERTIES OUT OF hian_trivia.csv ---
+  // --- PROPERTIES OUT OF street_trivia.csv ---
   trivia: {
     csvSource: 'trivia',
     csvHeader: 'trivia',

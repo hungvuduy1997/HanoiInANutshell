@@ -403,7 +403,7 @@ async function rebuildLayers(theme) {
       maxY: bounds.getNorth()
     };
 
-    const fgbFilePath = theme?.fgbSource || (DATA_SOURCES.geninfo.fgbDefault || 'data/HIAN_Geometry-260719.fgb');
+    const fgbFilePath = theme?.fgbSource || (DATA_SOURCES.geninfo.fgbDefault || 'data/street.fgb');
     
     // Explicitly demand identity (uncompressed) binary range chunks from server
     const iterator = flatgeobuf.deserialize(

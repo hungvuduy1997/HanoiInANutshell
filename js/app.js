@@ -3,6 +3,12 @@ import { themes } from './themes.js';
 import { setTheme, getTheme, loadData } from './data.js';
 import { initMap } from './map.js';
 
+// Memory object to track last selected theme for each map type
+const lastSelectedThemeByMapType = {
+  streets: 'categorization',
+  cuaOHanoi: 'categorization'
+};
+
 function setupDropdownCascading() {
   const mapTypeSelect = document.getElementById('mapTypeSelect');
   const themeSelect = document.getElementById('themeSelect');
@@ -19,7 +25,7 @@ function setupDropdownCascading() {
   });
 
   // 2. Helper to filter "Chủ đề" based on selected "Loại bản đồ"
-  function populateThemesForMapType(selectedMapType, targetThemeKey = null) {
+  function populateThemesForMapType(selectedMapType) {
     themeSelect.innerHTML = '';
 
     const matchingThemes = Object.keys(themes).filter(
@@ -33,13 +39,15 @@ function setupDropdownCascading() {
       themeSelect.appendChild(opt);
     });
 
-    // Select target theme or fall back to first option
-    const activeKey = targetThemeKey && matchingThemes.includes(targetThemeKey)
-      ? targetThemeKey
+    // Use remembered theme for this map type, or fall back to first theme
+    const rememberedTheme = lastSelectedThemeByMapType[selectedMapType];
+    const activeKey = rememberedTheme && matchingThemes.includes(rememberedTheme)
+      ? rememberedTheme
       : matchingThemes[0];
 
     if (activeKey) {
       themeSelect.value = activeKey;
+      lastSelectedThemeByMapType[selectedMapType] = activeKey;
       setTheme(activeKey);
     }
   }
@@ -49,16 +57,20 @@ function setupDropdownCascading() {
     populateThemesForMapType(e.target.value);
   });
 
-  // 4. Event Listener: When Theme changes
+  // 4. Event Listener: When Theme changes, remember choice
   themeSelect.addEventListener('change', (e) => {
+    const currentMapType = mapTypeSelect.value;
+    lastSelectedThemeByMapType[currentMapType] = e.target.value;
     setTheme(e.target.value);
   });
 
   // 5. Initial Sync with current active theme
   const currentThemeKey = getTheme() || 'categorization';
   const currentMapType = themes[currentThemeKey]?.mapType || 'streets';
+  lastSelectedThemeByMapType[currentMapType] = currentThemeKey;
+  
   mapTypeSelect.value = currentMapType;
-  populateThemesForMapType(currentMapType, currentThemeKey);
+  populateThemesForMapType(currentMapType);
 }
 
 // Complete initialization cycle
